@@ -1,0 +1,104 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lurkur/app/blocs/router_cubit.dart';
+import 'package:lurkur/app/utils/reddit_api.dart';
+import 'package:lurkur/app/widgets/loading_failed_indicator.dart';
+import 'package:lurkur/app/widgets/loading_indicator.dart';
+
+/// Shows a popup that lets the user select a subreddit from their subscriptions.
+///
+/// For more information, please see [SubscriptionsBody].
+void showSubscriptionsPopup(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    showDragHandle: true,
+    builder: (context) {
+      return const SubscriptionsBody();
+    },
+  );
+}
+
+class SubscriptionsBody extends StatelessWidget {
+  const SubscriptionsBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<RedditSubscription>>(
+      future: RedditApi().getSubscriptions(context),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const Center(
+            child: LoadingFailedIndicator(),
+          );
+        }
+        final data = snapshot.data;
+        if (data == null) {
+          return const Center(
+            child: LoadingIndicator(),
+          );
+        }
+        return ListView(
+          children: [
+            const _SubscriptionTile(
+              title: 'home',
+            ),
+            const _SubscriptionTile(
+              title: 'popular',
+              subredditName: 'popular',
+            ),
+            for (final subscription in data
+              ..sort((a, b) => a.displayName
+                  .toLowerCase()
+                  .compareTo(b.displayName.toLowerCase())))
+              _SubscriptionTile.fromSubscription(subscription),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _SubscriptionTile extends StatelessWidget {
+  const _SubscriptionTile({
+    required this.title,
+    this.subtitle,
+    this.subredditName,
+  });
+
+  factory _SubscriptionTile.fromSubscription(
+    RedditSubscription subscription,
+  ) {
+    return _SubscriptionTile(
+      title: subscription.displayName,
+      subtitle: subscription.title,
+      subredditName: subscription.displayName,
+    );
+  }
+
+  final String title;
+  final String? subtitle;
+  final String? subredditName;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(title),
+      subtitle: subtitle != null
+          ? Opacity(
+              opacity: 0.5,
+              child: Text(subtitle!),
+            )
+          : null,
+      trailing: const Opacity(
+        opacity: 0.5,
+        child: Icon(Icons.chevron_right),
+      ),
+      onTap: () => context.read<RouterCubit>()
+        ..pop(context)
+        ..goToSubreddit(
+          context,
+          subredditName: subredditName,
+        ),
+    );
+  }
+}
