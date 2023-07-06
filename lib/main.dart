@@ -6,6 +6,7 @@ import 'package:lurkur/app/blocs/auth_cubit.dart';
 import 'package:lurkur/app/blocs/preference_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
+import 'package:lurkur/app/utils/reddit_api.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -77,6 +78,9 @@ class _Providers extends StatelessWidget {
         ),
         BlocProvider(
           create: (_) => PreferenceCubit()..init(),
+        ),
+        Provider(
+          create: (_) => RedditApi(),
         ),
       ],
       child: child,

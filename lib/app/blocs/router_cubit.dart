@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lurkur/features/post.dart';
 import 'package:lurkur/features/sign_in.dart';
+import 'package:lurkur/features/submission.dart';
 import 'package:lurkur/features/subreddit.dart';
 
 /// Manages the routes available in the app.
@@ -10,6 +10,9 @@ class RouterCubit extends Cubit<RouteState> {
   static const signIn = '/';
   static const post = '/post';
   static const subreddit = '/subreddit';
+
+  static const submissionQueryParameter = 'submission';
+  static const subredditQueryParameter = 'subreddit';
 
   RouterCubit() : super(UnauthorizedRoutes());
 
@@ -28,16 +31,16 @@ class RouterCubit extends Cubit<RouteState> {
       context.goNamed(
         subreddit,
         queryParameters: {
-          if (subredditName != null) 'displayName': subredditName,
+          if (subredditName != null) subredditQueryParameter: subredditName,
         },
       );
 
-  void pushPost(
+  void pushSubmission(
     BuildContext context, {
-    required String post,
+    required String serializedSubmission,
   }) =>
       context.pushNamed(RouterCubit.post, queryParameters: {
-        'post': post,
+        submissionQueryParameter: serializedSubmission,
       });
 
   void pop(BuildContext context) => context.pop();
@@ -80,8 +83,9 @@ class AuthorizedRoutes extends RouteState {
         // todo maybe using the same str for path and name is a bad idea
         path: RouterCubit.post,
         name: RouterCubit.post,
-        builder: (context, state) => PostPage(
-          post: state.queryParameters['post'],
+        builder: (context, state) => SubmissionPage(
+          serializedSubmission:
+              state.queryParameters[RouterCubit.submissionQueryParameter] ?? '',
         ),
       ),
       GoRoute(
@@ -90,7 +94,7 @@ class AuthorizedRoutes extends RouteState {
         name: RouterCubit.subreddit,
         builder: (context, state) => SubredditPage(
           // todo Use a const for the query param
-          subreddit: state.queryParameters['displayName'],
+          subreddit: state.queryParameters[RouterCubit.subredditQueryParameter],
         ),
       ),
     ],

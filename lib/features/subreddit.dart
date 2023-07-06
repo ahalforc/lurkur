@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lurkur/app/blocs/auth_cubit.dart';
+import 'package:lurkur/app/blocs/reddit/subreddit_cubit.dart';
 import 'package:lurkur/app/utils/reddit_api.dart';
 import 'package:lurkur/app/widgets/loading_failed_indicator.dart';
 import 'package:lurkur/app/widgets/loading_indicator.dart';
 import 'package:lurkur/features/settings.dart';
-import 'package:lurkur/features/subreddit/post_tile.dart';
+import 'package:lurkur/features/subreddit/submission_tile.dart';
 import 'package:lurkur/features/subscriptions.dart';
 
 /// Renders a subreddit's posts and scaffold content for interacting with the
 /// subreddit and the rest of the app.
 ///
 /// If a null [subreddit] is provided, then the user's home page is fetched.
-class SubredditPage extends StatefulWidget {
+class SubredditPage extends StatelessWidget {
   const SubredditPage({
     super.key,
     this.subreddit,
@@ -20,39 +22,69 @@ class SubredditPage extends StatefulWidget {
   final String? subreddit;
 
   @override
-  State<SubredditPage> createState() => _SubredditPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => SubredditCubit(
+        authCubit: context.read<AuthCubit>(),
+        redditApi: context.read<RedditApi>(),
+      )..load(subreddit),
+      child: SubredditView(
+        subreddit: subreddit,
+      ),
+    );
+  }
 }
 
-class _SubredditPageState extends State<SubredditPage> {
-  late Future<List<RedditPost>> posts;
+class SubredditView extends StatefulWidget {
+  const SubredditView({
+    super.key,
+    this.subreddit,
+  });
+
+  final String? subreddit;
 
   @override
-  void initState() {
-    super.initState();
-    _getPosts();
-  }
+  State<SubredditView> createState() => _SubredditViewState();
+}
 
+class _SubredditViewState extends State<SubredditView> {
   @override
-  void didUpdateWidget(covariant SubredditPage oldWidget) {
+  void didUpdateWidget(covariant SubredditView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.subreddit != widget.subreddit) {
-      _getPosts();
+      context.read<SubredditCubit>().load(widget.subreddit);
     }
-  }
-
-  void _getPosts() {
-    posts = RedditApi().getPosts(
-      context,
-      subreddit: widget.subreddit,
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _Body(
-        subreddit: widget.subreddit,
-        posts: posts,
+      body: BlocBuilder<SubredditCubit, SubredditState>(
+        builder: (context, state) {
+          return _Body(
+            subreddit: widget.subreddit ?? 'home',
+            child: switch (state) {
+              (Loading _) => const SliverFillRemaining(
+                  child: Center(
+                    child: LoadingIndicator(),
+                  ),
+                ),
+              (LoadingFailed _) => const SliverFillRemaining(
+                  child: Center(
+                    child: LoadingFailedIndicator(),
+                  ),
+                ),
+              (Loaded loaded) => SliverList.builder(
+                  itemCount: loaded.submissions.length,
+                  itemBuilder: (context, index) {
+                    return SubmissionTile(
+                      submission: loaded.submissions[index],
+                    );
+                  },
+                ),
+            },
+          );
+        },
       ),
       bottomNavigationBar: const _BottomAppBar(),
       floatingActionButton: const _FloatingActionButton(),
@@ -64,48 +96,23 @@ class _SubredditPageState extends State<SubredditPage> {
 class _Body extends StatelessWidget {
   const _Body({
     required this.subreddit,
-    required this.posts,
+    required this.child,
   });
 
-  final String? subreddit;
-  final Future<List<RedditPost>> posts;
+  final String subreddit;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<RedditPost>>(
-      future: posts,
-      builder: (context, snapshot) {
-        return CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              title: Text(subreddit ?? 'home'),
-              centerTitle: false,
-              floating: true,
-            ),
-            if (snapshot.hasError)
-              const SliverFillRemaining(
-                child: Center(
-                  child: LoadingFailedIndicator(),
-                ),
-              ),
-            if (!snapshot.hasData)
-              const SliverFillRemaining(
-                child: Center(
-                  child: LoadingIndicator(),
-                ),
-              ),
-            if (snapshot.hasData)
-              SliverList.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  return PostTile(
-                    post: snapshot.data![index],
-                  );
-                },
-              ),
-          ],
-        );
-      },
+    return CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          title: Text(subreddit),
+          centerTitle: false,
+          floating: true,
+        ),
+        child,
+      ],
     );
   }
 }
@@ -130,10 +137,6 @@ class _BottomAppBar extends StatelessWidget {
     return BottomAppBar(
       child: Row(
         children: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.search),
-          ),
           IconButton(
             onPressed: () => showSettingsPopup(context),
             icon: const Icon(Icons.settings),

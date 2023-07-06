@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lurkur/app/blocs/auth_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
+import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/utils/reddit_api.dart';
+import 'package:lurkur/app/utils/reddit_models.dart';
 import 'package:lurkur/app/widgets/loading_failed_indicator.dart';
 import 'package:lurkur/app/widgets/loading_indicator.dart';
 
@@ -24,7 +27,9 @@ class SubscriptionsBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<RedditSubscription>>(
-      future: RedditApi().getSubscriptions(context),
+      future: RedditApi().getSubscriptions(
+        accessToken: context.read<AuthCubit>().state.accessToken!,
+      ),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Center(
@@ -39,6 +44,22 @@ class SubscriptionsBody extends StatelessWidget {
         }
         return ListView(
           children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                left: ThemeCubit.mediumPadding,
+                right: ThemeCubit.mediumPadding,
+                bottom: ThemeCubit.mediumPadding,
+              ),
+              child: TextField(
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.go,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Find a subreddit',
+                ),
+                onSubmitted: context.goToSubreddit,
+              ),
+            ),
             const _SubscriptionTile(
               title: 'home',
             ),
@@ -82,23 +103,28 @@ class _SubscriptionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(title),
-      subtitle: subtitle != null
-          ? Opacity(
-              opacity: 0.5,
-              child: Text(subtitle!),
-            )
-          : null,
-      trailing: const Opacity(
-        opacity: 0.5,
-        child: Icon(Icons.chevron_right),
-      ),
-      onTap: () => context.read<RouterCubit>()
-        ..pop(context)
-        ..goToSubreddit(
-          context,
-          subredditName: subredditName,
+        title: Text(title),
+        subtitle: subtitle != null
+            ? Opacity(
+                opacity: 0.5,
+                child: Text(subtitle!),
+              )
+            : null,
+        trailing: const Opacity(
+          opacity: 0.5,
+          child: Icon(Icons.chevron_right),
         ),
-    );
+        onTap: () => context.goToSubreddit(subredditName));
+  }
+}
+
+extension on BuildContext {
+  void goToSubreddit(String? subredditName) {
+    read<RouterCubit>()
+      ..pop(this)
+      ..goToSubreddit(
+        this,
+        subredditName: subredditName,
+      );
   }
 }

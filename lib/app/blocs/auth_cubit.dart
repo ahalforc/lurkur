@@ -75,6 +75,11 @@ class AuthCubit extends Cubit<AuthState> {
 /// to transition to the next state or to authenticate http requests.
 sealed class AuthState {
   const AuthState();
+
+  String? get accessToken => switch (this) {
+        (Authorized authorized) => authorized.accessToken,
+        _ => null,
+      };
 }
 
 /// The default state when the app is booted up.
