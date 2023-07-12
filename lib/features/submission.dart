@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/auth_cubit.dart';
@@ -8,7 +7,12 @@ import 'package:lurkur/app/blocs/reddit/submission_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/utils/reddit_api.dart';
 import 'package:lurkur/app/utils/reddit_models.dart';
-import 'package:video_player/video_player.dart';
+import 'package:lurkur/features/submission/comments_tree.dart';
+import 'package:lurkur/features/submission/gallery_tile.dart';
+import 'package:lurkur/features/submission/link_tile.dart';
+import 'package:lurkur/features/submission/self_tile.dart';
+import 'package:lurkur/features/submission/title_tile.dart';
+import 'package:lurkur/features/submission/video_tile.dart';
 
 class SubmissionPage extends StatelessWidget {
   const SubmissionPage({
@@ -45,139 +49,68 @@ class SubmissionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final link = submission.link;
     final self = submission.self;
-    final gallery = submission.gallery;
     final video = submission.video;
-    return Scaffold(
-      body: BlocBuilder<SubmissionCubit, SubmissionState>(
-        builder: (context, state) {
-          return CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                title: Text(submission.title),
-                centerTitle: false,
-              ),
-              if (self != null)
-                SliverToBoxAdapter(
-                  child: _SelfTextCard(self: self),
-                ),
-              if (gallery != null)
-                SliverToBoxAdapter(
-                  child: _GalleryCard(gallery: gallery),
-                ),
-              if (video != null)
-                SliverToBoxAdapter(
-                  child: _VideoCard(video: video),
-                ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
+    final gallery = submission.gallery;
 
-class _SelfTextCard extends StatelessWidget {
-  const _SelfTextCard({required this.self});
-
-  final SelfSubmission self;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(ThemeCubit.mediumPadding),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(ThemeCubit.mediumPadding),
-          child: Container(
-            constraints: const BoxConstraints(maxHeight: 400),
-            child: SelectableText(self.text),
+    final content = CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          title: Text(submission.subreddit),
+          centerTitle: false,
+        ),
+        SliverToBoxAdapter(
+          child: TitleTile(
+            title: submission.title,
+            author: submission.author,
           ),
         ),
-      ),
+        if (link != null)
+          SliverToBoxAdapter(
+            child: LinkTile(link: link),
+          ),
+        if (self != null)
+          SliverToBoxAdapter(
+            child: SelfTile(self: self),
+          ),
+        if (video != null)
+          SliverToBoxAdapter(
+            child: VideoTile(video: video),
+          ),
+        if (gallery != null)
+          SliverToBoxAdapter(
+            child: GalleryTile(gallery: gallery),
+          ),
+      ],
     );
-  }
-}
 
-class _GalleryCard extends StatelessWidget {
-  const _GalleryCard({required this.gallery});
-
-  final GallerySubmission gallery;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(
-        maxHeight: 800,
-      ),
-      child: PageView(
-        children: [
-          for (final url in gallery.urls)
-            Stack(
+    return Scaffold(
+      body: context.isDeviceWide
+          ? Row(
               children: [
-                Positioned.fill(
-                  child: Image.network(
-                    url,
-                    fit: BoxFit.fitHeight,
-                    gaplessPlayback: true,
-                  ),
+                Expanded(
+                  child: content,
                 ),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Text(
-                    '${gallery.urls.indexOf(url) + 1} / ${gallery.urls.length}',
+                const VerticalDivider(
+                  thickness: 1,
+                  width: 1,
+                ),
+                const Expanded(
+                  child: CustomScrollView(
+                    slivers: [
+                      SliverAppBar(
+                        automaticallyImplyLeading: false,
+                        title: Text('comments'),
+                        centerTitle: false,
+                      ),
+                      CommentsTree(),
+                    ],
                   ),
                 ),
               ],
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _VideoCard extends StatefulWidget {
-  const _VideoCard({required this.video});
-
-  final VideoSubmission video;
-
-  @override
-  State<_VideoCard> createState() => _VideoCardState();
-}
-
-class _VideoCardState extends State<_VideoCard> {
-  late final _videoController = VideoPlayerController.networkUrl(
-    Uri.parse(widget.video.url),
-  );
-
-  late final _chewieController = ChewieController(
-    videoPlayerController: _videoController,
-    autoPlay: true,
-    looping: false,
-  );
-
-  @override
-  void dispose() {
-    _chewieController.dispose();
-    _videoController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(ThemeCubit.mediumPadding),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(ThemeCubit.mediumPadding),
-          child: Container(
-            constraints: const BoxConstraints(maxHeight: 800),
-            child: Chewie(
-              controller: _chewieController,
-            ),
-          ),
-        ),
-      ),
+            )
+          : content,
     );
   }
 }

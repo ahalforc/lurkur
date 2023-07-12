@@ -61,6 +61,7 @@ class RedditApi {
     return result;
   }
 
+  /// Returns a starting level tree of comments for a submission.
   Future<List<RedditComment>> getComments({
     required String accessToken,
     required String subreddit,
@@ -70,7 +71,7 @@ class RedditApi {
       accessToken,
       '$_baseOauthUrl/r/$subreddit/comments/$submissionId?raw_json=1',
     );
-    print(data);
+    print(const JsonEncoder.withIndent('    ').convert(data));
     final result = <RedditComment>[];
     return result;
   }

@@ -29,7 +29,7 @@ class RedditSubmission {
 
   final Map _data;
 
-  String get id => _data['name'];
+  String get id => _data['id'];
 
   String get title => _data['title'];
 
@@ -62,10 +62,16 @@ class RedditSubmission {
         isUtc: true,
       );
 
+  LinkSubmission? get link {
+    final url = _data['url']?.toString();
+    if (url == null || url.isEmpty) return null;
+    return LinkSubmission(url: url);
+  }
+
   SelfSubmission? get self {
     final selfText = _data['selftext']?.toString();
     if (selfText == null || selfText.isEmpty) return null;
-    return SelfSubmission(selfText);
+    return SelfSubmission(text: selfText);
   }
 
   GallerySubmission? get gallery {
@@ -96,10 +102,18 @@ class RedditSubmission {
   VideoSubmission? get video {
     if (_data
         case {
-          'secure_media': {'reddit_video': {'fallback_url': String dashUrl}}
+          'secure_media': {
+            'reddit_video': {
+              'fallback_url': String dashUrl,
+              'width': num width,
+              'height': num height,
+            },
+          }
         }) {
       return VideoSubmission(
         url: dashUrl,
+        width: width.toDouble(),
+        height: height.toDouble(),
       );
     }
     return null;
@@ -109,8 +123,19 @@ class RedditSubmission {
   String toString() => const JsonEncoder.withIndent('    ').convert(_data);
 }
 
+class LinkSubmission {
+  const LinkSubmission({
+    required this.url,
+  });
+
+  final String url;
+}
+
 class SelfSubmission {
-  const SelfSubmission(this.text);
+  const SelfSubmission({
+    required this.text,
+  });
+
   final String text;
 }
 
@@ -125,7 +150,11 @@ class GallerySubmission {
 class VideoSubmission {
   const VideoSubmission({
     required this.url,
+    required this.width,
+    required this.height,
   });
 
   final String url;
+  final double width;
+  final double height;
 }

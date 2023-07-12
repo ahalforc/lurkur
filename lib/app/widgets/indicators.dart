@@ -11,3 +11,14 @@ class LoadingIndicator extends StatelessWidget {
     );
   }
 }
+
+class LoadingFailedIndicator extends StatelessWidget {
+  const LoadingFailedIndicator({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text(
+      'failed to load',
+    );
+  }
+}

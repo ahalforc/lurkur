@@ -6,6 +6,8 @@ extension BuildContextXTheme on BuildContext {
   bool get isDeviceWide =>
       MediaQuery.of(this).size.width > MediaQuery.of(this).size.height;
 
+  bool get isDeviceNarrow => !isDeviceWide;
+
   TextTheme get textTheme => Theme.of(this).textTheme;
 
   ColorScheme get colorScheme => Theme.of(this).colorScheme;

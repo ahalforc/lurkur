@@ -27,17 +27,17 @@ class SubmissionCubit extends Cubit<SubmissionState> {
     emit(const Loading());
 
     try {
-      // final comments = await _redditApi.getComments(
-      //   accessToken: accessToken,
-      //   subreddit: submission.subreddit,
-      //   submissionId: submission.id,
-      // );
-      // emit(
-      //   Loaded(
-      //     submission: submission,
-      //     comments: comments,
-      //   ),
-      // );
+      final comments = await _redditApi.getComments(
+        accessToken: accessToken,
+        subreddit: submission.subreddit,
+        submissionId: submission.id,
+      );
+      emit(
+        Loaded(
+          submission: submission,
+          comments: comments,
+        ),
+      );
     } catch (e, st) {
       emit(const LoadingFailed());
     }
