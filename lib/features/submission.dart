@@ -54,6 +54,15 @@ class SubmissionView extends StatelessWidget {
     final video = submission.video;
     final gallery = submission.gallery;
 
+    const comments = [
+      SliverAppBar(
+        automaticallyImplyLeading: false,
+        title: Text('comments'),
+        centerTitle: false,
+      ),
+      CommentsTree(),
+    ];
+
     final content = CustomScrollView(
       slivers: [
         SliverAppBar(
@@ -78,10 +87,11 @@ class SubmissionView extends StatelessWidget {
           SliverToBoxAdapter(
             child: VideoTile(video: video),
           ),
-        if (gallery != null)
+        if (video == null && gallery != null)
           SliverToBoxAdapter(
             child: GalleryTile(gallery: gallery),
           ),
+        if (context.isDeviceNarrow) ...comments,
       ],
     );
 
@@ -98,14 +108,7 @@ class SubmissionView extends StatelessWidget {
                 ),
                 const Expanded(
                   child: CustomScrollView(
-                    slivers: [
-                      SliverAppBar(
-                        automaticallyImplyLeading: false,
-                        title: Text('comments'),
-                        centerTitle: false,
-                      ),
-                      CommentsTree(),
-                    ],
+                    slivers: comments,
                   ),
                 ),
               ],

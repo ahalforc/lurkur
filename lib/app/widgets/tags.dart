@@ -37,6 +37,30 @@ class StickiedTag extends StatelessWidget {
   }
 }
 
+class SubmitterTag extends StatelessWidget {
+  const SubmitterTag({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return _TextTag(
+      text: 'OP',
+      color: context.colorScheme.primaryContainer,
+    );
+  }
+}
+
+class EditedTag extends StatelessWidget {
+  const EditedTag({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return _TextTag(
+      text: 'Edited',
+      color: context.colorScheme.secondaryContainer,
+    );
+  }
+}
+
 class _TextTag extends StatelessWidget {
   const _TextTag({
     required this.text,

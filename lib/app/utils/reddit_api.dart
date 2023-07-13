@@ -86,6 +86,19 @@ class RedditApi {
     );
     print(const JsonEncoder.withIndent('    ').convert(data));
     final result = <RedditComment>[];
+
+    if (data is Iterable) {
+      for (final entry in data) {
+        if (entry case {'data': {'children': List children}}) {
+          for (final child in children) {
+            if (child case {'kind': 't1', 'data': Map innerData}) {
+              result.add(RedditComment(data: innerData));
+            }
+          }
+        }
+      }
+    }
+    print(result);
     return result;
   }
 
