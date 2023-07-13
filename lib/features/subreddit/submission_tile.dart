@@ -28,6 +28,7 @@ class SubmissionTile extends StatelessWidget {
             ? Image.network(
                 submission.thumbnailUrl!,
                 fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const Icon(Icons.error),
               )
             : null,
       ),

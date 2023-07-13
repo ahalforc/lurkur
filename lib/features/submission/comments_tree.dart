@@ -26,9 +26,7 @@ class _Loading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const SliverFillRemaining(
-      child: Center(
-        child: LoadingIndicator(),
-      ),
+      child: LoadingIndicator(),
     );
   }
 }
@@ -39,9 +37,7 @@ class _LoadingFailed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const SliverFillRemaining(
-      child: Center(
-        child: LoadingFailedIndicator(),
-      ),
+      child: LoadingFailedIndicator(),
     );
   }
 }

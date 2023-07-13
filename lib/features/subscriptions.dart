@@ -31,15 +31,11 @@ class SubscriptionsBody extends StatelessWidget {
       ),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return const Center(
-            child: LoadingFailedIndicator(),
-          );
+          return const LoadingFailedIndicator();
         }
         final data = snapshot.data;
         if (data == null) {
-          return const Center(
-            child: LoadingIndicator(),
-          );
+          return const LoadingIndicator();
         }
         return ListView(
           children: [

@@ -5,9 +5,11 @@ class LoadingIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
-      width: 64,
-      child: LinearProgressIndicator(),
+    return const Center(
+      child: SizedBox(
+        width: 64,
+        child: LinearProgressIndicator(),
+      ),
     );
   }
 }
@@ -17,8 +19,10 @@ class LoadingFailedIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text(
-      'failed to load',
+    return const Center(
+      child: Text(
+        'failed to load',
+      ),
     );
   }
 }
