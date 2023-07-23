@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/reddit/subreddit_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
+import 'package:lurkur/app/widgets/pop_ups.dart';
 import 'package:lurkur/features/settings.dart';
 
 class SubredditBab extends StatelessWidget {
@@ -28,11 +29,11 @@ class SubredditBab extends StatelessWidget {
   void _showSortOptionsPopup(BuildContext context) {
     final subredditCubit = context.read<SubredditCubit>();
     final routerCubit = context.read<RouterCubit>();
-    showModalBottomSheet(
+    showPrimaryPopup(
       context: context,
-      showDragHandle: true,
-      builder: (context) {
+      builder: (context, scrollController) {
         return ListView(
+          controller: scrollController,
           children: [
             for (final option in [...SortOption.values])
               ListTile(

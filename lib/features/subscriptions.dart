@@ -6,22 +6,29 @@ import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/utils/reddit_api.dart';
 import 'package:lurkur/app/utils/reddit_models.dart';
 import 'package:lurkur/app/widgets/indicators.dart';
+import 'package:lurkur/app/widgets/pop_ups.dart';
 
 /// Shows a popup that lets the user select a subreddit from their subscriptions.
 ///
 /// For more information, please see [SubscriptionsBody].
 void showSubscriptionsPopup(BuildContext context) {
-  showModalBottomSheet(
+  showPrimaryPopup(
     context: context,
-    showDragHandle: true,
-    builder: (context) {
-      return const SubscriptionsBody();
+    builder: (context, scrollController) {
+      return SubscriptionsBody(
+        scrollController: scrollController,
+      );
     },
   );
 }
 
 class SubscriptionsBody extends StatelessWidget {
-  const SubscriptionsBody({super.key});
+  const SubscriptionsBody({
+    super.key,
+    required this.scrollController,
+  });
+
+  final ScrollController scrollController;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +45,7 @@ class SubscriptionsBody extends StatelessWidget {
           return const LoadingIndicator();
         }
         return ListView(
+          controller: scrollController,
           children: [
             Padding(
               padding: const EdgeInsets.only(

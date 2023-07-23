@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/utils/reddit_models.dart';
+import 'package:lurkur/app/widgets/pop_ups.dart';
 import 'package:lurkur/app/widgets/tags.dart';
 
 class SubmissionTile extends StatelessWidget {
@@ -111,10 +112,9 @@ class SubmissionTile extends StatelessWidget {
             context,
             serializedSubmission: submission.toString(),
           ),
-      onLongPress: () => showModalBottomSheet(
+      onLongPress: () => showPrimaryPopup(
         context: context,
-        showDragHandle: true,
-        builder: (context) {
+        builder: (context, _) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: SelectableText(submission.toString()),

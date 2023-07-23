@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/preference_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
+import 'package:lurkur/app/widgets/pop_ups.dart';
 
 /// Shows a popup that lets the user change app settings.
 ///
 /// For more information, please see [SettingsBody].
 void showSettingsPopup(BuildContext context) {
-  showModalBottomSheet(
+  showPrimaryPopup(
     context: context,
-    showDragHandle: true,
-    builder: (context) {
+    builder: (context, _) {
       return const SettingsBody();
     },
   );
