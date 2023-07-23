@@ -49,6 +49,7 @@ class SignInPage extends StatelessWidget {
   ) {
     showPrimaryPopup(
       context: context,
+      expand: true,
       builder: (context, _) {
         return _AuthWebView(
           onComplete: ({required stateId, required code}) async {
