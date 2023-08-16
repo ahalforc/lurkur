@@ -88,7 +88,7 @@ class CommentTile extends StatelessWidget {
     return BlocBuilder<_ExpansionStateCubit, Set<RedditComment>>(
       builder: (context, collapsedComments) {
         final leading = Text(
-          '+${comment.score}',
+          '${comment.score > 0 ? '+' : ''}${comment.score}',
           style: context.textTheme.bodyMedium?.copyWith(
             color: context.colorScheme.primary,
           ),

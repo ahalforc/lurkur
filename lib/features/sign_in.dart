@@ -57,7 +57,7 @@ class SignInPage extends StatelessWidget {
             final authCubit = context.read<AuthCubit>();
 
             // Do a little delay to make the experience nicer.
-            routerCubit.pop(context);
+            routerCubit.goBack(context);
             await Future.delayed(400.milliseconds);
             authCubit.authorize(stateId: stateId, code: code);
           },

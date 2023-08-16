@@ -43,7 +43,20 @@ class RouterCubit extends Cubit<RouteState> {
         submissionQueryParameter: serializedSubmission,
       });
 
-  void pop(BuildContext context) => context.pop();
+  void pushDismissibleFullScreenWidget(
+    BuildContext context, {
+    required Widget child,
+  }) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return child;
+        },
+      ),
+    );
+  }
+
+  void goBack(BuildContext context) => context.pop();
 }
 
 /// Represents the available routes.

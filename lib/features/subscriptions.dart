@@ -124,7 +124,7 @@ class _SubscriptionTile extends StatelessWidget {
 extension on BuildContext {
   void goToSubreddit(String? subredditName) {
     read<RouterCubit>()
-      ..pop(this)
+      ..goBack(this)
       ..goToSubreddit(
         this,
         subredditName: subredditName,

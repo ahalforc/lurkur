@@ -10,30 +10,35 @@ import 'package:lurkur/app/widgets/pop_ups.dart';
 void showSettingsPopup(BuildContext context) {
   showPrimaryPopup(
     context: context,
-    builder: (context, _) {
-      return const SettingsBody();
+    builder: (context, scrollController) {
+      return SettingsBody(
+        scrollController: scrollController,
+      );
     },
   );
 }
 
 class SettingsBody extends StatelessWidget {
-  const SettingsBody({super.key});
+  const SettingsBody({
+    super.key,
+    this.scrollController,
+  });
+
+  final ScrollController? scrollController;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const _HeaderTile(text: 'Theme'),
-        const _ThemeBrightness(),
-        const _ThemeColor(),
-        const _HeaderTile(text: 'Session'),
-        const ListTile(
+    return ListView(
+      controller: scrollController,
+      children: const [
+        _HeaderTile(text: 'Theme'),
+        _ThemeBrightness(),
+        _ThemeColor(),
+        _ThemeDensity(),
+        _HeaderTile(text: 'Session'),
+        ListTile(
           leading: Icon(Icons.logout),
           title: Text('Log out'),
-        ),
-        SizedBox(
-          height: MediaQuery.of(context).padding.bottom,
         ),
       ],
     );
@@ -69,7 +74,7 @@ class _ThemeBrightness extends StatelessWidget {
         ThemeBrightness.dark => const Icon(Icons.dark_mode),
         ThemeBrightness.auto => const Icon(Icons.brightness_auto),
       },
-      title: const Text('Brightness mode'),
+      title: const Text('Brightness'),
       onTap: () => context.read<PreferenceCubit>().nextThemeBrightness(),
     );
   }
@@ -85,8 +90,25 @@ class _ThemeColor extends StatelessWidget {
         Icons.color_lens,
         color: context.colorScheme.primary,
       ),
-      title: const Text('App color'),
+      title: const Text('Color'),
       onTap: () => context.read<PreferenceCubit>().nextThemeColor(),
+    );
+  }
+}
+
+class _ThemeDensity extends StatelessWidget {
+  const _ThemeDensity();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: switch (context.watch<PreferenceCubit>().state.themeDensity) {
+        ThemeDensity.small => const Icon(Icons.density_small),
+        ThemeDensity.medium => const Icon(Icons.density_medium),
+        ThemeDensity.large => const Icon(Icons.density_large),
+      },
+      title: const Text('Density'),
+      onTap: () => context.read<PreferenceCubit>().nextThemeDensity(),
     );
   }
 }

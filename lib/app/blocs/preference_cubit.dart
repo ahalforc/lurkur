@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class PreferenceCubit extends Cubit<PreferenceState> {
   static const _themeBrightness = 'theme brightness';
   static const _themeColor = 'theme color';
+  static const _themeDensity = 'theme density';
 
   PreferenceCubit() : super(const PreferenceState.empty());
 
@@ -20,11 +21,15 @@ class PreferenceCubit extends Cubit<PreferenceState> {
     return PreferenceState(
       themeBrightness: ThemeBrightness.values.firstWhere(
         (tb) => tb.value == prefs.getString(_themeBrightness),
-        orElse: () => ThemeBrightness.auto,
+        orElse: () => const PreferenceState.empty().themeBrightness,
       ),
       themeColor: ThemeColor.values.firstWhere(
         (tc) => tc.value == prefs.getString(_themeColor),
-        orElse: () => ThemeColor.blue,
+        orElse: () => const PreferenceState.empty().themeColor,
+      ),
+      themeDensity: ThemeDensity.values.firstWhere(
+        (td) => td.value == prefs.getString(_themeDensity),
+        orElse: () => const PreferenceState.empty().themeDensity,
       ),
     );
   }
@@ -48,6 +53,14 @@ class PreferenceCubit extends Cubit<PreferenceState> {
     );
     emit(await _nextState);
   }
+
+  void nextThemeDensity() async {
+    (await _prefs).setString(
+      _themeDensity,
+      ThemeDensity.values.next(state.themeDensity).value,
+    );
+    emit(await _nextState);
+  }
 }
 
 extension _ListX<T> on List<T> {
@@ -61,15 +74,19 @@ final class PreferenceState {
   const PreferenceState({
     required this.themeBrightness,
     required this.themeColor,
+    required this.themeDensity,
   });
 
   const PreferenceState.empty()
       : themeBrightness = ThemeBrightness.auto,
-        themeColor = ThemeColor.blue;
+        themeColor = ThemeColor.blue,
+        themeDensity = ThemeDensity.medium;
 
   final ThemeBrightness themeBrightness;
 
   final ThemeColor themeColor;
+
+  final ThemeDensity themeDensity;
 }
 
 enum ThemeBrightness {
@@ -94,4 +111,14 @@ enum ThemeColor {
   final String value;
 
   const ThemeColor(this.value);
+}
+
+enum ThemeDensity {
+  small('small'),
+  medium('medium'),
+  large('large');
+
+  final String value;
+
+  const ThemeDensity(this.value);
 }

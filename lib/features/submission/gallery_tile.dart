@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/utils/reddit_models.dart';
+import 'package:lurkur/app/widgets/images.dart';
 
 class GalleryTile extends StatelessWidget {
   const GalleryTile({
@@ -21,30 +21,8 @@ class GalleryTile extends StatelessWidget {
           constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height / 2,
           ),
-          child: PageView(
-            children: [
-              for (final url in gallery.urls)
-                Stack(
-                  children: [
-                    Positioned.fill(
-                      child: Image.network(
-                        url,
-                        fit: BoxFit.contain,
-                        gaplessPlayback: true,
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.bottomLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.all(ThemeCubit.smallPadding),
-                        child: Text(
-                          '${gallery.urls.indexOf(url) + 1} / ${gallery.urls.length}',
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-            ],
+          child: Gallery(
+            urls: gallery.urls,
           ),
         ),
       ],

@@ -41,7 +41,7 @@ class SubredditBab extends StatelessWidget {
                 title: Text(option.displayName),
                 onTap: () {
                   subredditCubit.setSortOption(option);
-                  routerCubit.pop(context);
+                  routerCubit.goBack(context);
                 },
               ),
           ],
