@@ -10,6 +10,7 @@ import 'package:lurkur/app/widgets/pop_ups.dart';
 import 'package:lurkur/app/widgets/tags.dart';
 import 'package:lurkur/features/submission/video_tile.dart';
 import 'package:provider/provider.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class SubmissionTile extends StatelessWidget {
   const SubmissionTile({
@@ -285,8 +286,7 @@ class _Context extends StatelessWidget {
               ),
             ),
           TextSpan(
-            text:
-                '${DateTime.now().difference(submission.createdDateTime).inHours} hours ago',
+            text: timeago.format(submission.createdDateTime, locale: 'en'),
             style: context.textTheme.bodyMedium?.copyWith(),
           ),
           TextSpan(
