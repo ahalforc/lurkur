@@ -20,3 +20,13 @@ void showPrimaryPopup({
     },
   );
 }
+
+/// Shows whatever the current "basic notification popup" UI is.
+void showNotificationPopup({
+  required BuildContext context,
+  required Widget content,
+}) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: content),
+  );
+}

@@ -1,57 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 
-class SplitIconButton extends StatelessWidget {
-  const SplitIconButton({
+class IconTextButton extends StatelessWidget {
+  const IconTextButton({
     super.key,
-    this.leftIcon,
-    this.rightIcon,
-    this.onLeftPressed,
-    this.onRightPressed,
-    required this.child,
+    required this.onPressed,
+    this.onLongPressed,
+    required this.icon,
+    required this.label,
   });
 
-  final Widget? leftIcon, rightIcon;
-  final void Function()? onLeftPressed, onRightPressed;
-  final Widget child;
+  final void Function()? onPressed, onLongPressed;
+  final Widget icon;
+  final Widget label;
 
   @override
   Widget build(BuildContext context) {
-    final leftIcon = this.leftIcon, rightIcon = this.rightIcon;
-    final onLeftPressed = this.onLeftPressed,
-        onRightPressed = this.onRightPressed;
-    void Function()? onCardPressed;
-    if (onLeftPressed != null && onRightPressed == null) {
-      onCardPressed = onLeftPressed;
-    } else if (onLeftPressed == null && onRightPressed != null) {
-      onCardPressed = onRightPressed;
-    }
-    return GestureDetector(
-      onTap: onCardPressed,
-      child: Card(
-        color: context.colorScheme.secondaryContainer,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (leftIcon != null)
-              IconButton(
-                icon: leftIcon,
-                onPressed: onLeftPressed,
-              ),
-            AnimatedDefaultTextStyle(
-              duration: kThemeChangeDuration,
-              style: context.textTheme.labelMedium!,
-              child: child,
-            ),
-            if (rightIcon != null)
-              IconButton(
-                icon: rightIcon,
-                onPressed: onRightPressed,
-              )
-            else
-              const SizedBox(width: ThemeCubit.mediumPadding),
-          ],
-        ),
+    final onPressed = this.onPressed;
+    final onLongPressed = this.onLongPressed;
+    return TextButton(
+      onPressed: onPressed != null
+          ? () {
+              HapticFeedback.lightImpact();
+              onPressed();
+            }
+          : null,
+      onLongPress: onLongPressed != null
+          ? () {
+              HapticFeedback.heavyImpact();
+              onLongPressed();
+            }
+          : null,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          icon,
+          const SizedBox(width: ThemeCubit.mediumPadding),
+          AnimatedDefaultTextStyle(
+            duration: kThemeChangeDuration,
+            style: context.textTheme.labelMedium!,
+            child: label,
+          ),
+        ],
       ),
     );
   }

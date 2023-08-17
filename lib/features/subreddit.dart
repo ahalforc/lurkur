@@ -115,8 +115,15 @@ class _Body extends StatelessWidget {
                 (Loaded loaded) => SliverList.builder(
                     itemCount: loaded.submissions.length,
                     itemBuilder: (context, index) {
-                      return SubmissionTile(
-                        submission: loaded.submissions[index],
+                      return Padding(
+                        padding: const EdgeInsets.only(
+                          left: ThemeCubit.mediumPadding,
+                          right: ThemeCubit.mediumPadding,
+                          bottom: ThemeCubit.mediumPadding,
+                        ),
+                        child: SubmissionTile(
+                          submission: loaded.submissions[index],
+                        ),
                       );
                     },
                   ),

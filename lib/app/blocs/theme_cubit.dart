@@ -49,6 +49,7 @@ final class ThemeState {
           brightness: Brightness.light,
         ),
         textTheme: _makeTextTheme(),
+        cardTheme: _makeCardTheme(),
       );
 
   ThemeData get darkTheme => ThemeData(
@@ -58,6 +59,7 @@ final class ThemeState {
           brightness: Brightness.dark,
         ),
         textTheme: _makeTextTheme(),
+        cardTheme: _makeCardTheme(),
       );
 
   TextTheme _makeTextTheme() {
@@ -83,6 +85,12 @@ final class ThemeState {
       labelLarge: labelFont,
       labelMedium: labelFont,
       labelSmall: labelFont,
+    );
+  }
+
+  CardTheme _makeCardTheme() {
+    return const CardTheme(
+      margin: EdgeInsets.zero,
     );
   }
 }

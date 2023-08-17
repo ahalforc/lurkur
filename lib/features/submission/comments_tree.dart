@@ -87,12 +87,6 @@ class CommentTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<_ExpansionStateCubit, Set<RedditComment>>(
       builder: (context, collapsedComments) {
-        final leading = Text(
-          '${comment.score > 0 ? '+' : ''}${comment.score}',
-          style: context.textTheme.bodyMedium?.copyWith(
-            color: context.colorScheme.primary,
-          ),
-        );
         final title = Text.rich(
           TextSpan(
             children: [
@@ -115,6 +109,12 @@ class CommentTile extends StatelessWidget {
                   ),
                 ),
               TextSpan(
+                text: '${comment.score > 0 ? '+' : ''}${comment.score} - ',
+                style: context.textTheme.bodyMedium?.copyWith(
+                  color: context.colorScheme.primary,
+                ),
+              ),
+              TextSpan(
                 text: comment.author,
                 style: context.textTheme.bodyMedium?.copyWith(
                   color: context.colorScheme.secondary,
@@ -126,11 +126,10 @@ class CommentTile extends StatelessWidget {
         final subtitle = Text(comment.body);
         return comment.replies.isNotEmpty
             ? ExpansionTile(
-                leading: leading,
                 title: title,
                 subtitle: subtitle,
                 initiallyExpanded: !collapsedComments.contains(comment),
-                childrenPadding: const EdgeInsets.only(left: 16),
+                childrenPadding: const EdgeInsets.only(left: 24),
                 onExpansionChanged: (v) => v
                     ? context.read<_ExpansionStateCubit>().setExpanded(comment)
                     : context
@@ -142,7 +141,6 @@ class CommentTile extends StatelessWidget {
                 ],
               )
             : ListTile(
-                leading: leading,
                 title: title,
                 subtitle: subtitle,
               );

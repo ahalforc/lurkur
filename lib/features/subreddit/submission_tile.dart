@@ -5,6 +5,7 @@ import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/utils/reddit_models.dart';
 import 'package:lurkur/app/widgets/buttons.dart';
+import 'package:lurkur/app/widgets/cards.dart';
 import 'package:lurkur/app/widgets/images.dart';
 import 'package:lurkur/app/widgets/pop_ups.dart';
 import 'package:lurkur/app/widgets/tags.dart';
@@ -24,11 +25,14 @@ class SubmissionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Provider.value(
       value: submission,
-      child: switch (context.themeDensity) {
-        ThemeDensity.small => const _SmallSubmissionTile(),
-        ThemeDensity.medium => const _MediumSubmissionTile(),
-        ThemeDensity.large => const _LargeSubmissionTile(),
-      },
+      child: ElevatedCard(
+        onPressed: () => context.goToSubmission(submission),
+        child: switch (context.themeDensity) {
+          ThemeDensity.small => const _SmallSubmissionTile(),
+          ThemeDensity.medium => const _MediumSubmissionTile(),
+          ThemeDensity.large => const _LargeSubmissionTile(),
+        },
+      ),
     );
   }
 }
@@ -63,40 +67,37 @@ class _SmallSubmissionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final submission = context.submission;
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: ThemeCubit.xsmallPadding,
-        right: ThemeCubit.xsmallPadding,
-      ),
-      child: Card(
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () {
-            context.goToSubmission(submission);
-          },
-          child: const Padding(
-            padding: EdgeInsets.all(ThemeCubit.smallPadding),
-            child: Row(
-              children: [
-                _Score(),
-                SizedBox(width: ThemeCubit.smallPadding),
-                _Preview(),
-                SizedBox(width: ThemeCubit.smallPadding),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _Title(),
-                      SizedBox(height: ThemeCubit.xsmallPadding),
-                      _Context(),
-                    ],
-                  ),
+    return const Padding(
+      padding: EdgeInsets.all(ThemeCubit.smallPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _Preview(),
+              SizedBox(width: ThemeCubit.smallPadding),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _Title(),
+                    SizedBox(height: ThemeCubit.smallPadding),
+                    _Context(),
+                    SizedBox(height: ThemeCubit.mediumPadding),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ),
+          Wrap(
+            children: [
+              _Score(),
+              _Comments(),
+              _Share(),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -107,58 +108,24 @@ class _MediumSubmissionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final submission = context.submission;
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: ThemeCubit.smallPadding,
-        right: ThemeCubit.smallPadding,
-        bottom: ThemeCubit.smallPadding,
-      ),
-      child: Card(
-        child: InkWell(
-          onTap: () => context.goToSubmission(submission),
-          child: const Padding(
-            padding: EdgeInsets.symmetric(vertical: ThemeCubit.smallPadding),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: ThemeCubit.smallPadding,
-                  ),
-                  child: _Title(),
-                ),
-                SizedBox(height: ThemeCubit.smallPadding),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: ThemeCubit.smallPadding,
-                  ),
-                  child: _Context(),
-                ),
-                SizedBox(height: ThemeCubit.smallPadding),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: ThemeCubit.smallPadding,
-                  ),
-                  child: _Preview(),
-                ),
-                SizedBox(height: ThemeCubit.smallPadding),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: ThemeCubit.smallPadding,
-                  ),
-                  child: Wrap(
-                    children: [
-                      _Score(),
-                      _Comments(),
-                      _Share(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+    return const Padding(
+      padding: EdgeInsets.all(ThemeCubit.smallPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _Title(),
+          SizedBox(height: ThemeCubit.smallPadding),
+          _Context(),
+          SizedBox(height: ThemeCubit.mediumPadding),
+          _Preview(),
+          Wrap(
+            children: [
+              _Score(),
+              _Comments(),
+              _Share(),
+            ],
           ),
-        ),
+        ],
       ),
     );
   }
@@ -170,53 +137,23 @@ class _LargeSubmissionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Padding(
-      padding: EdgeInsets.only(
-        left: ThemeCubit.smallPadding,
-        right: ThemeCubit.smallPadding,
-        bottom: ThemeCubit.smallPadding,
-      ),
-      child: Card(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: ThemeCubit.smallPadding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      padding: EdgeInsets.all(ThemeCubit.smallPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _Title(),
+          SizedBox(height: ThemeCubit.smallPadding),
+          _Context(),
+          SizedBox(height: ThemeCubit.mediumPadding),
+          _Preview(),
+          Wrap(
             children: [
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: ThemeCubit.smallPadding,
-                ),
-                child: _Title(),
-              ),
-              SizedBox(height: ThemeCubit.smallPadding),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: ThemeCubit.smallPadding,
-                ),
-                child: _Context(),
-              ),
-              SizedBox(height: ThemeCubit.smallPadding),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: ThemeCubit.smallPadding,
-                ),
-                child: _Preview(),
-              ),
-              SizedBox(height: ThemeCubit.smallPadding),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: ThemeCubit.smallPadding,
-                ),
-                child: Wrap(
-                  children: [
-                    _Score(),
-                    _Comments(),
-                    _Share(),
-                  ],
-                ),
-              ),
+              _Score(),
+              _Comments(),
+              _Share(),
             ],
           ),
-        ),
+        ],
       ),
     );
   }
@@ -227,23 +164,10 @@ class _Title extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final density = context.themeDensity;
     final submission = context.submission;
     return Text(
       submission.title,
-      maxLines: switch (density) {
-        ThemeDensity.small => 1,
-        _ => null,
-      },
-      overflow: switch (density) {
-        ThemeDensity.small => TextOverflow.ellipsis,
-        _ => null,
-      },
-      style: switch (density) {
-        ThemeDensity.small => context.textTheme.bodyMedium,
-        ThemeDensity.medium => context.textTheme.titleSmall,
-        ThemeDensity.large => context.textTheme.titleMedium,
-      },
+      style: context.textTheme.titleMedium,
     );
   }
 }
@@ -353,18 +277,25 @@ class _Score extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final score = context.submission.score;
-    return SplitIconButton(
-      onLeftPressed: () {
-        HapticFeedback.heavyImpact();
+    return IconTextButton(
+      onPressed: () {
+        HapticFeedback.lightImpact();
         // todo Hit the reddit api to upvote this, update the cache
+        showNotificationPopup(
+          context: context,
+          content: const Text('Upvote unimplemented'),
+        );
       },
-      onRightPressed: () {
+      onLongPressed: () {
         HapticFeedback.heavyImpact();
         // todo Hit the reddit api to downvote this, update the cache
+        showNotificationPopup(
+          context: context,
+          content: const Text('Downvote unimplemented'),
+        );
       },
-      leftIcon: const Icon(Icons.arrow_upward),
-      rightIcon: const Icon(Icons.arrow_downward),
-      child: Text('${score > 0 ? '+' : ''}$score'),
+      icon: const Icon(Icons.thumbs_up_down),
+      label: Text('${score > 0 ? '+' : ''}$score'),
     );
   }
 }
@@ -375,13 +306,13 @@ class _Comments extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final submission = context.submission;
-    return SplitIconButton(
-      onLeftPressed: () {
-        HapticFeedback.heavyImpact();
+    return IconTextButton(
+      onPressed: () {
+        HapticFeedback.lightImpact();
         context.goToSubmission(submission);
       },
-      leftIcon: const Icon(Icons.comment),
-      child: Text('${submission.commentCount}'),
+      icon: const Icon(Icons.comment),
+      label: Text('${submission.commentCount}'),
     );
   }
 }
@@ -391,13 +322,17 @@ class _Share extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SplitIconButton(
-      onLeftPressed: () {
-        HapticFeedback.heavyImpact();
+    return IconTextButton(
+      onPressed: () {
+        HapticFeedback.lightImpact();
         // todo Use the native share plugin and kick off a native share.
+        showNotificationPopup(
+          context: context,
+          content: const Text('Share unimplemented'),
+        );
       },
-      leftIcon: const Icon(Icons.ios_share),
-      child: const Text('Share'),
+      icon: const Icon(Icons.ios_share),
+      label: const Text('Share'),
     );
   }
 }
