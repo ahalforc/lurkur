@@ -25,8 +25,9 @@ class SubmissionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Provider.value(
       value: submission,
-      child: ElevatedCard(
+      child: PrimaryCard(
         onPressed: () => context.goToSubmission(submission),
+        onLongPressed: () => context.showSubmissionJson(submission),
         child: switch (context.themeDensity) {
           ThemeDensity.small => const _SmallSubmissionTile(),
           ThemeDensity.medium => const _MediumSubmissionTile(),

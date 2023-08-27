@@ -98,7 +98,8 @@ class AuthorizedRoutes extends RouteState {
         name: RouterCubit.post,
         builder: (context, state) => SubmissionPage(
           serializedSubmission:
-              state.queryParameters[RouterCubit.submissionQueryParameter] ?? '',
+              state.uri.queryParameters[RouterCubit.submissionQueryParameter] ??
+                  '',
         ),
       ),
       GoRoute(
@@ -106,8 +107,8 @@ class AuthorizedRoutes extends RouteState {
         path: RouterCubit.subreddit,
         name: RouterCubit.subreddit,
         builder: (context, state) => SubredditPage(
-          // todo Use a const for the query param
-          subreddit: state.queryParameters[RouterCubit.subredditQueryParameter],
+          subreddit:
+              state.uri.queryParameters[RouterCubit.subredditQueryParameter],
         ),
       ),
     ],

@@ -32,6 +32,7 @@ class SubmissionCubit extends Cubit<SubmissionState> {
         subreddit: submission.subreddit,
         submissionId: submission.id,
       );
+      if (isClosed) return;
       emit(
         Loaded(
           submission: submission,
