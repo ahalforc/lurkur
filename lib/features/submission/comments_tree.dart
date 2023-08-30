@@ -1,74 +1,116 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lurkur/app/blocs/auth_cubit.dart';
 import 'package:lurkur/app/blocs/reddit/submission_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
+import 'package:lurkur/app/utils/reddit_api.dart';
 import 'package:lurkur/app/utils/reddit_models.dart';
 import 'package:lurkur/app/widgets/indicators.dart';
+import 'package:lurkur/app/widgets/pop_ups.dart';
 import 'package:lurkur/app/widgets/tags.dart';
+import 'package:lurkur/features/submission/gallery_tile.dart';
+import 'package:lurkur/features/submission/link_tile.dart';
+import 'package:lurkur/features/submission/self_tile.dart';
+import 'package:lurkur/features/submission/title_tile.dart';
+import 'package:lurkur/features/submission/video_tile.dart';
 
-class CommentsTree extends StatelessWidget {
-  const CommentsTree({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<SubmissionCubit, SubmissionState>(
-      builder: (context, state) {
-        return switch (state) {
-          (Loading _) => const _Loading(),
-          (LoadingFailed _) => const _LoadingFailed(),
-          (Loaded loaded) => BlocProvider(
-              create: (_) => _ExpansionStateCubit(),
-              child: _Loaded(state: loaded),
-            ),
-        };
-      },
-    );
-  }
+void showCommentsPopup(
+  BuildContext context, {
+  required RedditSubmission submission,
+}) {
+  showPrimaryPopup(
+    context: context,
+    builder: (context, scrollController) {
+      return BlocProvider(
+        create: (_) => SubmissionCubit(
+          authCubit: context.read<AuthCubit>(),
+          redditApi: context.read<RedditApi>(),
+        )..load(submission),
+        child: CommentsBody(
+          scrollController: scrollController,
+        ),
+      );
+    },
+  );
 }
 
-class _Loading extends StatelessWidget {
-  const _Loading();
+class CommentsBody extends StatelessWidget {
+  const CommentsBody({
+    super.key,
+    this.scrollController,
+  });
+
+  final ScrollController? scrollController;
 
   @override
   Widget build(BuildContext context) {
-    return const SliverFillRemaining(
-      child: LoadingIndicator(),
-    );
-  }
-}
-
-class _LoadingFailed extends StatelessWidget {
-  const _LoadingFailed();
-
-  @override
-  Widget build(BuildContext context) {
-    return const SliverFillRemaining(
-      child: LoadingFailedIndicator(),
-    );
+    return switch (context.watch<SubmissionCubit>().state) {
+      (Loading _) => const LoadingIndicator(),
+      (LoadingFailed _) => const LoadingFailedIndicator(),
+      (Loaded loaded) => _Loaded(
+          scrollController: scrollController,
+          state: loaded,
+        ),
+    };
   }
 }
 
 class _Loaded extends StatelessWidget {
   const _Loaded({
+    this.scrollController,
     required this.state,
   });
 
+  final ScrollController? scrollController;
   final Loaded state;
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        dividerColor: Colors.transparent,
-      ),
-      child: SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            return CommentTile(
-              comment: state.comments[index],
-            );
-          },
-          childCount: state.comments.length,
+    final link = state.submission.link;
+    final self = state.submission.self;
+    final video = state.submission.video;
+    final gallery = state.submission.gallery;
+    return BlocProvider(
+      create: (_) => _ExpansionStateCubit(),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+        ),
+        child: CustomScrollView(
+          controller: scrollController,
+          slivers: [
+            SliverToBoxAdapter(
+              child: TitleTile(
+                title: state.submission.title,
+                author: state.submission.author,
+                subreddit: state.submission.subreddit,
+              ),
+            ),
+            if (link != null)
+              SliverToBoxAdapter(
+                child: LinkTile(link: link),
+              ),
+            if (self != null)
+              SliverToBoxAdapter(
+                child: SelfTile(self: self),
+              ),
+            if (video != null)
+              SliverToBoxAdapter(
+                child: VideoTile(video: video),
+              ),
+            if (video == null && gallery != null)
+              SliverToBoxAdapter(
+                child: GalleryTile(gallery: gallery),
+              ),
+            SliverList.builder(
+              itemBuilder: (context, index) {
+                return CommentTile(
+                  comment: state.comments[index],
+                );
+              },
+              itemCount: state.comments.length,
+            ),
+          ],
         ),
       ),
     );
@@ -94,7 +136,7 @@ class CommentTile extends StatelessWidget {
                 const WidgetSpan(
                   child: Padding(
                     padding: EdgeInsets.only(
-                      right: ThemeCubit.xsmallPadding,
+                      right: ThemeCubit.small3Padding,
                     ),
                     child: SubmitterTag(),
                   ),
@@ -103,7 +145,7 @@ class CommentTile extends StatelessWidget {
                 const WidgetSpan(
                   child: Padding(
                     padding: EdgeInsets.only(
-                      right: ThemeCubit.xsmallPadding,
+                      right: ThemeCubit.small3Padding,
                     ),
                     child: EditedTag(),
                   ),

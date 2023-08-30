@@ -25,7 +25,7 @@ class SignInPage extends StatelessWidget {
                   duration: 1.seconds,
                   curve: Curves.elasticOut,
                 ),
-            const SizedBox(height: ThemeCubit.mediumPadding),
+            const SizedBox(height: ThemeCubit.medium2Padding),
             OutlinedButton(
               onPressed: () => _showSignInWebView(context),
               child: const Text('sign in'),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/reddit/subreddit_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
+import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/widgets/pop_ups.dart';
 import 'package:lurkur/features/settings.dart';
 
@@ -10,6 +11,7 @@ class SubredditBab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final subredditState = context.watch<SubredditCubit>().state;
     return BottomAppBar(
       child: Row(
         children: [
@@ -20,6 +22,22 @@ class SubredditBab extends StatelessWidget {
           IconButton(
             onPressed: () => showSettingsPopup(context),
             icon: const Icon(Icons.settings),
+          ),
+          Expanded(
+            // todo Make this auto-scroll when there isn't enough visible space
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(text: subredditState.subreddit ?? 'home'),
+                  TextSpan(
+                    text: '  (${subredditState.sortOption.displayName})',
+                    style: context.textTheme.labelMedium,
+                  ),
+                ],
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
           ),
         ],
       ),

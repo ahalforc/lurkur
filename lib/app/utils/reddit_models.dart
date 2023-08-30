@@ -79,6 +79,8 @@ class RedditSubmission {
 
   int get score => _data['score'];
 
+  String get scoreStr => '${score > 0 ? '+' : ''}$score';
+
   String? get thumbnailUrl {
     return switch (_data['thumbnail']) {
       'default' => null,

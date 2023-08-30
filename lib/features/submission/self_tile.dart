@@ -20,9 +20,9 @@ class SelfTile extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(
-            left: ThemeCubit.mediumPadding,
-            right: ThemeCubit.mediumPadding,
-            bottom: ThemeCubit.mediumPadding,
+            left: ThemeCubit.medium2Padding,
+            right: ThemeCubit.medium2Padding,
+            bottom: ThemeCubit.medium2Padding,
           ),
           child: SelectableText(self.text),
         ),

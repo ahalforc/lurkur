@@ -36,7 +36,7 @@ class IconTextButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           icon,
-          const SizedBox(width: ThemeCubit.mediumPadding),
+          const SizedBox(width: ThemeCubit.medium2Padding),
           AnimatedDefaultTextStyle(
             duration: kThemeChangeDuration,
             style: context.textTheme.labelMedium!,

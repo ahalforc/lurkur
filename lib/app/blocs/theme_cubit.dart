@@ -15,13 +15,15 @@ extension BuildContextXTheme on BuildContext {
 
 /// Manages the app's theme.
 class ThemeCubit extends Cubit<ThemeState> {
-  static const xxsmallPadding = 2.0;
-  static const xsmallPadding = 4.0;
-  static const smallPadding = 8.0;
-  static const mediumPadding = 16.0;
-  static const bigPadding = 24.0;
-  static const largePadding = 32.0;
-  static const xlargePadding = 64.0;
+  static const small1Padding = 1.0;
+  static const small2Padding = 2.0;
+  static const small3Padding = 4.0;
+  static const medium1Padding = 8.0;
+  static const medium2Padding = 16.0;
+  static const medium3Padding = 24.0;
+  static const large1Padding = 32.0;
+  static const large2Padding = 64.0;
+  static const large3Padding = 128.0;
 
   ThemeCubit() : super(const ThemeState(color: Colors.blue));
 
@@ -42,24 +44,40 @@ final class ThemeState {
 
   final Color color;
 
-  ThemeData get lightTheme => ThemeData(
-        useMaterial3: true,
+  ThemeData get lightTheme => _makeThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: color,
           brightness: Brightness.light,
         ),
-        textTheme: _makeTextTheme(),
-        cardTheme: _makeCardTheme(),
       );
 
-  ThemeData get darkTheme => ThemeData(
-        useMaterial3: true,
+  ThemeData get darkTheme => _makeThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: color,
           brightness: Brightness.dark,
+        ).copyWith(
+          primary: color,
+          onPrimary: Colors.white,
+          error: Colors.red,
+          onError: Colors.white,
+          background: Colors.black,
+          onBackground: Colors.white,
+          surface: const Color(0xFF101010),
+          onSurface: Colors.white,
+          outline: color,
         ),
+      );
+
+  ThemeData _makeThemeData({
+    required ColorScheme colorScheme,
+  }) =>
+      ThemeData(
+        useMaterial3: true,
+        colorScheme: colorScheme,
         textTheme: _makeTextTheme(),
         cardTheme: _makeCardTheme(),
+        outlinedButtonTheme: _makeOutlinedButtonTheme(),
+        textButtonTheme: _makeTextButtonTheme(),
       );
 
   TextTheme _makeTextTheme() {
@@ -91,6 +109,30 @@ final class ThemeState {
   CardTheme _makeCardTheme() {
     return const CardTheme(
       margin: EdgeInsets.zero,
+    );
+  }
+
+  OutlinedButtonThemeData _makeOutlinedButtonTheme() {
+    return OutlinedButtonThemeData(
+      style: ButtonStyle(
+        shape: MaterialStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      ),
+    );
+  }
+
+  TextButtonThemeData _makeTextButtonTheme() {
+    return TextButtonThemeData(
+      style: ButtonStyle(
+        shape: MaterialStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      ),
     );
   }
 }

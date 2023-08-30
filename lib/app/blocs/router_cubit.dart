@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lurkur/features/sign_in.dart';
-import 'package:lurkur/features/submission.dart';
 import 'package:lurkur/features/subreddit.dart';
 
 /// Manages the routes available in the app.
 class RouterCubit extends Cubit<RouteState> {
   static const signIn = '/';
-  static const post = '/post';
   static const subreddit = '/subreddit';
 
-  static const submissionQueryParameter = 'submission';
   static const subredditQueryParameter = 'subreddit';
 
   RouterCubit() : super(UnauthorizedRoutes());
@@ -34,14 +31,6 @@ class RouterCubit extends Cubit<RouteState> {
           if (subredditName != null) subredditQueryParameter: subredditName,
         },
       );
-
-  void pushSubmission(
-    BuildContext context, {
-    required String serializedSubmission,
-  }) =>
-      context.pushNamed(RouterCubit.post, queryParameters: {
-        submissionQueryParameter: serializedSubmission,
-      });
 
   void pushDismissibleFullScreenWidget(
     BuildContext context, {
@@ -92,16 +81,6 @@ class AuthorizedRoutes extends RouteState {
   final RouterConfig<Object> routerConfig = GoRouter(
     initialLocation: RouterCubit.subreddit,
     routes: [
-      GoRoute(
-        // todo maybe using the same str for path and name is a bad idea
-        path: RouterCubit.post,
-        name: RouterCubit.post,
-        builder: (context, state) => SubmissionPage(
-          serializedSubmission:
-              state.uri.queryParameters[RouterCubit.submissionQueryParameter] ??
-                  '',
-        ),
-      ),
       GoRoute(
         // todo maybe using the same str for path and name is a bad idea
         path: RouterCubit.subreddit,

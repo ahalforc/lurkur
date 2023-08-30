@@ -68,7 +68,7 @@ class Gallery extends StatelessWidget {
                 Align(
                   alignment: Alignment.bottomLeft,
                   child: Padding(
-                    padding: const EdgeInsets.all(ThemeCubit.smallPadding),
+                    padding: const EdgeInsets.all(ThemeCubit.medium1Padding),
                     child: Text(
                       '${urls.indexOf(url) + 1} / ${urls.length}',
                     ),

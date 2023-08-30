@@ -78,8 +78,8 @@ class _TextTag extends StatelessWidget {
         color: color,
       ),
       padding: const EdgeInsets.symmetric(
-        horizontal: ThemeCubit.smallPadding,
-        vertical: ThemeCubit.xxsmallPadding,
+        horizontal: ThemeCubit.medium1Padding,
+        vertical: ThemeCubit.small2Padding,
       ),
       child: Text(text),
     );
