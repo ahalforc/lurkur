@@ -35,6 +35,8 @@ class SettingsBody extends StatelessWidget {
         _ThemeBrightness(),
         _ThemeColor(),
         _ThemeDensity(),
+        _HeaderTile(text: 'Media'),
+        _AutoPlayVideos(),
         _HeaderTile(text: 'Session'),
         ListTile(
           leading: Icon(Icons.logout),
@@ -109,6 +111,22 @@ class _ThemeDensity extends StatelessWidget {
       },
       title: const Text('Density'),
       onTap: () => context.read<PreferenceCubit>().nextThemeDensity(),
+    );
+  }
+}
+
+class _AutoPlayVideos extends StatelessWidget {
+  const _AutoPlayVideos();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: switch (context.watch<PreferenceCubit>().state.autoPlayVideos) {
+        true => const Icon(Icons.play_arrow),
+        false => const Icon(Icons.cancel),
+      },
+      title: const Text('Auto play videos'),
+      onTap: () => context.read<PreferenceCubit>().nextAutoPlayVideos(),
     );
   }
 }

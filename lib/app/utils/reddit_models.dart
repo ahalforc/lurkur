@@ -144,7 +144,7 @@ class RedditSubmission {
         case {
           'secure_media': {
             'reddit_video': {
-              'fallback_url': String dashUrl,
+              'hls_url': String dashUrl,
               'width': num width,
               'height': num height,
             },

@@ -1,5 +1,7 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:lurkur/app/blocs/preference_cubit.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 /// Represents a standard video.
@@ -21,7 +23,7 @@ class Video {
 }
 
 /// Standard widget for rendering a [Video].
-class VideoPlayer extends StatefulWidget {
+class VideoPlayer extends StatelessWidget {
   const VideoPlayer({
     super.key,
     required this.video,
@@ -30,10 +32,28 @@ class VideoPlayer extends StatefulWidget {
   final Video video;
 
   @override
-  State<VideoPlayer> createState() => _VideoPlayerState();
+  Widget build(BuildContext context) {
+    return _VideoPlayer(
+      video: video,
+      autoPlay: context.watch<PreferenceCubit>().state.autoPlayVideos,
+    );
+  }
 }
 
-class _VideoPlayerState extends State<VideoPlayer> {
+class _VideoPlayer extends StatefulWidget {
+  const _VideoPlayer({
+    required this.video,
+    required this.autoPlay,
+  });
+
+  final Video video;
+  final bool autoPlay;
+
+  @override
+  State<_VideoPlayer> createState() => _VideoPlayerState();
+}
+
+class _VideoPlayerState extends State<_VideoPlayer> {
   late final _videoController = VideoPlayerController.networkUrl(
     Uri.parse(widget.video.url),
     videoPlayerOptions: VideoPlayerOptions(
@@ -44,7 +64,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
 
   late final _chewieController = ChewieController(
     videoPlayerController: _videoController,
-    autoPlay: true,
+    autoPlay: widget.autoPlay,
     looping: false,
     aspectRatio: widget.video.width / widget.video.height,
   );

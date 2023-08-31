@@ -11,26 +11,29 @@ class PreferenceCubit extends Cubit<PreferenceState> {
   static const _themeBrightness = 'theme brightness';
   static const _themeColor = 'theme color';
   static const _themeDensity = 'theme density';
+  static const _autoPlayVideos = 'auto play videos';
 
   PreferenceCubit() : super(const PreferenceState.empty());
 
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
   Future<PreferenceState> get _nextState async {
+    const empty = PreferenceState.empty();
     final prefs = await _prefs;
     return PreferenceState(
       themeBrightness: ThemeBrightness.values.firstWhere(
         (tb) => tb.value == prefs.getString(_themeBrightness),
-        orElse: () => const PreferenceState.empty().themeBrightness,
+        orElse: () => empty.themeBrightness,
       ),
       themeColor: ThemeColor.values.firstWhere(
         (tc) => tc.value == prefs.getString(_themeColor),
-        orElse: () => const PreferenceState.empty().themeColor,
+        orElse: () => empty.themeColor,
       ),
       themeDensity: ThemeDensity.values.firstWhere(
         (td) => td.value == prefs.getString(_themeDensity),
-        orElse: () => const PreferenceState.empty().themeDensity,
+        orElse: () => empty.themeDensity,
       ),
+      autoPlayVideos: prefs.getBool(_autoPlayVideos) ?? empty.autoPlayVideos,
     );
   }
 
@@ -61,6 +64,14 @@ class PreferenceCubit extends Cubit<PreferenceState> {
     );
     emit(await _nextState);
   }
+
+  void nextAutoPlayVideos() async {
+    (await _prefs).setBool(
+      _autoPlayVideos,
+      !state.autoPlayVideos,
+    );
+    emit(await _nextState);
+  }
 }
 
 extension _ListX<T> on List<T> {
@@ -75,18 +86,22 @@ final class PreferenceState {
     required this.themeBrightness,
     required this.themeColor,
     required this.themeDensity,
+    required this.autoPlayVideos,
   });
 
   const PreferenceState.empty()
       : themeBrightness = ThemeBrightness.auto,
         themeColor = ThemeColor.blue,
-        themeDensity = ThemeDensity.medium;
+        themeDensity = ThemeDensity.medium,
+        autoPlayVideos = true;
 
   final ThemeBrightness themeBrightness;
 
   final ThemeColor themeColor;
 
   final ThemeDensity themeDensity;
+
+  final bool autoPlayVideos;
 }
 
 enum ThemeBrightness {
