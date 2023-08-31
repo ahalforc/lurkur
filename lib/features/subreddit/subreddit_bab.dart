@@ -4,7 +4,7 @@ import 'package:lurkur/app/blocs/reddit/subreddit_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/widgets/pop_ups.dart';
-import 'package:lurkur/features/settings.dart';
+import 'package:lurkur/features/settings_popup.dart';
 
 class SubredditBab extends StatelessWidget {
   const SubredditBab({super.key});

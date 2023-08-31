@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lurkur/features/sign_in.dart';
-import 'package:lurkur/features/subreddit.dart';
+import 'package:lurkur/features/sign_in_page.dart';
+import 'package:lurkur/features/subreddit_page.dart';
 
 /// Manages the routes available in the app.
 class RouterCubit extends Cubit<RouteState> {

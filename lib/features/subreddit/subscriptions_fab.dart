@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lurkur/features/subscriptions.dart';
+import 'package:lurkur/features/subscriptions_popup.dart';
 
 class SubscriptionsFab extends StatelessWidget {
   const SubscriptionsFab({super.key});
