@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lurkur/app/blocs/theme_cubit.dart';
 
 class LoadingIndicator extends StatelessWidget {
   const LoadingIndicator({super.key});
@@ -19,9 +20,12 @@ class LoadingFailedIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Text(
         'failed to load',
+        style: context.textTheme.bodyMedium?.copyWith(
+          color: context.colorScheme.error,
+        ),
       ),
     );
   }

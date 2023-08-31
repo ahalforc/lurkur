@@ -7,7 +7,7 @@ import 'package:lurkur/app/widgets/list_tiles.dart';
 import 'package:lurkur/app/widgets/pop_ups.dart';
 import 'package:lurkur/app/widgets/tags.dart';
 import 'package:lurkur/app/widgets/videos.dart';
-import 'package:lurkur/features/submission/comments_tree.dart';
+import 'package:lurkur/features/submission_popup.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -25,7 +25,7 @@ class SubmissionTile extends StatelessWidget {
     return Provider.value(
       value: submission,
       child: BodyListTile(
-          onPress: () => showCommentsPopup(
+          onPress: () => showSubmissionPopup(
                 context,
                 submission: submission,
               ),

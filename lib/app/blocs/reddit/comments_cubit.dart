@@ -6,8 +6,8 @@ import 'package:lurkur/app/utils/reddit_models.dart';
 /// Allows loading a subreddit.
 ///
 /// See [SubredditState] for the various meta states.
-class SubmissionCubit extends Cubit<SubmissionState> {
-  SubmissionCubit({
+class CommentsCubit extends Cubit<CommentsState> {
+  CommentsCubit({
     required AuthCubit authCubit,
     required RedditApi redditApi,
   })  : _authCubit = authCubit,
@@ -17,7 +17,10 @@ class SubmissionCubit extends Cubit<SubmissionState> {
   final AuthCubit _authCubit;
   final RedditApi _redditApi;
 
-  void load(RedditSubmission submission) async {
+  void load({
+    required String subreddit,
+    required String submissionId,
+  }) async {
     final accessToken = _authCubit.state.accessToken;
     if (accessToken == null) {
       emit(const LoadingFailed());
@@ -29,13 +32,12 @@ class SubmissionCubit extends Cubit<SubmissionState> {
     try {
       final comments = await _redditApi.getComments(
         accessToken: accessToken,
-        subreddit: submission.subreddit,
-        submissionId: submission.id,
+        subreddit: subreddit,
+        submissionId: submissionId,
       );
       if (isClosed) return;
       emit(
         Loaded(
-          submission: submission,
           comments: comments,
         ),
       );
@@ -45,25 +47,23 @@ class SubmissionCubit extends Cubit<SubmissionState> {
   }
 }
 
-/// Represents the meta state of a subreddit.
-sealed class SubmissionState {
-  const SubmissionState();
+/// Represents the meta state of a comments request.
+sealed class CommentsState {
+  const CommentsState();
 }
 
-class Loading extends SubmissionState {
+class Loading extends CommentsState {
   const Loading();
 }
 
-class LoadingFailed extends SubmissionState {
+class LoadingFailed extends CommentsState {
   const LoadingFailed();
 }
 
-class Loaded extends SubmissionState {
+class Loaded extends CommentsState {
   const Loaded({
-    required this.submission,
     required this.comments,
   });
 
-  final RedditSubmission submission;
   final List<RedditComment> comments;
 }

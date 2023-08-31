@@ -84,9 +84,7 @@ class RedditApi {
       accessToken,
       '$_baseOauthUrl/r/$subreddit/comments/$submissionId?raw_json=1',
     );
-    print(const JsonEncoder.withIndent('    ').convert(data));
     final result = <RedditComment>[];
-
     if (data is Iterable) {
       for (final entry in data) {
         if (entry case {'data': {'children': List children}}) {
@@ -98,7 +96,6 @@ class RedditApi {
         }
       }
     }
-    print(result);
     return result;
   }
 

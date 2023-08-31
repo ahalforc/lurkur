@@ -17,13 +17,8 @@ class GalleryTile extends StatelessWidget {
       leading: const Icon(Icons.image),
       title: const Text('gallery'),
       children: [
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height / 2,
-          ),
-          child: Gallery(
-            urls: gallery.urls,
-          ),
+        Gallery(
+          urls: gallery.urls,
         ),
       ],
     );
