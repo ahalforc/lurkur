@@ -213,25 +213,29 @@ class _Preview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final submission = context.submission;
+    final self = submission.self;
+    final video = submission.video;
+    final gallery = submission.gallery;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (submission.self != null)
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: ThemeCubit.medium2Padding,
-            ),
-            child: SelectableText(
-              submission.self!.text,
-            ),
+        if (self != null)
+          Text(
+            self.text,
+            maxLines: 20,
+            overflow: TextOverflow.fade,
           ),
-        if (submission.video != null)
-          Video(
-            video: submission.video!,
+        if (video != null)
+          VideoPlayer(
+            video: Video(
+              url: video.url,
+              width: video.width,
+              height: video.height,
+            ),
           )
-        else if (submission.gallery != null)
+        else if (gallery != null)
           Gallery(
-            urls: submission.gallery!.urls,
+            urls: gallery.urls,
           ),
       ],
     );

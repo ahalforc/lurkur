@@ -1,21 +1,39 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:lurkur/app/utils/reddit_models.dart';
 import 'package:video_player/video_player.dart';
 
-class Video extends StatefulWidget {
+/// Represents a standard video.
+///
+/// Note that this only represents network url videos.
+///
+/// In the future, this should be made abstract and other
+/// video types can be supported by switching on the type.
+class Video {
   const Video({
+    required this.url,
+    required this.width,
+    required this.height,
+  });
+
+  final String url;
+  final double width;
+  final double height;
+}
+
+/// Standard widget for rendering a [Video].
+class VideoPlayer extends StatefulWidget {
+  const VideoPlayer({
     super.key,
     required this.video,
   });
 
-  final VideoSubmission video;
+  final Video video;
 
   @override
-  State<Video> createState() => _VideoState();
+  State<VideoPlayer> createState() => _VideoPlayerState();
 }
 
-class _VideoState extends State<Video> {
+class _VideoPlayerState extends State<VideoPlayer> {
   late final _videoController = VideoPlayerController.networkUrl(
     Uri.parse(widget.video.url),
     videoPlayerOptions: VideoPlayerOptions(
