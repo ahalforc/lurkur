@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lurkur/app/utils/reddit_models.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class LinkTile extends StatelessWidget {
   const LinkTile({
@@ -12,11 +13,19 @@ class LinkTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: SelectableText(
+      onTap: _openWebView,
+      title: Text(
         link.url,
         maxLines: 1,
       ),
       leading: const Icon(Icons.link),
+    );
+  }
+
+  void _openWebView() {
+    launchUrlString(
+      link.url,
+      mode: LaunchMode.inAppWebView,
     );
   }
 }
