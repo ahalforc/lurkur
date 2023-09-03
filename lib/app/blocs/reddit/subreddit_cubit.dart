@@ -63,6 +63,14 @@ class SubredditCubit extends Cubit<SubredditState> {
     }
   }
 
+  /// Just kicks off a [load] with its existing state.
+  ///
+  /// Does nothing if already loading.
+  void reload() {
+    if (state is Loading) return;
+    load(state.subreddit, sortOption: state.sortOption);
+  }
+
   /// Uses the cubit's current state to go get more submissions.
   ///
   /// Does nothing if the current state is not fully [Loaded].

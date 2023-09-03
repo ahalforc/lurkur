@@ -54,11 +54,15 @@ class _SubredditViewState extends State<SubredditView> {
   @override
   void didUpdateWidget(covariant SubredditView oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    final subredditCubit = context.read<SubredditCubit>();
     if (oldWidget.subreddit != widget.subreddit) {
-      context.read<SubredditCubit>().load(
-            widget.subreddit,
-            sortOption: SubredditPage.defaultSortOption,
-          );
+      subredditCubit.load(
+        widget.subreddit,
+        sortOption: SubredditPage.defaultSortOption,
+      );
+    } else {
+      subredditCubit.reload();
     }
   }
 
