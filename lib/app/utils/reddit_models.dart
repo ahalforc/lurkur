@@ -181,6 +181,22 @@ class RedditSubmission {
         width: width.toDouble(),
         height: height.toDouble(),
       );
+    } else if (_data
+        case {
+          'preview': {
+            'reddit_video_preview': {
+              // hls_url doesn't seem to work
+              'fallback_url': String url,
+              'width': num width,
+              'height': num height,
+            },
+          },
+        }) {
+      return VideoSubmission(
+        url: url,
+        width: width.toDouble(),
+        height: height.toDouble(),
+      );
     }
     return null;
   }
