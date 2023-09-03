@@ -32,17 +32,17 @@ class BodyListTile extends StatelessWidget {
     return InkWell(
       onTap: onPress,
       onLongPress: onLongPress,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: ThemeCubit.medium1Padding,
-          vertical: ThemeCubit.medium1Padding,
-        ),
-        child: SeparatedColumn(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          space: ThemeCubit.medium1Padding,
-          children: [
-            Row(
+      child: SeparatedColumn(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        space: ThemeCubit.medium1Padding,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: ThemeCubit.medium1Padding,
+              vertical: ThemeCubit.medium1Padding,
+            ),
+            child: Row(
               crossAxisAlignment: contentAlignment ?? CrossAxisAlignment.center,
               children: [
                 if (leading != null)
@@ -64,9 +64,9 @@ class BodyListTile extends StatelessWidget {
                 ),
               ],
             ),
-            if (body != null) body,
-          ],
-        ),
+          ),
+          if (body != null) body,
+        ],
       ),
     );
   }

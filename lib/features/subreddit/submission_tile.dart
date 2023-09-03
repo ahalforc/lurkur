@@ -222,10 +222,15 @@ class _Preview extends StatelessWidget {
       space: ThemeCubit.medium1Padding,
       children: [
         if (self != null)
-          Text(
-            self.text,
-            maxLines: 20,
-            overflow: TextOverflow.fade,
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: ThemeCubit.medium1Padding,
+            ),
+            child: Text(
+              self.text,
+              maxLines: 20,
+              overflow: TextOverflow.fade,
+            ),
           ),
         if (video != null)
           VideoPlayer(
