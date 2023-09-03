@@ -14,6 +14,7 @@ import 'package:lurkur/app/widgets/pop_ups.dart';
 void showSubscriptionsPopup(BuildContext context) {
   showPrimaryPopup(
     context: context,
+    expand: true,
     builder: (context, scrollController) {
       return SubscriptionsBody(
         scrollController: scrollController,

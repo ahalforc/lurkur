@@ -20,6 +20,7 @@ void showSubmissionPopup(
 }) {
   showPrimaryPopup(
     context: context,
+    expand: true,
     builder: (context, scrollController) {
       return MultiProvider(
         providers: [
