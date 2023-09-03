@@ -69,6 +69,7 @@ class SubmissionBody extends StatelessWidget {
             title: submission.title,
             author: submission.author,
             subreddit: submission.subreddit,
+            scoreStr: submission.scoreStr,
           ),
         ),
         if (link != null)
