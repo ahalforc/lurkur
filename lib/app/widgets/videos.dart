@@ -10,8 +10,8 @@ import 'package:video_player/video_player.dart';
 ///
 /// In the future, this should be made abstract and other
 /// video types can be supported by switching on the type.
-class Video {
-  const Video({
+class UrlVideo {
+  const UrlVideo({
     required this.url,
     required this.width,
     required this.height,
@@ -22,14 +22,14 @@ class Video {
   final double height;
 }
 
-/// Standard widget for rendering a [Video].
+/// Standard widget for rendering a [UrlVideo].
 class VideoPlayer extends StatelessWidget {
   const VideoPlayer({
     super.key,
     required this.video,
   });
 
-  final Video video;
+  final UrlVideo video;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class _VideoPlayer extends StatefulWidget {
     required this.autoPlay,
   });
 
-  final Video video;
+  final UrlVideo video;
   final bool autoPlay;
 
   @override

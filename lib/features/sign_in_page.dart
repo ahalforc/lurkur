@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lurkur/app/blocs/auth_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
+import 'package:lurkur/app/widgets/layout.dart';
 import 'package:lurkur/app/widgets/pop_ups.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -15,8 +16,9 @@ class SignInPage extends StatelessWidget {
     return Scaffold(
       body: Align(
         alignment: const FractionalOffset(0.5, 0.45),
-        child: Column(
+        child: SeparatedColumn(
           mainAxisSize: MainAxisSize.min,
+          space: ThemeCubit.medium2Padding,
           children: [
             Text(
               'lurkur',
@@ -25,7 +27,6 @@ class SignInPage extends StatelessWidget {
                   duration: 1.seconds,
                   curve: Curves.elasticOut,
                 ),
-            const SizedBox(height: ThemeCubit.medium2Padding),
             OutlinedButton(
               onPressed: () => _showSignInWebView(context),
               child: const Text('sign in'),

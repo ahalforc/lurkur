@@ -3,6 +3,7 @@ import 'package:lurkur/app/blocs/preference_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/utils/reddit_models.dart';
 import 'package:lurkur/app/widgets/images.dart';
+import 'package:lurkur/app/widgets/layout.dart';
 import 'package:lurkur/app/widgets/list_tiles.dart';
 import 'package:lurkur/app/widgets/pop_ups.dart';
 import 'package:lurkur/app/widgets/tags.dart';
@@ -216,8 +217,9 @@ class _Preview extends StatelessWidget {
     final self = submission.self;
     final video = submission.video;
     final gallery = submission.gallery;
-    return Column(
+    return SeparatedColumn(
       mainAxisSize: MainAxisSize.min,
+      space: ThemeCubit.medium1Padding,
       children: [
         if (self != null)
           Text(
@@ -227,7 +229,7 @@ class _Preview extends StatelessWidget {
           ),
         if (video != null)
           VideoPlayer(
-            video: Video(
+            video: UrlVideo(
               url: video.url,
               width: video.width,
               height: video.height,
@@ -235,7 +237,14 @@ class _Preview extends StatelessWidget {
           )
         else if (gallery != null)
           Gallery(
-            urls: gallery.urls,
+            images: [
+              for (final (url, width, height) in gallery.images)
+                UrlImage(
+                  url: url,
+                  width: width,
+                  height: height,
+                ),
+            ],
           ),
       ],
     );

@@ -18,7 +18,7 @@ class VideoTile extends StatelessWidget {
       title: const Text('video'),
       children: [
         VideoPlayer(
-          video: Video(
+          video: UrlVideo(
             url: video.url,
             width: video.width,
             height: video.height,

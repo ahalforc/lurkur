@@ -18,7 +18,14 @@ class GalleryTile extends StatelessWidget {
       title: const Text('gallery'),
       children: [
         Gallery(
-          urls: gallery.urls,
+          images: [
+            for (final (url, width, height) in gallery.images)
+              UrlImage(
+                url: url,
+                width: width,
+                height: height,
+              ),
+          ],
         ),
       ],
     );

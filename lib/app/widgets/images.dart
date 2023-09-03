@@ -1,7 +1,27 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
+
+/// Represents a standard image.
+///
+/// Note that this only represents network url images.
+///
+/// In the future, this should be made abstract and other
+/// image types can be supported by switching on the type.
+class UrlImage {
+  const UrlImage({
+    required this.url,
+    required this.width,
+    required this.height,
+  });
+
+  final String url;
+  final double width;
+  final double height;
+}
 
 class Thumbnail extends StatelessWidget {
   const Thumbnail({super.key, required this.url});
@@ -31,21 +51,25 @@ class Thumbnail extends StatelessWidget {
 }
 
 class Gallery extends StatelessWidget {
-  const Gallery({super.key, required this.urls});
+  const Gallery({super.key, required this.images});
 
-  final List<String> urls;
+  final List<UrlImage> images;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height / 2,
+    return AspectRatio(
+      // Use the smallest aspect ratio in the gallery.
+      // (The smaller the aspect ratio, the taller it is.)
+      aspectRatio: images.fold(
+        images.first.width / images.first.height,
+        (aspectRatio, image) => min(
+          aspectRatio,
+          image.width / image.height,
+        ),
       ),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(100)),
-      alignment: Alignment.center,
       child: PageView(
         children: [
-          for (final url in urls)
+          for (final image in images)
             Stack(
               children: [
                 Positioned.fill(
@@ -55,11 +79,11 @@ class Gallery extends StatelessWidget {
                           .read<RouterCubit>()
                           .pushDismissibleFullScreenWidget(
                             context,
-                            child: FullScreenImage(url: url),
+                            child: FullScreenImage(url: image.url),
                           );
                     },
                     child: Image.network(
-                      url,
+                      image.url,
                       fit: BoxFit.contain,
                       gaplessPlayback: true,
                     ),
@@ -70,7 +94,7 @@ class Gallery extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(ThemeCubit.medium1Padding),
                     child: Text(
-                      '${urls.indexOf(url) + 1} / ${urls.length}',
+                      '${images.indexOf(image) + 1} / ${images.length}',
                     ),
                   ),
                 ),

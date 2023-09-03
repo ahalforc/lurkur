@@ -115,26 +115,52 @@ class RedditSubmission {
   }
 
   GallerySubmission? get gallery {
-    final urls = <String>[];
+    final result = <(String, double, double)>[];
     if (_data case {'preview': {'images': List images}}) {
       for (final image in images) {
-        if (image case {'variants': {'gif': {'source': {'url': String url}}}}) {
-          urls.add(url);
-        } else if (image case {'source': {'url': String url}}) {
-          urls.add(url);
+        if (image
+            case {
+              'variants': {
+                'gif': {
+                  'source': {
+                    'url': String url,
+                    'width': num width,
+                    'height': num height,
+                  },
+                },
+              },
+            }) {
+          result.add((url, width.toDouble(), height.toDouble()));
+        } else if (image
+            case {
+              'source': {
+                'url': String url,
+                'width': num width,
+                'height': num height,
+              },
+            }) {
+          result.add((url, width.toDouble(), height.toDouble()));
         }
       }
     }
     if (_data case {'media_metadata': Map metadata}) {
       for (final entry in metadata.values) {
-        if (entry case {'e': 'Image', 's': {'u': String url}}) {
-          urls.add(url);
+        if (entry
+            case {
+              'e': 'Image',
+              's': {
+                'u': String url,
+                'x': num width,
+                'y': num height,
+              },
+            }) {
+          result.add((url, width.toDouble(), height.toDouble()));
         }
       }
     }
-    return urls.isNotEmpty
+    return result.isNotEmpty
         ? GallerySubmission(
-            urls: urls,
+            images: result,
           )
         : null;
   }
@@ -181,10 +207,10 @@ class SelfSubmission {
 
 class GallerySubmission {
   const GallerySubmission({
-    required this.urls,
+    required this.images,
   });
 
-  final List<String> urls;
+  final List<(String url, double width, double height)> images;
 }
 
 class VideoSubmission {

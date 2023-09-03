@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
+import 'package:lurkur/app/widgets/layout.dart';
 
 class BodyListTile extends StatelessWidget {
   const BodyListTile({
@@ -36,9 +37,10 @@ class BodyListTile extends StatelessWidget {
           horizontal: ThemeCubit.medium1Padding,
           vertical: ThemeCubit.medium1Padding,
         ),
-        child: Column(
+        child: SeparatedColumn(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
+          space: ThemeCubit.medium1Padding,
           children: [
             Row(
               crossAxisAlignment: contentAlignment ?? CrossAxisAlignment.center,
@@ -62,13 +64,7 @@ class BodyListTile extends StatelessWidget {
                 ),
               ],
             ),
-            if (body != null)
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: ThemeCubit.medium1Padding,
-                ),
-                child: body,
-              ),
+            if (body != null) body,
           ],
         ),
       ),
