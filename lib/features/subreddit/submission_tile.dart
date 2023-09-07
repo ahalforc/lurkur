@@ -223,8 +223,8 @@ class _Preview extends StatelessWidget {
       children: [
         if (self != null)
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: ThemeCubit.medium1Padding,
+            padding: const EdgeInsets.all(ThemeCubit.medium1Padding).copyWith(
+              top: 0,
             ),
             child: Text(
               self.text,
