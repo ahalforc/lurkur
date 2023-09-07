@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lurkur/app/utils/reddit_models.dart';
+import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/images.dart';
 
 class GalleryTile extends StatelessWidget {
@@ -19,11 +19,11 @@ class GalleryTile extends StatelessWidget {
       children: [
         Gallery(
           images: [
-            for (final (url, width, height) in gallery.images)
+            for (final image in gallery.images)
               UrlImage(
-                url: url,
-                width: width,
-                height: height,
+                url: image.url,
+                width: image.width,
+                height: image.height,
               ),
           ],
         ),

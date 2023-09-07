@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/auth_cubit.dart';
-import 'package:lurkur/app/utils/reddit_api.dart';
-import 'package:lurkur/app/utils/reddit_models.dart';
+import 'package:lurkur/app/reddit/reddit.dart';
 
 /// Allows loading a subreddit and managing its ever-scrolling listing.
 ///

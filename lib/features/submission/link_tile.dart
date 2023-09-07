@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lurkur/app/utils/reddit_models.dart';
+import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class LinkTile extends StatelessWidget {

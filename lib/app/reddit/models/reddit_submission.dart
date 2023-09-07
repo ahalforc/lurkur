@@ -1,64 +1,6 @@
 import 'dart:convert';
 
 /// Data class for the endpoint
-///   /subreddits/mine/subscriber
-///
-class RedditSubscription {
-  const RedditSubscription({
-    required Map data,
-  }) : _data = data;
-
-  final Map _data;
-
-  String get displayName => _data['display_name'] ?? '';
-
-  String get title => _data['title'] ?? '';
-
-  @override
-  String toString() => const JsonEncoder.withIndent('    ').convert(_data);
-}
-
-class RedditComment {
-  const RedditComment({
-    required Map data,
-  }) : _data = data;
-
-  final Map _data;
-
-  String get author => _data['author'] ?? '';
-
-  int get score => _data['score'] ?? 0;
-
-  String get body => _data['body'] ?? '';
-
-  bool get isEdited {
-    final edited = _data['edited'];
-    if (edited is bool) return edited;
-    if (edited is num) return true;
-    return false;
-  }
-
-  bool get isSubmitter => _data['is_submitter'] ?? false;
-
-  DateTime get createdDateTime => DateTime.fromMillisecondsSinceEpoch(
-        _data['created_utc'].toInt() * 1000,
-        isUtc: true,
-      );
-
-  List<RedditComment> get replies {
-    final result = <RedditComment>[];
-    if (_data['replies'] case {'data': {'children': List children}}) {
-      for (final child in children) {
-        if (child case {'data': Map data}) {
-          result.add(RedditComment(data: data));
-        }
-      }
-    }
-    return result;
-  }
-}
-
-/// Data class for the endpoint
 ///   /r/$subreddit/<filter>
 class RedditSubmission {
   const RedditSubmission({
@@ -115,7 +57,8 @@ class RedditSubmission {
   }
 
   GallerySubmission? get gallery {
-    final result = <(String, double, double)>[];
+    final result = <GalleryImage>[];
+    final galleryIds = <String>[];
     if (_data case {'preview': {'images': List images}}) {
       for (final image in images) {
         if (image
@@ -130,7 +73,13 @@ class RedditSubmission {
                 },
               },
             }) {
-          result.add((url, width.toDouble(), height.toDouble()));
+          result.add(
+            GalleryImage(
+              url: url,
+              width: width.toDouble(),
+              height: height.toDouble(),
+            ),
+          );
         } else if (image
             case {
               'source': {
@@ -139,7 +88,13 @@ class RedditSubmission {
                 'height': num height,
               },
             }) {
-          result.add((url, width.toDouble(), height.toDouble()));
+          result.add(
+            GalleryImage(
+              url: url,
+              width: width.toDouble(),
+              height: height.toDouble(),
+            ),
+          );
         }
       }
     }
@@ -153,11 +108,38 @@ class RedditSubmission {
                 'x': num width,
                 'y': num height,
               },
+              'id': String id,
             }) {
-          result.add((url, width.toDouble(), height.toDouble()));
+          result.add(
+            GalleryImage(
+              id: id,
+              url: url,
+              width: width.toDouble(),
+              height: height.toDouble(),
+            ),
+          );
         }
       }
     }
+    if (_data case {'gallery_data': {'items': List items}}) {
+      for (final item in items) {
+        if (item case {'media_id': String id}) {
+          galleryIds.add(id);
+        }
+      }
+    }
+
+    // If [galleryIds] is not empty, then [result] is likely sortable
+    // based off the list order of [galleryIds].
+    if (galleryIds.isNotEmpty && result.length > 1) {
+      result.sort((a, b) {
+        final aId = a.id, bId = b.id;
+        if (aId == null) return 1; // be comes before a
+        if (bId == null) return -1; // a comes before b
+        return galleryIds.indexOf(aId).compareTo(galleryIds.indexOf(bId));
+      });
+    }
+
     return result.isNotEmpty
         ? GallerySubmission(
             images: result,
@@ -226,7 +208,20 @@ class GallerySubmission {
     required this.images,
   });
 
-  final List<(String url, double width, double height)> images;
+  final List<GalleryImage> images;
+}
+
+class GalleryImage {
+  const GalleryImage({
+    this.id,
+    required this.url,
+    required this.width,
+    required this.height,
+  });
+
+  final String? id;
+  final String url;
+  final double width, height;
 }
 
 class VideoSubmission {

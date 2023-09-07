@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lurkur/app/blocs/preference_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
-import 'package:lurkur/app/utils/reddit_models.dart';
+import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/images.dart';
 import 'package:lurkur/app/widgets/layout.dart';
 import 'package:lurkur/app/widgets/list_tiles.dart';
@@ -243,11 +243,11 @@ class _Preview extends StatelessWidget {
         else if (gallery != null)
           Gallery(
             images: [
-              for (final (url, width, height) in gallery.images)
+              for (final image in gallery.images)
                 UrlImage(
-                  url: url,
-                  width: width,
-                  height: height,
+                  url: image.url,
+                  width: image.width,
+                  height: image.height,
                 ),
             ],
           ),

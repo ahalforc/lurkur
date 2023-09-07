@@ -93,8 +93,21 @@ class Gallery extends StatelessWidget {
                   alignment: Alignment.bottomLeft,
                   child: Padding(
                     padding: const EdgeInsets.all(ThemeCubit.medium1Padding),
-                    child: Text(
-                      '${images.indexOf(image) + 1} / ${images.length}',
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: context.colorScheme.background,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: ThemeCubit.medium1Padding,
+                        vertical: ThemeCubit.small1Padding,
+                      ),
+                      child: Text(
+                        '${images.indexOf(image) + 1} / ${images.length}',
+                        style: context.textTheme.labelMedium?.copyWith(
+                          color: context.colorScheme.onBackground,
+                        ),
+                      ),
                     ),
                   ),
                 ),

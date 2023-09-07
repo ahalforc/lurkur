@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lurkur/app/utils/reddit_models.dart';
+import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/videos.dart';
 
 class VideoTile extends StatelessWidget {

@@ -3,8 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/auth_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
-import 'package:lurkur/app/utils/reddit_api.dart';
-import 'package:lurkur/app/utils/reddit_models.dart';
+import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/indicators.dart';
 import 'package:lurkur/app/widgets/pop_ups.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
-import 'package:lurkur/app/utils/reddit_models.dart';
+import 'package:lurkur/app/reddit/reddit.dart';
 
 class SelfTile extends StatelessWidget {
   const SelfTile({

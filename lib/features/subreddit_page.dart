@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/auth_cubit.dart';
 import 'package:lurkur/app/blocs/reddit/subreddit_cubit.dart';
-import 'package:lurkur/app/utils/reddit_api.dart';
+import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/features/subreddit/subreddit_bab.dart';
 import 'package:lurkur/features/subreddit/subreddit_body.dart';
 import 'package:lurkur/features/subreddit/subscriptions_fab.dart';

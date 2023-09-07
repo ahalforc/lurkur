@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
-import 'package:lurkur/app/utils/reddit_models.dart';
+import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/tags.dart';
 
 class CommentsTree extends StatelessWidget {
