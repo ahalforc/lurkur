@@ -134,8 +134,8 @@ class RedditSubmission {
     if (galleryIds.isNotEmpty && result.length > 1) {
       result.sort((a, b) {
         final aId = a.id, bId = b.id;
-        if (aId == null) return 1; // be comes before a
         if (bId == null) return -1; // a comes before b
+        if (aId == null) return 1; // b comes before a
         return galleryIds.indexOf(aId).compareTo(galleryIds.indexOf(bId));
       });
     }
