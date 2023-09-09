@@ -48,6 +48,16 @@ final class ThemeState {
         colorScheme: ColorScheme.fromSeed(
           seedColor: color,
           brightness: Brightness.light,
+        ).copyWith(
+          primary: color,
+          onPrimary: Colors.black,
+          error: Colors.red,
+          onError: Colors.white,
+          background: Colors.white,
+          onBackground: Colors.black,
+          surface: const Color(0xFFFAFAFA),
+          onSecondary: Colors.black,
+          outline: color,
         ),
       );
 
