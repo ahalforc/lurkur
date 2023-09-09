@@ -61,8 +61,6 @@ class _SubredditViewState extends State<SubredditView> {
         widget.subreddit,
         sortOption: SubredditPage.defaultSortOption,
       );
-    } else {
-      subredditCubit.reload();
     }
   }
 

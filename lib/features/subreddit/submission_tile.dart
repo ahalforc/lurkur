@@ -219,6 +219,7 @@ class _Preview extends StatelessWidget {
     final gallery = submission.gallery;
     return SeparatedColumn(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       space: ThemeCubit.medium1Padding,
       children: [
         if (self != null)
