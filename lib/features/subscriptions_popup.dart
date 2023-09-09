@@ -5,7 +5,7 @@ import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/indicators.dart';
-import 'package:lurkur/app/widgets/pop_ups.dart';
+import 'package:lurkur/app/widgets/popups.dart';
 
 /// Shows a popup that lets the user select a subreddit from their subscriptions.
 ///

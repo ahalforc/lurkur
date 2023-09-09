@@ -4,7 +4,7 @@ import 'package:lurkur/app/blocs/auth_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/widgets/layout.dart';
-import 'package:lurkur/app/widgets/pop_ups.dart';
+import 'package:lurkur/app/widgets/popups.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/preference_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
-import 'package:lurkur/app/widgets/pop_ups.dart';
+import 'package:lurkur/app/widgets/popups.dart';
 
 /// Shows a popup that lets the user change app settings.
 ///
@@ -38,6 +38,7 @@ class SettingsBody extends StatelessWidget {
         _HeaderTile(text: 'Media'),
         _AutoPlayVideos(),
         _HeaderTile(text: 'Session'),
+        _ClearPreferences(),
         ListTile(
           leading: Icon(Icons.logout),
           title: Text('Log out'),
@@ -127,6 +128,27 @@ class _AutoPlayVideos extends StatelessWidget {
       },
       title: const Text('Auto play videos'),
       onTap: () => context.read<PreferenceCubit>().nextAutoPlayVideos(),
+    );
+  }
+}
+
+class _ClearPreferences extends StatelessWidget {
+  const _ClearPreferences();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: const Icon(Icons.warning),
+      title: const Text('Clear all settings'),
+      onTap: () {
+        showConfirmationPopup(
+          context: context,
+          title: const Text('Clear all settings'),
+          body: const Text('This action cannot be undone.'),
+          onConfirm: () =>
+              context.read<PreferenceCubit>().clearAllPreferences(),
+        );
+      },
     );
   }
 }

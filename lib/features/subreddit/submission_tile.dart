@@ -5,7 +5,7 @@ import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/images.dart';
 import 'package:lurkur/app/widgets/layout.dart';
 import 'package:lurkur/app/widgets/list_tiles.dart';
-import 'package:lurkur/app/widgets/pop_ups.dart';
+import 'package:lurkur/app/widgets/popups.dart';
 import 'package:lurkur/app/widgets/tags.dart';
 import 'package:lurkur/app/widgets/videos.dart';
 import 'package:lurkur/features/submission_popup.dart';

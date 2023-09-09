@@ -21,6 +21,35 @@ void showPrimaryPopup({
   );
 }
 
+void showConfirmationPopup({
+  required BuildContext context,
+  required Widget title,
+  required Widget body,
+  required void Function() onConfirm,
+}) {
+  showAdaptiveDialog(
+    context: context,
+    barrierDismissible: true,
+    builder: (context) => AlertDialog(
+      title: title,
+      content: body,
+      actions: [
+        TextButton(
+          child: const Text('Cancel'),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        TextButton(
+          child: const Text('Confirm'),
+          onPressed: () {
+            Navigator.of(context).pop();
+            onConfirm();
+          },
+        ),
+      ],
+    ),
+  );
+}
+
 /// Shows whatever the current "basic notification popup" UI is.
 void showNotificationPopup({
   required BuildContext context,

@@ -72,6 +72,11 @@ class PreferenceCubit extends Cubit<PreferenceState> {
     );
     emit(await _nextState);
   }
+
+  void clearAllPreferences() async {
+    (await _prefs).clear();
+    emit(await _nextState);
+  }
 }
 
 extension _ListX<T> on List<T> {

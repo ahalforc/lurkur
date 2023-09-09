@@ -4,7 +4,7 @@ import 'package:lurkur/app/blocs/auth_cubit.dart';
 import 'package:lurkur/app/blocs/reddit/comments_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/indicators.dart';
-import 'package:lurkur/app/widgets/pop_ups.dart';
+import 'package:lurkur/app/widgets/popups.dart';
 import 'package:lurkur/features/submission/comments_tree.dart';
 import 'package:lurkur/features/submission/gallery_tile.dart';
 import 'package:lurkur/features/submission/link_tile.dart';
