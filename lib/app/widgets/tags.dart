@@ -75,7 +75,7 @@ class ScoreTag extends StatelessWidget {
     final isPositive = score >= 0;
     return _Tag(
       icon: isPositive ? Icons.thumb_up : Icons.thumb_down,
-      text: '${isPositive ? '' : ''}$score',
+      text: '${isPositive ? '' : ''}${score.shorthand}',
       color: isPositive
           ? context.colorScheme.primaryContainer
           : context.colorScheme.error,
@@ -95,7 +95,7 @@ class CommentsTag extends StatelessWidget {
   Widget build(BuildContext context) {
     return _Tag(
       icon: Icons.comment,
-      text: '$count',
+      text: count.shorthand,
       color: context.colorScheme.secondaryContainer,
     );
   }
@@ -158,5 +158,15 @@ class _Tag extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+extension on int {
+  String get shorthand {
+    final i = abs();
+    if (1000 <= i && i < 1000000) {
+      return '${i ~/ 1000}k';
+    }
+    return toString();
   }
 }
