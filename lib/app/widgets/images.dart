@@ -32,8 +32,8 @@ class Thumbnail extends StatelessWidget {
   Widget build(BuildContext context) {
     final url = this.url;
     return Container(
-      width: 44,
-      height: 44,
+      width: 36,
+      height: 36,
       decoration: BoxDecoration(
         color: context.colorScheme.primaryContainer,
         shape: BoxShape.circle,

@@ -54,6 +54,16 @@ class CommentTile extends StatelessWidget {
         final title = Text.rich(
           TextSpan(
             children: [
+              WidgetSpan(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    right: ThemeCubit.small3Padding,
+                  ),
+                  child: ScoreTag(
+                    score: comment.score,
+                  ),
+                ),
+              ),
               if (comment.isSubmitter)
                 const WidgetSpan(
                   child: Padding(
@@ -72,12 +82,6 @@ class CommentTile extends StatelessWidget {
                     child: EditedTag(),
                   ),
                 ),
-              TextSpan(
-                text: '${comment.score > 0 ? '+' : ''}${comment.score} - ',
-                style: context.textTheme.bodyMedium?.copyWith(
-                  color: context.colorScheme.primary,
-                ),
-              ),
               TextSpan(
                 text: comment.author,
                 style: context.textTheme.bodyMedium?.copyWith(

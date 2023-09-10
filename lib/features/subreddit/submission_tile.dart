@@ -10,7 +10,6 @@ import 'package:lurkur/app/widgets/videos.dart';
 import 'package:lurkur/features/submission_more_actions_popup.dart';
 import 'package:lurkur/features/submission_popup.dart';
 import 'package:provider/provider.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 class SubmissionTile extends StatelessWidget {
   const SubmissionTile({
@@ -41,8 +40,9 @@ class SubmissionTile extends StatelessWidget {
           leading: const _Leading(),
           title: const _Title(),
           subtitles: const [
-            _Info(),
             SizedBox(height: ThemeCubit.small2Padding),
+            _Info(),
+            SizedBox(height: ThemeCubit.small3Padding),
             _Context(),
           ],
           body: switch (density) {
@@ -82,74 +82,23 @@ class _Info extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final density = context.themeDensity;
     final submission = context.submission;
-    return Text.rich(
-      TextSpan(
-        children: [
-          if (submission.isNsfw)
-            const WidgetSpan(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  right: ThemeCubit.medium1Padding,
-                ),
-                child: NsfwTag(),
-              ),
-            ),
-          if (submission.isPinned)
-            const WidgetSpan(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  right: ThemeCubit.medium1Padding,
-                ),
-                child: PinnedTag(),
-              ),
-            ),
-          if (submission.isStickied)
-            const WidgetSpan(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  right: ThemeCubit.medium1Padding,
-                ),
-                child: StickiedTag(),
-              ),
-            ),
-          TextSpan(
-            text: submission.scoreStr,
-            style: context.textTheme.bodyMedium?.copyWith(
-              color: context.colorScheme.primary,
-            ),
-          ),
-          TextSpan(
-            text: ' - ',
-            style: context.textTheme.bodyMedium?.copyWith(
-              color: context.colorScheme.primary.withOpacity(0.5),
-            ),
-          ),
-          TextSpan(
-            text: '${submission.commentCount} comments',
-            style: context.textTheme.bodyMedium?.copyWith(),
-          ),
-          TextSpan(
-            text: ' - ',
-            style: context.textTheme.bodyMedium?.copyWith(
-              color: context.colorScheme.primary.withOpacity(0.5),
-            ),
-          ),
-          TextSpan(
-            text: timeago.format(submission.createdDateTime, locale: 'en'),
-            style: context.textTheme.bodyMedium?.copyWith(),
-          ),
-        ],
-      ),
-      maxLines: switch (density) {
-        ThemeDensity.small => 1,
-        _ => null,
-      },
-      overflow: switch (density) {
-        ThemeDensity.small => TextOverflow.ellipsis,
-        _ => null,
-      },
+    return Wrap(
+      spacing: ThemeCubit.medium1Padding,
+      children: [
+        if (submission.isNsfw) const NsfwTag(),
+        if (submission.isPinned) const PinnedTag(),
+        if (submission.isStickied) const StickiedTag(),
+        ScoreTag(
+          score: submission.score,
+        ),
+        CommentsTag(
+          count: submission.commentCount,
+        ),
+        CreatedTag(
+          createdTime: submission.createdDateTime,
+        ),
+      ],
     );
   }
 }

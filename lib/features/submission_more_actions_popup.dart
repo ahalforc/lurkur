@@ -64,9 +64,10 @@ class _ShowJson extends StatelessWidget {
     return ListTile(
       leading: const Icon(Icons.data_object),
       title: const Text('Show json'),
-      subtitle: const Text('Stats for nerds, or something.'),
+      subtitle: const Text('For the daring'),
       onTap: () => showPrimaryPopup(
         context: context,
+        expand: true,
         builder: (context, _) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
