@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/preference_cubit.dart';
@@ -25,12 +27,15 @@ class SubredditBody extends StatelessWidget {
     }
         .toList();
 
+    final screenSize = MediaQuery.of(context).size;
+
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) => _maybeLoadMore(
         context,
         notification,
       ),
       child: CustomScrollView(
+        cacheExtent: screenSize.height,
         slivers: [
           switch (state) {
             (Loading _) => const SliverFillRemaining(
@@ -43,17 +48,25 @@ class SubredditBody extends StatelessWidget {
                 left: false,
                 right: false,
                 bottom: false,
-                sliver: SliverList.separated(
-                  itemCount: submissions.length,
-                  itemBuilder: (context, index) {
-                    return SubmissionTile(
-                      key: ValueKey(submissions[index].id),
-                      submission: submissions[index],
-                    );
-                  },
-                  separatorBuilder: (context, _) => Container(
-                    color: context.colorScheme.outline.withOpacity(0.15),
-                    height: ThemeCubit.medium1Padding,
+                sliver: SliverPadding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: max(
+                      (screenSize.width - ThemeCubit.maxBodyWidth) / 2,
+                      0.0,
+                    ),
+                  ),
+                  sliver: SliverList.separated(
+                    itemCount: submissions.length,
+                    itemBuilder: (context, index) {
+                      return SubmissionTile(
+                        key: ValueKey(submissions[index].id),
+                        submission: submissions[index],
+                      );
+                    },
+                    separatorBuilder: (context, _) => Container(
+                      color: context.colorScheme.outline.withOpacity(0.15),
+                      height: ThemeCubit.medium1Padding,
+                    ),
                   ),
                 ),
               ),

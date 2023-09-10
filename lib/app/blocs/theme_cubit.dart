@@ -25,6 +25,8 @@ class ThemeCubit extends Cubit<ThemeState> {
   static const large2Padding = 64.0;
   static const large3Padding = 128.0;
 
+  static const maxBodyWidth = 560.0;
+
   ThemeCubit() : super(const ThemeState(color: Colors.blue));
 
   void setColorSeed(Color color) {
