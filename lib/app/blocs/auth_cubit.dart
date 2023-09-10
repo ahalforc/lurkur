@@ -75,7 +75,9 @@ class AuthCubit extends Cubit<AuthState> {
 /// to transition to the next state or to authenticate http requests.
 sealed class AuthState {
   const AuthState();
+}
 
+extension AuthStateX on AuthState {
   String? get accessToken => switch (this) {
         (Authorized authorized) => authorized.accessToken,
         _ => null,
@@ -112,11 +114,11 @@ class Authorizing extends AuthState {
 class Authorized extends AuthState {
   const Authorized({
     required this.accessToken,
-    required this.expirationTime,
     required this.refreshToken,
+    required this.expirationTime,
   });
 
   final String accessToken;
-  final DateTime expirationTime;
   final String refreshToken;
+  final DateTime expirationTime;
 }

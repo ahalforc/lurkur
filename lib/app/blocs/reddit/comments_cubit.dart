@@ -40,7 +40,7 @@ class CommentsCubit extends Cubit<CommentsState> {
           comments: comments,
         ),
       );
-    } catch (e, st) {
+    } catch (_) {
       emit(const LoadingFailed());
     }
   }

@@ -57,7 +57,7 @@ class SubredditCubit extends Cubit<SubredditState> {
           didLoadingMoreFail: false,
         ),
       );
-    } catch (e, st) {
+    } catch (_) {
       emit(LoadingFailed(subreddit: subreddit, sortOption: sortOption));
     }
   }
@@ -114,7 +114,7 @@ class SubredditCubit extends Cubit<SubredditState> {
           didLoadingMoreFail: false,
         ),
       );
-    } catch (e, st) {
+    } catch (_) {
       emit(
         Loaded(
           subreddit: state.subreddit,
