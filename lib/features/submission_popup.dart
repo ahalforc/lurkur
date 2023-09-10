@@ -8,6 +8,7 @@ import 'package:lurkur/app/widgets/layout.dart';
 import 'package:lurkur/app/widgets/popups.dart';
 import 'package:lurkur/features/submission/comments_tree.dart';
 import 'package:lurkur/features/submission/gallery_tile.dart';
+import 'package:lurkur/features/submission/info_tile.dart';
 import 'package:lurkur/features/submission/link_tile.dart';
 import 'package:lurkur/features/submission/self_tile.dart';
 import 'package:lurkur/features/submission/title_tile.dart';
@@ -66,10 +67,12 @@ class SubmissionBody extends StatelessWidget {
       slivers: [
         SliverToBoxAdapter(
           child: TitleTile(
-            title: submission.title,
-            author: submission.author,
-            subreddit: submission.subreddit,
-            scoreStr: submission.scoreStr,
+            submission: submission,
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: InfoTile(
+            submission: submission,
           ),
         ),
         if (link != null)

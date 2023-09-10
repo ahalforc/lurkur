@@ -43,10 +43,7 @@ class SubmissionMoreActionsBody extends StatelessWidget {
       controller: scrollController,
       children: [
         TitleTile(
-          title: submission.title,
-          author: submission.author,
-          subreddit: submission.subreddit,
-          scoreStr: submission.scoreStr,
+          submission: submission,
         ),
         const _ShowOrHide(),
         const _ShowJson(),
