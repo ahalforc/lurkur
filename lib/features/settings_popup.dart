@@ -38,6 +38,7 @@ class SettingsBody extends StatelessWidget {
         _HeaderTile(text: 'Media'),
         _AutoPlayVideos(),
         _HeaderTile(text: 'Session'),
+        _HiddenSubreddits(),
         _ClearPreferences(),
         ListTile(
           leading: Icon(Icons.logout),
@@ -128,6 +129,36 @@ class _AutoPlayVideos extends StatelessWidget {
       },
       title: const Text('Auto play videos'),
       onTap: () => context.read<PreferenceCubit>().nextAutoPlayVideos(),
+    );
+  }
+}
+
+class _HiddenSubreddits extends StatelessWidget {
+  const _HiddenSubreddits();
+
+  @override
+  Widget build(BuildContext context) {
+    final hiddenSubreddits =
+        context.watch<PreferenceCubit>().state.hiddenSubreddits;
+    return ExpansionTile(
+      leading: const Icon(Icons.hide_source),
+      title: const Text('Hidden subreddits'),
+      children: [
+        for (final subreddit in hiddenSubreddits)
+          ListTile(
+            key: ValueKey(subreddit),
+            leading: Checkbox(
+              value: true,
+              onChanged: (_) => context.read<PreferenceCubit>().showSubreddit(
+                    subreddit,
+                  ),
+            ),
+            title: Text(subreddit),
+            onTap: () => context.read<PreferenceCubit>().showSubreddit(
+                  subreddit,
+                ),
+          ),
+      ],
     );
   }
 }

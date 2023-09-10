@@ -5,9 +5,9 @@ import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/images.dart';
 import 'package:lurkur/app/widgets/layout.dart';
 import 'package:lurkur/app/widgets/list_tiles.dart';
-import 'package:lurkur/app/widgets/popups.dart';
 import 'package:lurkur/app/widgets/tags.dart';
 import 'package:lurkur/app/widgets/videos.dart';
+import 'package:lurkur/features/submission_more_actions_popup.dart';
 import 'package:lurkur/features/submission_popup.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -30,7 +30,10 @@ class SubmissionTile extends StatelessWidget {
                 context,
                 submission: submission,
               ),
-          onLongPress: () => context.showSubmissionJson(submission),
+          onLongPress: () => showSubmissionMoreActionsPopup(
+                context,
+                submission: submission,
+              ),
           contentAlignment: switch (density) {
             ThemeDensity.small => CrossAxisAlignment.center,
             _ => CrossAxisAlignment.start,
@@ -54,18 +57,6 @@ extension on BuildContext {
   ThemeDensity get themeDensity => watch<PreferenceCubit>().state.themeDensity;
 
   RedditSubmission get submission => watch<RedditSubmission>();
-
-  void showSubmissionJson(RedditSubmission submission) {
-    showPrimaryPopup(
-      context: this,
-      builder: (context, _) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: SelectableText(submission.toString()),
-        );
-      },
-    );
-  }
 }
 
 class _Title extends StatelessWidget {

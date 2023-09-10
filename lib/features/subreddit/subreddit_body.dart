@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lurkur/app/blocs/preference_cubit.dart';
 import 'package:lurkur/app/blocs/reddit/subreddit_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
+import 'package:lurkur/app/reddit/models/reddit_submission.dart';
 import 'package:lurkur/app/widgets/indicators.dart';
 import 'package:lurkur/features/subreddit/submission_tile.dart';
 
@@ -11,6 +13,17 @@ class SubredditBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<SubredditCubit>().state;
+    final hiddenSubreddits =
+        context.watch<PreferenceCubit>().state.hiddenSubreddits;
+
+    final submissions = switch (state) {
+      (Loaded loaded) => loaded.submissions.where(
+          (submission) => !hiddenSubreddits.contains(submission.subreddit),
+        ),
+      _ => const <RedditSubmission>[],
+    }
+        .toList();
+
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) => _maybeLoadMore(
         context,
@@ -25,15 +38,16 @@ class SubredditBody extends StatelessWidget {
             (LoadingFailed _) => const SliverFillRemaining(
                 child: LoadingFailedIndicator(),
               ),
-            (Loaded loaded) => SliverSafeArea(
+            (Loaded _) => SliverSafeArea(
                 left: false,
                 right: false,
                 bottom: false,
                 sliver: SliverList.separated(
-                  itemCount: loaded.submissions.length,
+                  itemCount: submissions.length,
                   itemBuilder: (context, index) {
                     return SubmissionTile(
-                      submission: loaded.submissions[index],
+                      key: ValueKey(submissions[index].id),
+                      submission: submissions[index],
                     );
                   },
                   separatorBuilder: (context, _) => Container(

@@ -12,6 +12,7 @@ class PreferenceCubit extends Cubit<PreferenceState> {
   static const _themeColor = 'theme color';
   static const _themeDensity = 'theme density';
   static const _autoPlayVideos = 'auto play videos';
+  static const _hiddenSubreddits = 'hidden subreddits';
 
   PreferenceCubit() : super(const PreferenceState.empty());
 
@@ -34,6 +35,8 @@ class PreferenceCubit extends Cubit<PreferenceState> {
         orElse: () => empty.themeDensity,
       ),
       autoPlayVideos: prefs.getBool(_autoPlayVideos) ?? empty.autoPlayVideos,
+      hiddenSubreddits:
+          prefs.getStringList(_hiddenSubreddits)?.toSet() ?? const {},
     );
   }
 
@@ -73,6 +76,28 @@ class PreferenceCubit extends Cubit<PreferenceState> {
     emit(await _nextState);
   }
 
+  void hideSubreddit(String subreddit) async {
+    (await _prefs).setStringList(
+      _hiddenSubreddits,
+      {
+        ...state.hiddenSubreddits,
+        subreddit,
+      }.toList(),
+    );
+    emit(await _nextState);
+  }
+
+  void showSubreddit(String subreddit) async {
+    (await _prefs).setStringList(
+      _hiddenSubreddits,
+      ({
+        ...state.hiddenSubreddits,
+      }..remove(subreddit))
+          .toList(),
+    );
+    emit(await _nextState);
+  }
+
   void clearAllPreferences() async {
     (await _prefs).clear();
     emit(await _nextState);
@@ -92,13 +117,15 @@ final class PreferenceState {
     required this.themeColor,
     required this.themeDensity,
     required this.autoPlayVideos,
+    required this.hiddenSubreddits,
   });
 
   const PreferenceState.empty()
       : themeBrightness = ThemeBrightness.auto,
         themeColor = ThemeColor.blue,
-        themeDensity = ThemeDensity.medium,
-        autoPlayVideos = true;
+        themeDensity = ThemeDensity.large,
+        autoPlayVideos = true,
+        hiddenSubreddits = const {};
 
   final ThemeBrightness themeBrightness;
 
@@ -107,6 +134,8 @@ final class PreferenceState {
   final ThemeDensity themeDensity;
 
   final bool autoPlayVideos;
+
+  final Set<String> hiddenSubreddits;
 }
 
 enum ThemeBrightness {

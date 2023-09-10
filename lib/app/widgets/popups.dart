@@ -21,13 +21,13 @@ void showPrimaryPopup({
   );
 }
 
-void showConfirmationPopup({
+Future<void> showConfirmationPopup({
   required BuildContext context,
   required Widget title,
   required Widget body,
   required void Function() onConfirm,
-}) {
-  showAdaptiveDialog(
+}) async {
+  await showAdaptiveDialog(
     context: context,
     barrierDismissible: true,
     builder: (context) => AlertDialog(
