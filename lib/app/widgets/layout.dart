@@ -30,3 +30,23 @@ class SeparatedColumn extends StatelessWidget {
     );
   }
 }
+
+/// Like [SliverFillRemaining], but is just the size of the screen.
+class SliverFullScreen extends StatelessWidget {
+  const SliverFullScreen({
+    super.key,
+    required this.child,
+  });
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height,
+        child: child,
+      ),
+    );
+  }
+}

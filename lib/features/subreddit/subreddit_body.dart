@@ -5,6 +5,7 @@ import 'package:lurkur/app/blocs/reddit/subreddit_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/reddit/models/reddit_submission.dart';
 import 'package:lurkur/app/widgets/indicators.dart';
+import 'package:lurkur/app/widgets/layout.dart';
 import 'package:lurkur/features/subreddit/submission_tile.dart';
 
 class SubredditBody extends StatelessWidget {
@@ -58,11 +59,11 @@ class SubredditBody extends StatelessWidget {
               ),
           },
           if (state is Loaded && state.isLoadingMore)
-            const SliverToBoxAdapter(
+            const SliverFullScreen(
               child: LoadingIndicator(),
             ),
           if (state is Loaded && state.didLoadingMoreFail)
-            const SliverToBoxAdapter(
+            const SliverFullScreen(
               child: LoadingFailedIndicator(),
             ),
         ],
@@ -71,8 +72,10 @@ class SubredditBody extends StatelessWidget {
   }
 
   bool _maybeLoadMore(BuildContext context, ScrollNotification notification) {
-    // todo This should be more like "75% of max scroll extent == load more"
-    if (notification.metrics.pixels == notification.metrics.maxScrollExtent) {
+    final max = notification.metrics.maxScrollExtent;
+    final current = notification.metrics.pixels;
+    // At 80% of the total scroll (or more), start loading the next block.
+    if (current >= max * 0.8) {
       context.read<SubredditCubit>().loadMore();
     }
     return false; // let the notification continue bubbling

@@ -4,6 +4,7 @@ import 'package:lurkur/app/blocs/auth_cubit.dart';
 import 'package:lurkur/app/blocs/reddit/comments_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/indicators.dart';
+import 'package:lurkur/app/widgets/layout.dart';
 import 'package:lurkur/app/widgets/popups.dart';
 import 'package:lurkur/features/submission/comments_tree.dart';
 import 'package:lurkur/features/submission/gallery_tile.dart';
@@ -88,10 +89,10 @@ class SubmissionBody extends StatelessWidget {
             child: GalleryTile(gallery: gallery),
           ),
         switch (comments) {
-          (Loading _) => const SliverFillRemaining(
+          (Loading _) => const SliverFullScreen(
               child: LoadingIndicator(),
             ),
-          (LoadingFailed _) => const SliverFillRemaining(
+          (LoadingFailed _) => const SliverFullScreen(
               child: LoadingFailedIndicator(),
             ),
           (Loaded loaded) => CommentsTree(
