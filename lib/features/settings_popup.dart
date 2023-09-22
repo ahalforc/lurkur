@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lurkur/app/blocs/auth_cubit.dart';
 import 'package:lurkur/app/blocs/preference_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/widgets/popups.dart';
@@ -40,10 +41,7 @@ class SettingsBody extends StatelessWidget {
         _HeaderTile(text: 'Session'),
         _HiddenSubreddits(),
         _ClearPreferences(),
-        ListTile(
-          leading: Icon(Icons.logout),
-          title: Text('Log out'),
-        ),
+        _LogOut(),
       ],
     );
   }
@@ -129,6 +127,18 @@ class _AutoPlayVideos extends StatelessWidget {
       },
       title: const Text('Auto play videos'),
       onTap: () => context.read<PreferenceCubit>().nextAutoPlayVideos(),
+    );
+  }
+}
+
+class _LogOut extends StatelessWidget {
+  const _LogOut();
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: const Icon(Icons.logout),
+      title: const Text('Log Out'),
+      onTap: () => context.read<AuthCubit>().logout(),
     );
   }
 }
