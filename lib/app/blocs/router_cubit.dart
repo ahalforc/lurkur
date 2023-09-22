@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:lurkur/features/sign_in_page.dart';
 import 'package:lurkur/features/subreddit_page.dart';
 
+import '../../features/loading_page.dart';
+
 /// Manages the routes available in the app.
 class RouterCubit extends Cubit<RouteState> {
   static const signIn = '/';
@@ -11,7 +13,7 @@ class RouterCubit extends Cubit<RouteState> {
 
   static const subredditQueryParameter = 'subreddit';
 
-  RouterCubit() : super(UnauthorizedRoutes());
+  RouterCubit() : super(UnknownAuthRoutes());
 
   void showUnauthorizedRoutes() {
     emit(UnauthorizedRoutes());
@@ -59,6 +61,20 @@ sealed class RouteState {
   ///
   /// Failing to do so will result in hard-to-trace navigation history issues.
   RouterConfig<Object> get routerConfig;
+}
+
+/// Provides the default app boot route
+class UnknownAuthRoutes extends RouteState {
+  @override
+  final RouterConfig<Object> routerConfig = GoRouter(
+    initialLocation: RouterCubit.signIn,
+    routes: [
+      GoRoute(
+        path: RouterCubit.signIn,
+        builder: (context, state) => LoadingPage(),
+      ),
+    ],
+  );
 }
 
 /// Provides routes available for those that haven't signed in yet.

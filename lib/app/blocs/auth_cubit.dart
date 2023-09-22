@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:lurkur/app/secrets.dart' as secrets;
 import 'package:uuid/uuid.dart';
@@ -9,8 +10,9 @@ import 'package:uuid/uuid.dart';
 class AuthCubit extends Cubit<AuthState> {
   static const clientId = secrets.clientId;
   static const redirectUri = 'https://www.reddit.com';
+  static const storage = FlutterSecureStorage();
 
-  AuthCubit() : super(const Unauthorized());
+  AuthCubit() : super(const Unknown());
 
   /// Puts this cubit into the [Authorizing] state with a newly generated
   /// "state" unique identifier required for the reddit api.
@@ -20,6 +22,28 @@ class AuthCubit extends Cubit<AuthState> {
     final state = Authorizing(stateId: const Uuid().v4());
     emit(state);
     return state.authUrl;
+  }
+
+  void checkExistingAuth() async {
+    String? accessToken = await storage.read(key: 'access_token');
+    if (accessToken == null) {
+      emit(const Unauthorized());
+      return;
+    }
+    String? expiresInString = await storage.read(key: 'expires') ?? '';
+    DateTime expiresIn = DateTime.parse(expiresInString);
+    String refreshToken = await storage.read(key: 'refresh_token') ?? '';
+    emit(Authorized(
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        expirationTime: expiresIn));
+  }
+
+  void logout() async {
+    await storage.delete(key: 'access_token');
+    await storage.delete(key: 'expires');
+    await storage.delete(key: 'refresh_token');
+    emit(const Unauthorized());
   }
 
   /// Fetches an access token from the reddit api using the given [code].
@@ -58,10 +82,14 @@ class AuthCubit extends Cubit<AuthState> {
         'expires_in': expiresIn,
         'refresh_token': refreshToken,
       } = jsonDecode(response.body);
+      var expires = DateTime.now().add(Duration(seconds: expiresIn));
+      await storage.write(key: 'access_token', value: accessToken);
+      await storage.write(key: 'expires', value: expires.toString());
+      await storage.write(key: 'refresh_token', value: refreshToken);
       emit(
         Authorized(
           accessToken: accessToken,
-          expirationTime: DateTime.now().add(Duration(seconds: expiresIn)),
+          expirationTime: expires,
           refreshToken: refreshToken,
         ),
       );
@@ -84,7 +112,12 @@ extension AuthStateX on AuthState {
       };
 }
 
-/// The default state when the app is booted up.
+/// Default state when the app is booting that triggers an auth check
+class Unknown extends AuthState {
+  const Unknown();
+}
+
+/// Logged out state when the user has no credentials.
 class Unauthorized extends AuthState {
   const Unauthorized();
 }
