@@ -10,40 +10,44 @@ import 'package:uuid/uuid.dart';
 class AuthCubit extends Cubit<AuthState> {
   static const clientId = secrets.clientId;
   static const redirectUri = 'https://www.reddit.com';
-  static const storage = FlutterSecureStorage();
+  static const _storage = FlutterSecureStorage();
 
-  AuthCubit() : super(const Unknown());
+  AuthCubit() : super(const Unauthorized());
+
+  /// Returns true if secure storage contains tokens required for login.
+  Future<bool> areTokensStoredAndValid() async {
+    final accessToken = await _storage.read(key: 'access_token');
+    final expires = await _storage.read(key: 'expires');
+    final refreshToken = await _storage.read(key: 'refresh_token');
+    return [accessToken, expires, refreshToken].every((s) => s != null);
+  }
+
+  /// Puts this cubit [Authorized] state if secure storage contains valid tokens.
+  void startAuthorizingViaStorage() async {
+    final accessToken = await _storage.read(key: 'access_token');
+    final expires = await _storage.read(key: 'expires');
+    final refreshToken = await _storage.read(key: 'refresh_token');
+    if (accessToken == null || expires == null || refreshToken == null) {
+      emit(const Unauthorized());
+      return;
+    }
+    emit(
+      Authorized(
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        expirationTime: DateTime.parse(expires),
+      ),
+    );
+  }
 
   /// Puts this cubit into the [Authorizing] state with a newly generated
   /// "state" unique identifier required for the reddit api.
   ///
   /// Returns the auth url for reddit's web view sign in process.
-  String startAuthorizing() {
+  String startAuthorizingViaWeb() {
     final state = Authorizing(stateId: const Uuid().v4());
     emit(state);
     return state.authUrl;
-  }
-
-  void checkExistingAuth() async {
-    String? accessToken = await storage.read(key: 'access_token');
-    if (accessToken == null) {
-      emit(const Unauthorized());
-      return;
-    }
-    String? expiresInString = await storage.read(key: 'expires') ?? '';
-    DateTime expiresIn = DateTime.parse(expiresInString);
-    String refreshToken = await storage.read(key: 'refresh_token') ?? '';
-    emit(Authorized(
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        expirationTime: expiresIn));
-  }
-
-  void logout() async {
-    await storage.delete(key: 'access_token');
-    await storage.delete(key: 'expires');
-    await storage.delete(key: 'refresh_token');
-    emit(const Unauthorized());
   }
 
   /// Fetches an access token from the reddit api using the given [code].
@@ -83,9 +87,9 @@ class AuthCubit extends Cubit<AuthState> {
         'refresh_token': refreshToken,
       } = jsonDecode(response.body);
       var expires = DateTime.now().add(Duration(seconds: expiresIn));
-      await storage.write(key: 'access_token', value: accessToken);
-      await storage.write(key: 'expires', value: expires.toString());
-      await storage.write(key: 'refresh_token', value: refreshToken);
+      await _storage.write(key: 'access_token', value: accessToken);
+      await _storage.write(key: 'expires', value: expires.toString());
+      await _storage.write(key: 'refresh_token', value: refreshToken);
       emit(
         Authorized(
           accessToken: accessToken,
@@ -94,6 +98,14 @@ class AuthCubit extends Cubit<AuthState> {
         ),
       );
     }
+  }
+
+  /// Signs the user out and deletes their stored tokens.
+  void logout() async {
+    await _storage.delete(key: 'access_token');
+    await _storage.delete(key: 'expires');
+    await _storage.delete(key: 'refresh_token');
+    emit(const Unauthorized());
   }
 }
 
@@ -110,11 +122,6 @@ extension AuthStateX on AuthState {
         (Authorized authorized) => authorized.accessToken,
         _ => null,
       };
-}
-
-/// Default state when the app is booting that triggers an auth check
-class Unknown extends AuthState {
-  const Unknown();
 }
 
 /// Logged out state when the user has no credentials.

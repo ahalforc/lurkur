@@ -1,15 +1,30 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lurkur/app/blocs/auth_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
+import 'package:lurkur/app/widgets/indicators.dart';
 import 'package:lurkur/app/widgets/layout.dart';
 import 'package:lurkur/app/widgets/popups.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class SignInPage extends StatelessWidget {
+  static const _welcomeBackMessages = [
+    'welcome back ;)',
+    'i missed your face',
+    'oh it\'s you, welcome back i guess',
+    'reddit again? really?',
+    'stop wasting your time here',
+    'gonna look at weird stuff again?',
+  ];
+
   const SignInPage({super.key});
+
+  String get _randomWelcomeBackMessage =>
+      _welcomeBackMessages[Random().nextInt(_welcomeBackMessages.length)];
 
   @override
   Widget build(BuildContext context) {
@@ -27,18 +42,41 @@ class SignInPage extends StatelessWidget {
                   duration: 1.seconds,
                   curve: Curves.elasticOut,
                 ),
-            OutlinedButton(
-              onPressed: () => _showSignInWebView(context),
-              child: const Text('sign in'),
-            )
-                .animate(
-                  delay: 1.seconds,
-                )
-                .scaleX(
-                  duration: 0.75.seconds,
-                  curve: Curves.elasticOut,
-                )
-                .fadeIn(),
+            FutureBuilder(
+              future: context.read<AuthCubit>().areTokensStoredAndValid(),
+              builder: (context, snapshot) {
+                final areValid = snapshot.data;
+                if (areValid == null) {
+                  return const LoadingIndicator();
+                } else if (areValid) {
+                  return Text(
+                    _randomWelcomeBackMessage,
+                    style: context.textTheme.bodyMedium,
+                  )
+                      .animate(
+                        delay: 1.seconds,
+                        onComplete: (_) => _signInViaStorage(context),
+                      )
+                      .scaleX(
+                        duration: 0.75.seconds,
+                        curve: Curves.elasticOut,
+                      );
+                } else {
+                  return OutlinedButton(
+                    onPressed: () => _showSignInWebView(context),
+                    child: const Text('sign in'),
+                  )
+                      .animate(
+                        delay: 1.seconds,
+                      )
+                      .scaleX(
+                        duration: 0.75.seconds,
+                        curve: Curves.elasticOut,
+                      )
+                      .fadeIn();
+                }
+              },
+            ),
           ],
         ),
       ),
@@ -65,6 +103,14 @@ class SignInPage extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _signInViaStorage(
+    BuildContext context,
+  ) async {
+    final authCubit = context.read<AuthCubit>();
+    await Future.delayed(1.seconds);
+    authCubit.startAuthorizingViaStorage();
   }
 }
 
@@ -106,7 +152,7 @@ class _AuthWebViewState extends State<_AuthWebView> {
   void _loadAuthUrl() {
     _controller.loadRequest(
       Uri.parse(
-        context.read<AuthCubit>().startAuthorizing(),
+        context.read<AuthCubit>().startAuthorizingViaWeb(),
       ),
     );
   }
