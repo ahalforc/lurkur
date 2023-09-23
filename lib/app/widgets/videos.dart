@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lurkur/app/blocs/preference_cubit.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 /// Represents a standard video.
 ///
@@ -64,7 +65,8 @@ class _VideoPlayerState extends State<_VideoPlayer> {
 
   late final _chewieController = ChewieController(
     videoPlayerController: _videoController,
-    autoPlay: widget.autoPlay,
+    autoPlay: false,
+    autoInitialize: true,
     looping: false,
     aspectRatio: widget.video.width / widget.video.height,
   );
@@ -80,9 +82,22 @@ class _VideoPlayerState extends State<_VideoPlayer> {
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: widget.video.width / widget.video.height,
-      child: Chewie(
-        controller: _chewieController,
+      child: VisibilityDetector(
+        key: ValueKey(widget.video),
+        onVisibilityChanged: _onVisibilityChanged,
+        child: Chewie(
+          controller: _chewieController,
+        ),
       ),
     );
+  }
+
+  void _onVisibilityChanged(VisibilityInfo info) {
+    if (!widget.autoPlay) return;
+    if (info.visibleFraction > 0.75) {
+      _chewieController.play();
+    } else {
+      _chewieController.pause();
+    }
   }
 }
