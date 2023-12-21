@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lurkur/app/blocs/auth_cubit.dart';
@@ -12,19 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class SignInPage extends StatelessWidget {
-  static const _welcomeBackMessages = [
-    'welcome back ;)',
-    'i missed your face',
-    'oh it\'s you, welcome back i guess',
-    'reddit again? really?',
-    'stop wasting your time here',
-    'gonna look at weird stuff again?',
-  ];
-
   const SignInPage({super.key});
-
-  String get _randomWelcomeBackMessage =>
-      _welcomeBackMessages[Random().nextInt(_welcomeBackMessages.length)];
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +36,7 @@ class SignInPage extends StatelessWidget {
                   return const LoadingIndicator();
                 } else if (areValid) {
                   return Text(
-                    _randomWelcomeBackMessage,
+                    '👋',
                     style: context.textTheme.bodyMedium,
                   )
                       .animate(

@@ -67,6 +67,7 @@ class _VideoPlayerState extends State<_VideoPlayer> {
     videoPlayerController: _videoController,
     autoPlay: false,
     autoInitialize: true,
+    showControlsOnInitialize: false,
     looping: false,
     aspectRatio: widget.video.width / widget.video.height,
   );
