@@ -12,6 +12,7 @@ class PreferenceCubit extends Cubit<PreferenceState> {
   static const _themeColor = 'theme color';
   static const _themeDensity = 'theme density';
   static const _autoPlayVideos = 'auto play videos';
+  static const _useHtmlForText = 'use html for text';
   static const _hiddenSubreddits = 'hidden subreddits';
 
   PreferenceCubit() : super(const PreferenceState.empty());
@@ -35,6 +36,7 @@ class PreferenceCubit extends Cubit<PreferenceState> {
         orElse: () => empty.themeDensity,
       ),
       autoPlayVideos: prefs.getBool(_autoPlayVideos) ?? empty.autoPlayVideos,
+      useHtmlForText: prefs.getBool(_useHtmlForText) ?? empty.useHtmlForText,
       hiddenSubreddits:
           prefs.getStringList(_hiddenSubreddits)?.toSet() ?? const {},
     );
@@ -72,6 +74,14 @@ class PreferenceCubit extends Cubit<PreferenceState> {
     (await _prefs).setBool(
       _autoPlayVideos,
       !state.autoPlayVideos,
+    );
+    emit(await _nextState);
+  }
+
+  void nextUseHtmlForText() async {
+    (await _prefs).setBool(
+      _useHtmlForText,
+      !state.useHtmlForText,
     );
     emit(await _nextState);
   }
@@ -117,6 +127,7 @@ final class PreferenceState {
     required this.themeColor,
     required this.themeDensity,
     required this.autoPlayVideos,
+    required this.useHtmlForText,
     required this.hiddenSubreddits,
   });
 
@@ -125,6 +136,7 @@ final class PreferenceState {
         themeColor = ThemeColor.blue,
         themeDensity = ThemeDensity.large,
         autoPlayVideos = true,
+        useHtmlForText = false,
         hiddenSubreddits = const {};
 
   final ThemeBrightness themeBrightness;
@@ -134,6 +146,8 @@ final class PreferenceState {
   final ThemeDensity themeDensity;
 
   final bool autoPlayVideos;
+
+  final bool useHtmlForText;
 
   final Set<String> hiddenSubreddits;
 }

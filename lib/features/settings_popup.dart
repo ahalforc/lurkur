@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/auth_cubit.dart';
 import 'package:lurkur/app/blocs/preference_cubit.dart';
@@ -38,6 +39,7 @@ class SettingsBody extends StatelessWidget {
         _ThemeDensity(),
         _HeaderTile(text: 'Media'),
         _AutoPlayVideos(),
+        _UseHtmlForText(),
         _HeaderTile(text: 'Session'),
         _HiddenSubreddits(),
         _ClearPreferences(),
@@ -127,6 +129,22 @@ class _AutoPlayVideos extends StatelessWidget {
       },
       title: const Text('Auto play videos'),
       onTap: () => context.read<PreferenceCubit>().nextAutoPlayVideos(),
+    );
+  }
+}
+
+class _UseHtmlForText extends StatelessWidget {
+  const _UseHtmlForText();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: switch (context.watch<PreferenceCubit>().state.useHtmlForText) {
+        true => const Icon(Icons.check).animate().shake(),
+        false => const Icon(Icons.cancel).animate().shake(),
+      },
+      title: const Text('Use HTML for text'),
+      onTap: () => context.read<PreferenceCubit>().nextUseHtmlForText(),
     );
   }
 }

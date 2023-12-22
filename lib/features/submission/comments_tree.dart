@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:lurkur/app/blocs/preference_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/tags.dart';
@@ -91,7 +93,9 @@ class CommentTile extends StatelessWidget {
             ],
           ),
         );
-        final subtitle = Text(comment.body);
+        final subtitle = context.watch<PreferenceCubit>().state.useHtmlForText
+            ? HtmlWidget(comment.bodyHtml)
+            : Text(comment.body);
         return comment.replies.isNotEmpty
             ? ExpansionTile(
                 title: title,

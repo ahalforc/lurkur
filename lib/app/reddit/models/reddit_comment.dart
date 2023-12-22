@@ -13,6 +13,8 @@ class RedditComment {
 
   String get body => _data['body'] ?? '';
 
+  String get bodyHtml => _data['body_html'] ?? '';
+
   bool get isEdited {
     final edited = _data['edited'];
     if (edited is bool) return edited;
