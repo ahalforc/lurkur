@@ -60,7 +60,7 @@ class SubscriptionsBody extends StatelessWidget {
                   border: OutlineInputBorder(),
                   hintText: 'Find a subreddit',
                 ),
-                onSubmitted: context.goToSubreddit,
+                onSubmitted: (s) => context.goToSubreddit(s.trim()),
               ),
             ),
             const _SubscriptionTile(
