@@ -23,6 +23,10 @@ class SubredditBab extends StatelessWidget {
             onPressed: () => showSettingsPopup(context),
             icon: const Icon(Icons.settings),
           ),
+          IconButton(
+            onPressed: () => _reload(context),
+            icon: const Icon(Icons.refresh),
+          ),
           Expanded(
             // todo Make this auto-scroll when there isn't enough visible space
             child: Text.rich(
@@ -66,6 +70,10 @@ class SubredditBab extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _reload(BuildContext context) {
+    context.read<SubredditCubit>().reload();
   }
 }
 
