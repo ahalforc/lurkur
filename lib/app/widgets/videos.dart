@@ -1,8 +1,7 @@
-import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:lurkur/app/blocs/preference_cubit.dart';
 import 'package:provider/provider.dart';
-import 'package:video_player/video_player.dart';
+import 'package:video_player/video_player.dart' as vp;
 import 'package:visibility_detector/visibility_detector.dart';
 
 /// Represents a standard video.
@@ -55,26 +54,29 @@ class _VideoPlayer extends StatefulWidget {
 }
 
 class _VideoPlayerState extends State<_VideoPlayer> {
-  late final _videoController = VideoPlayerController.networkUrl(
+  late final _videoController = vp.VideoPlayerController.networkUrl(
     Uri.parse(widget.video.url),
-    videoPlayerOptions: VideoPlayerOptions(
+    videoPlayerOptions: vp.VideoPlayerOptions(
       allowBackgroundPlayback: false,
       mixWithOthers: true,
     ),
   );
 
-  late final _chewieController = ChewieController(
-    videoPlayerController: _videoController,
-    autoPlay: false,
-    autoInitialize: true,
-    showControlsOnInitialize: false,
-    looping: false,
-    aspectRatio: widget.video.width / widget.video.height,
-  );
+  @override
+  void initState() {
+    super.initState();
+    _videoController.initialize().then((_) {
+      if (mounted) {
+        setState(() {});
+        if (widget.autoPlay) {
+          _videoController.play();
+        }
+      }
+    });
+  }
 
   @override
   void dispose() {
-    _chewieController.dispose();
     _videoController.dispose();
     super.dispose();
   }
@@ -86,8 +88,23 @@ class _VideoPlayerState extends State<_VideoPlayer> {
       child: VisibilityDetector(
         key: ValueKey(widget.video),
         onVisibilityChanged: _onVisibilityChanged,
-        child: Chewie(
-          controller: _chewieController,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: vp.VideoPlayer(_videoController),
+            ),
+            GestureDetector(
+              onTap: () {
+                if (!_videoController.value.isInitialized) return;
+                _videoController.value.isPlaying
+                    ? _videoController.pause()
+                    : _videoController.play();
+              },
+              child: Container(
+                color: Colors.transparent,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -96,9 +113,9 @@ class _VideoPlayerState extends State<_VideoPlayer> {
   void _onVisibilityChanged(VisibilityInfo info) {
     if (!widget.autoPlay) return;
     if (info.visibleFraction > 0.75) {
-      _chewieController.play();
+      _videoController.play();
     } else {
-      _chewieController.pause();
+      _videoController.pause();
     }
   }
 }
