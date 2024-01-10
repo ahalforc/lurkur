@@ -137,8 +137,7 @@ class Authorizing extends AuthState {
 
   final String stateId;
 
-  String get authUrl =>
-      'https://www.reddit.com/api/v1/authorize.compact?$queryParams';
+  String get authUrl => 'https://old.reddit.com/api/v1/authorize?$queryParams';
 
   String get queryParams => [
         'client_id=${AuthCubit.clientId}',

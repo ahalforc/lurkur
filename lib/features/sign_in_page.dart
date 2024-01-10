@@ -144,6 +144,8 @@ class _AuthWebViewState extends State<_AuthWebView> {
   }
 
   NavigationDecision _checkForAuthRedirect(NavigationRequest request) {
+    print('JOEY - redirect ${request.url}');
+
     if (request.url.startsWith(AuthCubit.redirectUri)) {
       if (Uri.parse(request.url).queryParameters
           case {'state': String stateId, 'code': String code}) {
