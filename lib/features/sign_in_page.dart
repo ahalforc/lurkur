@@ -4,7 +4,7 @@ import 'package:lurkur/app/blocs/auth_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/widgets/indicators.dart';
-import 'package:lurkur/app/widgets/layout.dart';
+import 'package:lurkur/app/widgets/liquid/liquid_box.dart';
 import 'package:lurkur/app/widgets/popups.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -16,18 +16,13 @@ class SignInPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Align(
-        alignment: const FractionalOffset(0.5, 0.45),
-        child: SeparatedColumn(
+        alignment: Alignment.bottomCenter,
+        child: Column(
           mainAxisSize: MainAxisSize.min,
-          space: ThemeCubit.medium2Padding,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'lurkur',
-              style: context.textTheme.displayLarge,
-            ).animate().scaleX(
-                  duration: 1.seconds,
-                  curve: Curves.elasticOut,
-                ),
+            const _Title().animate().fadeIn(),
+            const _Subtitle().animate().fadeIn(delay: 0.25.seconds),
             FutureBuilder(
               future: context.read<AuthCubit>().areTokensStoredAndValid(),
               builder: (context, snapshot) {
@@ -63,6 +58,11 @@ class SignInPage extends StatelessWidget {
                 }
               },
             ),
+            const SizedBox(height: 64),
+            const LiquidBox(
+              width: double.infinity,
+              height: 64,
+            ),
           ],
         ),
       ),
@@ -97,6 +97,30 @@ class SignInPage extends StatelessWidget {
     final authCubit = context.read<AuthCubit>();
     await Future.delayed(1.seconds);
     authCubit.startAuthorizingViaStorage();
+  }
+}
+
+class _Title extends StatelessWidget {
+  const _Title();
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      'lurkur',
+      style: context.textTheme.displayLarge,
+    );
+  }
+}
+
+class _Subtitle extends StatelessWidget {
+  const _Subtitle();
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      'Reddit, but simpler.',
+      style: context.textTheme.titleMedium,
+    );
   }
 }
 
@@ -144,8 +168,6 @@ class _AuthWebViewState extends State<_AuthWebView> {
   }
 
   NavigationDecision _checkForAuthRedirect(NavigationRequest request) {
-    print('JOEY - redirect ${request.url}');
-
     if (request.url.startsWith(AuthCubit.redirectUri)) {
       if (Uri.parse(request.url).queryParameters
           case {'state': String stateId, 'code': String code}) {
