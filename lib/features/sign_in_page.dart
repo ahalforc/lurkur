@@ -4,7 +4,6 @@ import 'package:lurkur/app/blocs/auth_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/widgets/indicators.dart';
-import 'package:lurkur/app/widgets/liquid/liquid_box.dart';
 import 'package:lurkur/app/widgets/popups.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -16,13 +15,13 @@ class SignInPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Align(
-        alignment: Alignment.bottomCenter,
+        alignment: Alignment.center,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const _Title().animate().fadeIn(),
             const _Subtitle().animate().fadeIn(delay: 0.25.seconds),
+            const SizedBox(height: 8),
             FutureBuilder(
               future: context.read<AuthCubit>().areTokensStoredAndValid(),
               builder: (context, snapshot) {
@@ -57,11 +56,6 @@ class SignInPage extends StatelessWidget {
                       .fadeIn();
                 }
               },
-            ),
-            const SizedBox(height: 64),
-            const LiquidBox(
-              width: double.infinity,
-              height: 64,
             ),
           ],
         ),
