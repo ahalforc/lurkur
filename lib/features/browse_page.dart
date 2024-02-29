@@ -5,30 +5,24 @@ import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/indicators.dart';
-import 'package:lurkur/app/widgets/popups.dart';
 
-/// Shows a popup that lets the user select a subreddit from their subscriptions.
-///
-/// For more information, please see [SubscriptionsBody].
-void showSubscriptionsPopup(BuildContext context) {
-  showPrimaryPopup(
-    context: context,
-    expand: true,
-    builder: (context, scrollController) {
-      return SubscriptionsBody(
-        scrollController: scrollController,
-      );
-    },
-  );
+class BrowsePage extends StatelessWidget {
+  const BrowsePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('browse'),
+        centerTitle: false,
+      ),
+      body: const _SubscriptionsList(),
+    );
+  }
 }
 
-class SubscriptionsBody extends StatelessWidget {
-  const SubscriptionsBody({
-    super.key,
-    required this.scrollController,
-  });
-
-  final ScrollController scrollController;
+class _SubscriptionsList extends StatelessWidget {
+  const _SubscriptionsList();
 
   @override
   Widget build(BuildContext context) {
@@ -45,23 +39,14 @@ class SubscriptionsBody extends StatelessWidget {
           return const LoadingIndicator();
         }
         return ListView(
-          controller: scrollController,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(
+            const Padding(
+              padding: EdgeInsets.only(
                 left: ThemeCubit.medium2Padding,
                 right: ThemeCubit.medium2Padding,
                 bottom: ThemeCubit.medium2Padding,
               ),
-              child: TextField(
-                keyboardType: TextInputType.text,
-                textInputAction: TextInputAction.go,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Find a subreddit',
-                ),
-                onSubmitted: (s) => context.goToSubreddit(s.trim()),
-              ),
+              child: _SubredditTextField(),
             ),
             const _SubscriptionTile(
               title: 'home',
@@ -78,6 +63,23 @@ class SubscriptionsBody extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+class _SubredditTextField extends StatelessWidget {
+  const _SubredditTextField();
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      keyboardType: TextInputType.text,
+      textInputAction: TextInputAction.go,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: 'Find a subreddit',
+      ),
+      onSubmitted: (s) => context.goToSubreddit(s.trim()),
     );
   }
 }
@@ -123,11 +125,9 @@ class _SubscriptionTile extends StatelessWidget {
 
 extension on BuildContext {
   void goToSubreddit(String? subredditName) {
-    read<RouterCubit>()
-      ..goBack(this)
-      ..goToSubreddit(
-        this,
-        subredditName: subredditName,
-      );
+    read<RouterCubit>().pushSubreddit(
+      this,
+      subredditName: subredditName,
+    );
   }
 }

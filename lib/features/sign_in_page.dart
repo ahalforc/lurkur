@@ -15,7 +15,7 @@ class SignInPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Align(
-        alignment: Alignment.center,
+        alignment: const FractionalOffset(0.5, 0.45),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -42,7 +42,7 @@ class SignInPage extends StatelessWidget {
                         curve: Curves.elasticOut,
                       );
                 } else {
-                  return OutlinedButton(
+                  return FilledButton(
                     onPressed: () => _showSignInWebView(context),
                     child: const Text('sign in'),
                   )

@@ -89,13 +89,16 @@ class _ThemeColor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // This is temporarily disabled while I figure out the app theme.
     return ListTile(
       leading: Icon(
-        Icons.color_lens,
-        color: context.colorScheme.primary,
+        // Icons.color_lens,
+        // color: context.colorScheme.primary,
+        Icons.cancel_rounded,
+        color: context.colorScheme.error,
       ),
       title: const Text('Color'),
-      onTap: () => context.read<PreferenceCubit>().nextThemeColor(),
+      // onTap: () => context.read<PreferenceCubit>().nextThemeColor(),
     );
   }
 }

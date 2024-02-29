@@ -26,7 +26,7 @@ class InfoTile extends StatelessWidget {
   void _openSubreddit(BuildContext context) {
     context.read<RouterCubit>()
       ..goBack(context)
-      ..goToSubreddit(
+      ..pushSubreddit(
         context,
         subredditName: submission.subreddit,
       );

@@ -40,6 +40,14 @@ class ThemeCubit extends Cubit<ThemeState> {
 
 /// Provides access to theme objects using customizable inputs.
 final class ThemeState {
+  static const black = Color(0xFF000000);
+  static const night = Color(0xFF141414);
+  static const white = Color(0xFFFFFFFF);
+  static const linen = Color(0xFFFFEDE1);
+  static const jasper = Color(0xFFBF4E30);
+  static const cerulean = Color(0xFF37718E);
+  static const resedaGreen = Color(0xFF646F4B);
+
   const ThemeState({
     required this.color,
   });
@@ -65,19 +73,34 @@ final class ThemeState {
 
   ThemeData get darkTheme => _makeThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: color,
+          seedColor: cerulean,
           brightness: Brightness.dark,
         ).copyWith(
-          primary: color,
-          onPrimary: Colors.white,
-          error: Colors.red,
-          onError: Colors.white,
-          background: Colors.black,
-          onBackground: Colors.white,
-          surface: const Color(0xFF101010),
-          onSurface: Colors.white,
-          outline: color,
+          primary: cerulean,
+          onPrimary: white,
+          secondary: resedaGreen,
+          onSecondary: white,
+          tertiary: jasper,
+          onTertiary: white,
+          background: night,
+          onBackground: white,
+          surface: black,
+          onSurface: white,
         ),
+        // colorScheme: ColorScheme.fromSeed(
+        //   seedColor: color,
+        //   brightness: Brightness.dark,
+        // ).copyWith(
+        //   primary: color,
+        //   onPrimary: Colors.white,
+        //   error: Colors.red,
+        //   onError: Colors.white,
+        //   background: Colors.black,
+        //   onBackground: Colors.white,
+        //   surface: const Color(0xFF101010),
+        //   onSurface: Colors.white,
+        //   outline: color,
+        // ),
       );
 
   ThemeData _makeThemeData({
@@ -87,7 +110,10 @@ final class ThemeState {
         useMaterial3: true,
         colorScheme: colorScheme,
         textTheme: _makeTextTheme(),
+        appBarTheme: _makeAppBarTheme(colorScheme),
+        bottomNavigationBarTheme: _makeBottomNavigationBarTheme(colorScheme),
         cardTheme: _makeCardTheme(),
+        filledButtonTheme: _makeFilledButtonTheme(),
         outlinedButtonTheme: _makeOutlinedButtonTheme(),
         textButtonTheme: _makeTextButtonTheme(),
       );
@@ -118,9 +144,37 @@ final class ThemeState {
     );
   }
 
+  AppBarTheme _makeAppBarTheme(ColorScheme colorScheme) {
+    return AppBarTheme(
+      backgroundColor: colorScheme.background,
+    );
+  }
+
+  BottomNavigationBarThemeData _makeBottomNavigationBarTheme(
+    ColorScheme colorScheme,
+  ) {
+    return BottomNavigationBarThemeData(
+      backgroundColor: colorScheme.background,
+      unselectedItemColor: colorScheme.onBackground,
+      selectedItemColor: colorScheme.primary,
+    );
+  }
+
   CardTheme _makeCardTheme() {
     return const CardTheme(
       margin: EdgeInsets.zero,
+    );
+  }
+
+  FilledButtonThemeData _makeFilledButtonTheme() {
+    return FilledButtonThemeData(
+      style: ButtonStyle(
+        shape: MaterialStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      ),
     );
   }
 

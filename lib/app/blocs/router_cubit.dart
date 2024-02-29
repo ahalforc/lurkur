@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lurkur/app/widgets/shells.dart';
+import 'package:lurkur/features/browse_page.dart';
+import 'package:lurkur/features/settings_popup.dart';
 import 'package:lurkur/features/sign_in_page.dart';
 import 'package:lurkur/features/subreddit_page.dart';
 
 /// Manages the routes available in the app.
 class RouterCubit extends Cubit<RouteState> {
   static const signIn = '/';
+  static const home = '/home';
+  static const popular = '/popular';
+  static const browse = '/browse';
   static const subreddit = '/subreddit';
 
   static const subredditQueryParameter = 'subreddit';
@@ -21,11 +27,11 @@ class RouterCubit extends Cubit<RouteState> {
     emit(AuthorizedRoutes());
   }
 
-  void goToSubreddit(
+  void pushSubreddit(
     BuildContext context, {
     String? subredditName,
   }) =>
-      context.goNamed(
+      (state.routerConfig as GoRouter).pushNamed(
         subreddit,
         queryParameters: {
           if (subredditName != null) subredditQueryParameter: subredditName,
@@ -79,16 +85,61 @@ class UnauthorizedRoutes extends RouteState {
 class AuthorizedRoutes extends RouteState {
   @override
   final RouterConfig<Object> routerConfig = GoRouter(
-    initialLocation: RouterCubit.subreddit,
+    initialLocation: RouterCubit.home,
     routes: [
-      GoRoute(
-        // todo maybe using the same str for path and name is a bad idea
-        path: RouterCubit.subreddit,
-        name: RouterCubit.subreddit,
-        builder: (context, state) => SubredditPage(
-          subreddit:
-              state.uri.queryParameters[RouterCubit.subredditQueryParameter],
-        ),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, child) {
+          return NavigationShell(
+            selectedIndex: child.currentIndex,
+            onSelectIndex: (index) {
+              if (index == 3) {
+                showSettingsPopup(context);
+              } else {
+                child.goBranch(index);
+              }
+            },
+            child: child,
+          );
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RouterCubit.home,
+                name: RouterCubit.home,
+                builder: (context, state) => const SubredditPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RouterCubit.popular,
+                name: RouterCubit.popular,
+                builder: (context, state) => const SubredditPage(
+                  subreddit: 'popular',
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RouterCubit.browse,
+                name: RouterCubit.browse,
+                builder: (context, state) => const BrowsePage(),
+              ),
+              GoRoute(
+                path: RouterCubit.subreddit,
+                name: RouterCubit.subreddit,
+                builder: (context, state) => SubredditPage(
+                  subreddit: state
+                      .uri.queryParameters[RouterCubit.subredditQueryParameter],
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     ],
   );
