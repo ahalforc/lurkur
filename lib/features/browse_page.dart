@@ -5,18 +5,24 @@ import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/indicators.dart';
+import 'package:lurkur/app/widgets/layout.dart';
 
 class BrowsePage extends StatelessWidget {
   const BrowsePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('browse'),
-        centerTitle: false,
+    return const Scaffold(
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            title: Text('browse'),
+            centerTitle: false,
+            floating: true,
+          ),
+          _SubscriptionsList(),
+        ],
       ),
-      body: const _SubscriptionsList(),
     );
   }
 }
@@ -32,13 +38,17 @@ class _SubscriptionsList extends StatelessWidget {
       ),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return const LoadingFailedIndicator();
+          return const SliverFullScreen(
+            child: LoadingFailedIndicator(),
+          );
         }
         final data = snapshot.data;
         if (data == null) {
-          return const LoadingIndicator();
+          return const SliverFullScreen(
+            child: LoadingIndicator(),
+          );
         }
-        return ListView(
+        return SliverList.list(
           children: [
             const Padding(
               padding: EdgeInsets.only(
@@ -47,13 +57,6 @@ class _SubscriptionsList extends StatelessWidget {
                 bottom: ThemeCubit.medium2Padding,
               ),
               child: _SubredditTextField(),
-            ),
-            const _SubscriptionTile(
-              title: 'home',
-            ),
-            const _SubscriptionTile(
-              title: 'popular',
-              subredditName: 'popular',
             ),
             for (final subscription in data
               ..sort((a, b) => a.displayName

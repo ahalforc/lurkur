@@ -17,15 +17,20 @@ class GalleryTile extends StatelessWidget {
       leading: const Icon(Icons.image),
       title: const Text('gallery'),
       children: [
-        Gallery(
-          images: [
-            for (final image in gallery.images)
-              UrlImage(
-                url: image.url,
-                width: image.width,
-                height: image.height,
-              ),
-          ],
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height / 2,
+          ),
+          child: Gallery(
+            images: [
+              for (final image in gallery.images)
+                UrlImage(
+                  url: image.url,
+                  width: image.width,
+                  height: image.height,
+                ),
+            ],
+          ),
         ),
       ],
     );

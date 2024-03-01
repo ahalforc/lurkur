@@ -50,3 +50,30 @@ class SliverFullScreen extends StatelessWidget {
     );
   }
 }
+
+class HorizontalFancyScrollView extends StatelessWidget {
+  const HorizontalFancyScrollView(
+      {super.key, required this.itemCount, required this.itemBuilder});
+
+  final int itemCount;
+  final Widget Function(BuildContext, int index) itemBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        maxHeight: 300,
+      ),
+      child: CustomScrollView(
+        scrollDirection: Axis.horizontal,
+        slivers: [
+          SliverList.separated(
+            itemCount: itemCount,
+            itemBuilder: itemBuilder,
+            separatorBuilder: (_, __) => const SizedBox(width: 16),
+          )
+        ],
+      ),
+    );
+  }
+}

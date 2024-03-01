@@ -4,51 +4,76 @@ import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/images.dart';
 import 'package:lurkur/app/widgets/layout.dart';
-import 'package:lurkur/app/widgets/list_tiles.dart';
 import 'package:lurkur/app/widgets/tags.dart';
 import 'package:lurkur/app/widgets/videos.dart';
 import 'package:lurkur/features/submission_more_actions_popup.dart';
 import 'package:lurkur/features/submission_popup.dart';
 import 'package:provider/provider.dart';
 
-class SubmissionTile extends StatelessWidget {
-  const SubmissionTile({
+class SubmissionCard extends StatelessWidget {
+  const SubmissionCard({
     super.key,
     required this.submission,
+    this.compact = false,
   });
 
   final RedditSubmission submission;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
-    final density = context.themeDensity;
+    final width =
+        (MediaQuery.of(context).size.width - 32) * (compact ? 0.8 : 1);
+    final height =
+        (MediaQuery.of(context).size.height / 2) * (compact ? 0.8 : 1);
+
     return Provider.value(
       value: submission,
-      child: BodyListTile(
-          onPress: () => showSubmissionPopup(
-                context,
-                submission: submission,
-              ),
-          onLongPress: () => showSubmissionMoreActionsPopup(
-                context,
-                submission: submission,
-              ),
-          contentAlignment: switch (density) {
-            ThemeDensity.small => CrossAxisAlignment.center,
-            _ => CrossAxisAlignment.start,
-          },
-          leading: const _Leading(),
-          title: const _Title(),
-          subtitles: const [
-            SizedBox(height: ThemeCubit.small2Padding),
-            _Info(),
-            SizedBox(height: ThemeCubit.small3Padding),
-            _Context(),
-          ],
-          body: switch (density) {
-            ThemeDensity.large => const _Preview(),
-            _ => null,
-          }),
+      child: SizedBox(
+        width: width,
+        height: height,
+        child: Card.outlined(
+          child: InkWell(
+            onTap: () => showSubmissionPopup(
+              context,
+              submission: submission,
+            ),
+            onLongPress: () => showSubmissionMoreActionsPopup(
+              context,
+              submission: submission,
+            ),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _Context(),
+                            SizedBox(height: 4),
+                            _Title(),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      _Info(),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: _Preview(),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -83,8 +108,8 @@ class _Info extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final submission = context.submission;
-    return Wrap(
-      spacing: ThemeCubit.medium1Padding,
+    return SeparatedColumn(
+      space: ThemeCubit.medium1Padding,
       children: [
         if (submission.isNsfw) const NsfwTag(),
         if (submission.isPinned) const PinnedTag(),
@@ -137,17 +162,6 @@ class _Context extends StatelessWidget {
   }
 }
 
-class _Leading extends StatelessWidget {
-  const _Leading();
-
-  @override
-  Widget build(BuildContext context) {
-    return Thumbnail(
-      url: context.submission.thumbnailUrl,
-    );
-  }
-}
-
 class _Preview extends StatelessWidget {
   const _Preview();
 
@@ -157,40 +171,45 @@ class _Preview extends StatelessWidget {
     final self = submission.self;
     final video = submission.video;
     final gallery = submission.gallery;
-    return SeparatedColumn(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      space: ThemeCubit.medium1Padding,
+    return Column(
       children: [
         if (self != null)
-          Padding(
-            padding: const EdgeInsets.all(ThemeCubit.medium1Padding).copyWith(
-              top: 0,
-            ),
-            child: Text(
-              self.text,
-              maxLines: 20,
-              overflow: TextOverflow.fade,
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(ThemeCubit.medium1Padding).copyWith(
+                top: 0,
+              ),
+              child: Text(
+                self.text,
+                maxLines: 20,
+                overflow: TextOverflow.fade,
+              ),
             ),
           ),
         if (video != null)
-          VideoPlayer(
-            video: UrlVideo(
-              url: video.url,
-              width: video.width,
-              height: video.height,
+          Expanded(
+            flex: 4,
+            child: VideoPlayer(
+              video: UrlVideo(
+                url: video.url,
+                width: video.width,
+                height: video.height,
+              ),
             ),
           )
         else if (gallery != null)
-          Gallery(
-            images: [
-              for (final image in gallery.images)
-                UrlImage(
-                  url: image.url,
-                  width: image.width,
-                  height: image.height,
-                ),
-            ],
+          Expanded(
+            flex: 4,
+            child: Gallery(
+              images: [
+                for (final image in gallery.images)
+                  UrlImage(
+                    url: image.url,
+                    width: image.width,
+                    height: image.height,
+                  ),
+              ],
+            ),
           ),
       ],
     );

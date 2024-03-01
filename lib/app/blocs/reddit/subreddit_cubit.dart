@@ -39,6 +39,10 @@ class SubredditCubit extends Cubit<SubredditState> {
   }) async {
     emit(Loading(subreddit: subreddit, sortOption: sortOption));
     try {
+      final subredditInfo = await _redditApi.getSubredditInfo(
+        accessToken: _accessToken,
+        subreddit: subreddit,
+      );
       final (after, submissions) = await _redditApi.getSubmissions(
         accessToken: _accessToken,
         subreddit: subreddit,
@@ -49,6 +53,7 @@ class SubredditCubit extends Cubit<SubredditState> {
       );
       emit(
         Loaded(
+          headerImageUrl: subredditInfo?.headerImageUrl,
           subreddit: subreddit,
           sortOption: sortOption,
           after: after,
@@ -83,6 +88,7 @@ class SubredditCubit extends Cubit<SubredditState> {
 
     emit(
       Loaded(
+        headerImageUrl: state.headerImageUrl,
         subreddit: state.subreddit,
         sortOption: state.sortOption,
         after: state.after,
@@ -103,6 +109,7 @@ class SubredditCubit extends Cubit<SubredditState> {
       );
       emit(
         Loaded(
+          headerImageUrl: state.headerImageUrl,
           subreddit: state.subreddit,
           sortOption: state.sortOption,
           after: after,
@@ -117,6 +124,7 @@ class SubredditCubit extends Cubit<SubredditState> {
     } catch (_) {
       emit(
         Loaded(
+          headerImageUrl: state.headerImageUrl,
           subreddit: state.subreddit,
           sortOption: state.sortOption,
           after: state.after,
@@ -181,6 +189,11 @@ sealed class SubredditState {
 
   final String? subreddit;
   final SortOption sortOption;
+
+  bool get isMultiSubreddit => {
+        null,
+        'popular',
+      }.contains(subreddit);
 }
 
 class Loading extends SubredditState {
@@ -201,12 +214,14 @@ class Loaded extends SubredditState {
   const Loaded({
     required super.subreddit,
     required super.sortOption,
+    required this.headerImageUrl,
     required this.after,
     required this.submissions,
     required this.isLoadingMore,
     required this.didLoadingMoreFail,
   });
 
+  final String? headerImageUrl;
   final String after;
   final List<RedditSubmission> submissions;
   final bool isLoadingMore;

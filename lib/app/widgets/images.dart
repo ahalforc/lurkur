@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
@@ -57,64 +55,51 @@ class Gallery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      // Use the smallest aspect ratio in the gallery.
-      // (The smaller the aspect ratio, the taller it is.)
-      aspectRatio: images.fold(
-        images.first.width / images.first.height,
-        (aspectRatio, image) => min(
-          aspectRatio,
-          image.width / image.height,
-        ),
-      ),
-      child: PageView(
-        children: [
-          for (final image in images)
-            Stack(
-              children: [
-                Positioned.fill(
-                  child: GestureDetector(
-                    onTap: () {
-                      context
-                          .read<RouterCubit>()
-                          .pushDismissibleFullScreenWidget(
-                            context,
-                            child: FullScreenImage(url: image.url),
-                          );
-                    },
-                    child: Image.network(
-                      image.url,
-                      fit: BoxFit.contain,
-                      gaplessPlayback: true,
-                    ),
+    return PageView(
+      children: [
+        for (final image in images)
+          Stack(
+            children: [
+              Positioned.fill(
+                child: GestureDetector(
+                  onTap: () {
+                    context.read<RouterCubit>().pushDismissibleFullScreenWidget(
+                          context,
+                          child: FullScreenImage(url: image.url),
+                        );
+                  },
+                  child: Image.network(
+                    image.url,
+                    fit: BoxFit.contain,
+                    gaplessPlayback: true,
                   ),
                 ),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.all(ThemeCubit.medium1Padding),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        color: context.colorScheme.background,
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: ThemeCubit.medium1Padding,
-                        vertical: ThemeCubit.small1Padding,
-                      ),
-                      child: Text(
-                        '${images.indexOf(image) + 1} / ${images.length}',
-                        style: context.textTheme.labelMedium?.copyWith(
-                          color: context.colorScheme.onBackground,
-                        ),
+              ),
+              Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(ThemeCubit.medium1Padding),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: context.colorScheme.background,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: ThemeCubit.medium1Padding,
+                      vertical: ThemeCubit.small1Padding,
+                    ),
+                    child: Text(
+                      '${images.indexOf(image) + 1} / ${images.length}',
+                      style: context.textTheme.labelMedium?.copyWith(
+                        color: context.colorScheme.onBackground,
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
-        ],
-      ),
+              ),
+            ],
+          ),
+      ],
     );
   }
 }

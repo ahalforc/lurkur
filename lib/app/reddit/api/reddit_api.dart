@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:lurkur/app/reddit/models/reddit_subreddit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
 
 class RedditApi {
@@ -23,6 +24,24 @@ class RedditApi {
       }
     }
     return result;
+  }
+
+  Future<RedditSubreddit?> getSubredditInfo({
+    required String accessToken,
+    required String? subreddit,
+  }) async {
+    if (subreddit == null || subreddit == 'popular') return null;
+
+    final url = StringBuffer(_baseOauthUrl);
+    url.write('/r/$subreddit/about');
+    url.write('?raw_json=1');
+
+    final data = await _get(
+      accessToken,
+      url.toString(),
+    );
+
+    return RedditSubreddit(data: data);
   }
 
   /// Returns a record of

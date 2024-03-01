@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/auth_cubit.dart';
 import 'package:lurkur/app/blocs/preference_cubit.dart';
@@ -11,7 +12,7 @@ import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/indicators.dart';
 import 'package:lurkur/app/widgets/layout.dart';
 import 'package:lurkur/app/widgets/popups.dart';
-import 'package:lurkur/features/subreddit/submission_tile.dart';
+import 'package:lurkur/features/subreddit/submission_card.dart';
 
 /// Renders a subreddit's posts and scaffold content for interacting with the
 /// subreddit and the rest of the app.
@@ -51,15 +52,28 @@ class _SubredditView extends StatelessWidget {
     final hiddenSubreddits =
         context.watch<PreferenceCubit>().state.hiddenSubreddits;
 
-    final submissions = switch (state) {
-      (Loaded loaded) => loaded.submissions.where(
-          (submission) => !hiddenSubreddits.contains(submission.subreddit),
-        ),
-      _ => const <RedditSubmission>[],
+    final stickiedPosts = <RedditSubmission>[];
+    final otherPosts = <RedditSubmission>[];
+
+    if (state is Loaded) {
+      for (final post in state.submissions) {
+        if (hiddenSubreddits.contains(post.subreddit)) {
+          continue;
+        } else if (post.isStickied && !state.isMultiSubreddit) {
+          stickiedPosts.add(post);
+        } else {
+          otherPosts.add(post);
+        }
+      }
     }
-        .toList();
 
     final screenSize = MediaQuery.of(context).size;
+    final horizontalPadding = EdgeInsets.symmetric(
+      horizontal: max(
+        (screenSize.width - ThemeCubit.maxBodyWidth) / 2,
+        16,
+      ),
+    );
 
     return Scaffold(
       body: NotificationListener<ScrollNotification>(
@@ -67,65 +81,79 @@ class _SubredditView extends StatelessWidget {
           context,
           notification,
         ),
-        child: RefreshIndicator(
-          onRefresh: () async => _reload(context),
-          child: CustomScrollView(
-            cacheExtent: screenSize.height,
-            slivers: [
-              SliverAppBar(
+        child: CustomScrollView(
+          cacheExtent: screenSize.height,
+          slivers: [
+            SliverAppBar(
+              floating: true,
+              expandedHeight: 100,
+              stretch: true,
+              flexibleSpace: FlexibleSpaceBar(
                 title: Text(state.subreddit ?? 'home'),
                 centerTitle: false,
-                actions: [
-                  IconButton(
-                    onPressed: () => _showSortOptionsPopup(context),
-                    icon: const Icon(Icons.filter_list_rounded),
-                  ),
-                ],
+                background: switch (state) {
+                  Loaded loaded
+                      when loaded.headerImageUrl != null &&
+                          loaded.headerImageUrl!.isNotEmpty =>
+                    Image.network(
+                      state.headerImageUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(),
+                    ).animate().fade(
+                          begin: 0,
+                          end: 0.5,
+                        ),
+                  _ => null,
+                },
               ),
-              switch (state) {
-                (Loading _) => const SliverFillRemaining(
-                    child: LoadingIndicator(),
-                  ),
-                (LoadingFailed _) => const SliverFillRemaining(
-                    child: LoadingFailedIndicator(),
-                  ),
-                (Loaded _) => SliverSafeArea(
-                    left: false,
-                    right: false,
-                    bottom: false,
-                    sliver: SliverPadding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: max(
-                          (screenSize.width - ThemeCubit.maxBodyWidth) / 2,
-                          0.0,
-                        ),
-                      ),
-                      sliver: SliverList.separated(
-                        itemCount: submissions.length,
-                        itemBuilder: (context, index) {
-                          return SubmissionTile(
-                            key: ValueKey(submissions[index].id),
-                            submission: submissions[index],
-                          );
-                        },
-                        separatorBuilder: (context, _) => Container(
-                          color: context.colorScheme.outline.withOpacity(0.15),
-                          height: ThemeCubit.medium1Padding,
-                        ),
-                      ),
-                    ),
-                  ),
-              },
-              if (state is Loaded && state.isLoadingMore)
-                const SliverFullScreen(
-                  child: LoadingIndicator(),
+              actions: [
+                IconButton(
+                  onPressed: () => _showSortOptionsPopup(context),
+                  icon: const Icon(Icons.filter_list_rounded),
                 ),
-              if (state is Loaded && state.didLoadingMoreFail)
-                const SliverFullScreen(
-                  child: LoadingFailedIndicator(),
+                IconButton(
+                  onPressed: () => _refresh(context),
+                  icon: const Icon(Icons.refresh_rounded),
                 ),
+              ],
+            ),
+            if (state is Loading)
+              const SliverFillRemaining(
+                child: LoadingIndicator(),
+              ),
+            if (state is LoadingFailed)
+              const SliverFillRemaining(
+                child: LoadingFailedIndicator(),
+              ),
+            if (state is Loaded) ...[
+              const SliverToBoxAdapter(child: SizedBox(height: 16)),
+              if (stickiedPosts.isNotEmpty) ...[
+                const _Header(text: 'stickied'),
+                SliverPadding(
+                  padding: horizontalPadding,
+                  sliver: _StickiedPostsGroup(
+                    submissions: stickiedPosts,
+                  ),
+                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 16)),
+              ],
+              const _Header(text: 'posts'),
+              SliverPadding(
+                padding: horizontalPadding,
+                sliver: _PostsList(
+                  submissions: otherPosts,
+                ),
+              ),
             ],
-          ),
+            if (state is Loaded && state.isLoadingMore)
+              const SliverFullScreen(
+                child: LoadingIndicator(),
+              ),
+            if (state is Loaded && state.didLoadingMoreFail)
+              const SliverFullScreen(
+                child: LoadingFailedIndicator(),
+              ),
+          ],
         ),
       ),
     );
@@ -155,7 +183,7 @@ class _SubredditView extends StatelessWidget {
     );
   }
 
-  void _reload(BuildContext context) {
+  void _refresh(BuildContext context) {
     context.read<SubredditCubit>().reload();
   }
 
@@ -167,6 +195,77 @@ class _SubredditView extends StatelessWidget {
       context.read<SubredditCubit>().loadMore();
     }
     return false; // let the notification continue bubbling
+  }
+}
+
+class _StickiedPostsGroup extends StatelessWidget {
+  const _StickiedPostsGroup({
+    required this.submissions,
+  });
+
+  final List<RedditSubmission> submissions;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: HorizontalFancyScrollView(
+        itemCount: submissions.length,
+        itemBuilder: (context, i) {
+          return SubmissionCard(
+            submission: submissions[i],
+            compact: true,
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _PostsList extends StatelessWidget {
+  const _PostsList({
+    required this.submissions,
+  });
+
+  final List<RedditSubmission> submissions;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverList.separated(
+      itemCount: submissions.length,
+      itemBuilder: (context, index) {
+        return SubmissionCard(
+          key: ValueKey(submissions[index].id),
+          submission: submissions[index],
+        );
+      },
+      separatorBuilder: (context, _) => const SizedBox(
+        height: ThemeCubit.medium2Padding,
+      ),
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  const _Header({
+    required this.text,
+  });
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.only(
+          left: 16,
+          bottom: 8,
+        ),
+        child: Text(
+          text,
+          style: context.textTheme.titleLarge,
+        ),
+      ),
+    );
   }
 }
 

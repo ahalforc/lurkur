@@ -59,48 +59,33 @@ final class ThemeState {
           seedColor: color,
           brightness: Brightness.light,
         ).copyWith(
-          primary: color,
+          primary: Colors.white,
           onPrimary: Colors.black,
           error: Colors.red,
           onError: Colors.white,
           background: Colors.white,
           onBackground: Colors.black,
-          surface: const Color(0xFFFAFAFA),
-          onSecondary: Colors.black,
+          surface: Colors.white,
+          onSurface: Colors.black,
           outline: color,
         ),
       );
 
   ThemeData get darkTheme => _makeThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: cerulean,
+          seedColor: color,
           brightness: Brightness.dark,
         ).copyWith(
-          primary: cerulean,
-          onPrimary: white,
-          secondary: resedaGreen,
-          onSecondary: white,
-          tertiary: jasper,
-          onTertiary: white,
-          background: night,
-          onBackground: white,
-          surface: black,
-          onSurface: white,
+          primary: Colors.black,
+          onPrimary: Colors.white,
+          error: Colors.red,
+          onError: Colors.white,
+          background: Colors.black,
+          onBackground: Colors.white,
+          surface: Colors.black,
+          onSurface: Colors.white,
+          outline: color,
         ),
-        // colorScheme: ColorScheme.fromSeed(
-        //   seedColor: color,
-        //   brightness: Brightness.dark,
-        // ).copyWith(
-        //   primary: color,
-        //   onPrimary: Colors.white,
-        //   error: Colors.red,
-        //   onError: Colors.white,
-        //   background: Colors.black,
-        //   onBackground: Colors.white,
-        //   surface: const Color(0xFF101010),
-        //   onSurface: Colors.white,
-        //   outline: color,
-        // ),
       );
 
   ThemeData _makeThemeData({
@@ -112,8 +97,9 @@ final class ThemeState {
         textTheme: _makeTextTheme(),
         appBarTheme: _makeAppBarTheme(colorScheme),
         bottomNavigationBarTheme: _makeBottomNavigationBarTheme(colorScheme),
-        cardTheme: _makeCardTheme(),
+        cardTheme: _makeCardTheme(colorScheme),
         filledButtonTheme: _makeFilledButtonTheme(),
+        applyElevationOverlayColor: false,
         outlinedButtonTheme: _makeOutlinedButtonTheme(),
         textButtonTheme: _makeTextButtonTheme(),
       );
@@ -147,6 +133,8 @@ final class ThemeState {
   AppBarTheme _makeAppBarTheme(ColorScheme colorScheme) {
     return AppBarTheme(
       backgroundColor: colorScheme.background,
+      foregroundColor: colorScheme.onBackground,
+      surfaceTintColor: colorScheme.background,
     );
   }
 
@@ -156,13 +144,21 @@ final class ThemeState {
     return BottomNavigationBarThemeData(
       backgroundColor: colorScheme.background,
       unselectedItemColor: colorScheme.onBackground,
-      selectedItemColor: colorScheme.primary,
+      selectedItemColor: colorScheme.onBackground,
     );
   }
 
-  CardTheme _makeCardTheme() {
-    return const CardTheme(
+  CardTheme _makeCardTheme(ColorScheme colorScheme) {
+    return CardTheme(
+      clipBehavior: Clip.hardEdge,
       margin: EdgeInsets.zero,
+      surfaceTintColor: Colors.black,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: colorScheme.onSurface,
+        ),
+      ),
     );
   }
 
