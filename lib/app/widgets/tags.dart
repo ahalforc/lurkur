@@ -142,9 +142,6 @@ class _Tag extends StatelessWidget {
         horizontal: ThemeCubit.medium1Padding,
         vertical: ThemeCubit.small2Padding,
       ),
-      constraints: const BoxConstraints(
-        minWidth: 64,
-      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

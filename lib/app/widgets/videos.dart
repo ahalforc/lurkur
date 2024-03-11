@@ -110,6 +110,28 @@ class _VideoPlayerState extends State<_VideoPlayer> {
                 ),
               ),
             ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: ValueListenableBuilder(
+                valueListenable: _videoController,
+                builder: (context, value, widget) {
+                  return AnimatedSwitcher(
+                    duration: 0.25.seconds,
+                    transitionBuilder: (child, animation) => ScaleTransition(
+                      scale: animation,
+                      child: child,
+                    ),
+                    child: Icon(
+                      value.isPlaying
+                          ? Icons.pause_rounded
+                          : Icons.play_arrow_rounded,
+                      key: ValueKey('video_player_icon_${value.isPlaying}'),
+                      color: context.colorScheme.primary,
+                    ),
+                  );
+                },
+              ),
+            ),
             _Glass(
               onTap: _playOrPause,
               onSeek: _seekBy,
@@ -163,12 +185,12 @@ class _ProgressBar extends StatelessWidget {
             if (0 < progress)
               AnimatedContainer(
                 duration: 0.2.seconds,
-                height: 4,
+                height: 2,
                 width: (constraints.maxWidth * progress).clamp(
                   0,
                   constraints.maxWidth - 1,
                 ),
-                color: context.colorScheme.outline,
+                color: context.colorScheme.primary,
                 padding: EdgeInsets.zero,
                 margin: EdgeInsets.zero,
               )

@@ -56,7 +56,7 @@ final class ThemeState {
 
   ThemeData get lightTheme => _makeThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: color,
+          seedColor: cerulean,
           brightness: Brightness.light,
         ).copyWith(
           primary: Colors.white,
@@ -73,11 +73,9 @@ final class ThemeState {
 
   ThemeData get darkTheme => _makeThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: color,
+          seedColor: cerulean,
           brightness: Brightness.dark,
         ).copyWith(
-          primary: Colors.black,
-          onPrimary: Colors.white,
           error: Colors.red,
           onError: Colors.white,
           background: Colors.black,
@@ -97,6 +95,7 @@ final class ThemeState {
         textTheme: _makeTextTheme(),
         appBarTheme: _makeAppBarTheme(colorScheme),
         bottomNavigationBarTheme: _makeBottomNavigationBarTheme(colorScheme),
+        bottomSheetTheme: _makeBottomSheetTheme(colorScheme),
         cardTheme: _makeCardTheme(colorScheme),
         filledButtonTheme: _makeFilledButtonTheme(),
         applyElevationOverlayColor: false,
@@ -148,16 +147,28 @@ final class ThemeState {
     );
   }
 
+  BottomSheetThemeData _makeBottomSheetTheme(ColorScheme colorScheme) {
+    return BottomSheetThemeData(
+      backgroundColor: colorScheme.background,
+      surfaceTintColor: colorScheme.background,
+      dragHandleColor: colorScheme.onBackground,
+      dragHandleSize: const Size(48, 4),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(16),
+        ),
+      ),
+    );
+  }
+
   CardTheme _makeCardTheme(ColorScheme colorScheme) {
     return CardTheme(
       clipBehavior: Clip.hardEdge,
       margin: EdgeInsets.zero,
-      surfaceTintColor: Colors.black,
+      color: colorScheme.primaryContainer.withOpacity(0.3),
+      surfaceTintColor: null,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-        side: BorderSide(
-          color: colorScheme.onSurface,
-        ),
+        borderRadius: BorderRadius.circular(16),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
+import 'package:lurkur/app/widgets/layout.dart';
 
 /// Represents a standard image.
 ///
@@ -55,7 +56,7 @@ class Gallery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageView(
+    return FancyPageView(
       children: [
         for (final image in images)
           Stack(
@@ -72,28 +73,6 @@ class Gallery extends StatelessWidget {
                     image.url,
                     fit: BoxFit.contain,
                     gaplessPlayback: true,
-                  ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: const EdgeInsets.all(ThemeCubit.medium1Padding),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      color: context.colorScheme.background,
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: ThemeCubit.medium1Padding,
-                      vertical: ThemeCubit.small1Padding,
-                    ),
-                    child: Text(
-                      '${images.indexOf(image) + 1} / ${images.length}',
-                      style: context.textTheme.labelMedium?.copyWith(
-                        color: context.colorScheme.onBackground,
-                      ),
-                    ),
                   ),
                 ),
               ),

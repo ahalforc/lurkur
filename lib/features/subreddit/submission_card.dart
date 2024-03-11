@@ -18,6 +18,7 @@ class SubmissionCard extends StatelessWidget {
   });
 
   final RedditSubmission submission;
+
   final bool compact;
 
   @override
@@ -32,7 +33,7 @@ class SubmissionCard extends StatelessWidget {
       child: SizedBox(
         width: width,
         height: height,
-        child: Card.outlined(
+        child: Card.filled(
           child: InkWell(
             onTap: () => showSubmissionPopup(
               context,
@@ -42,32 +43,16 @@ class SubmissionCard extends StatelessWidget {
               context,
               submission: submission,
             ),
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Stack(
               children: [
-                Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _Context(),
-                            SizedBox(height: 4),
-                            _Title(),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 4),
-                      _Info(),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: _Preview(),
+                _Background(),
+                Column(
+                  children: [
+                    _Header(),
+                    Expanded(
+                      child: _Preview(),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -82,6 +67,62 @@ extension on BuildContext {
   ThemeDensity get themeDensity => watch<PreferenceCubit>().state.themeDensity;
 
   RedditSubmission get submission => watch<RedditSubmission>();
+}
+
+class _Background extends StatelessWidget {
+  const _Background();
+
+  @override
+  Widget build(BuildContext context) {
+    final gallery = context.submission.gallery;
+    return gallery == null
+        ? Container()
+        : Positioned.fill(
+            child: Opacity(
+              opacity: 0.1,
+              child: Image.network(
+                gallery.images.first.url,
+                fit: BoxFit.cover,
+              ),
+            ),
+          );
+  }
+}
+
+class _Header extends StatelessWidget {
+  const _Header();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _Context(),
+                    SizedBox(height: 4),
+                    _Title(),
+                  ],
+                ),
+              ),
+              SizedBox(width: 4),
+            ],
+          ),
+          SizedBox(height: 4),
+          _Info(),
+        ],
+      ),
+    );
+  }
 }
 
 class _Title extends StatelessWidget {
@@ -108,8 +149,8 @@ class _Info extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final submission = context.submission;
-    return SeparatedColumn(
-      space: ThemeCubit.medium1Padding,
+    return SeparatedRow(
+      space: 4,
       children: [
         if (submission.isNsfw) const NsfwTag(),
         if (submission.isPinned) const PinnedTag(),
@@ -176,7 +217,7 @@ class _Preview extends StatelessWidget {
         if (self != null)
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(ThemeCubit.medium1Padding).copyWith(
+              padding: const EdgeInsets.all(ThemeCubit.medium2Padding).copyWith(
                 top: 0,
               ),
               child: Text(
@@ -189,26 +230,30 @@ class _Preview extends StatelessWidget {
         if (video != null)
           Expanded(
             flex: 4,
-            child: VideoPlayer(
-              video: UrlVideo(
-                url: video.url,
-                width: video.width,
-                height: video.height,
+            child: Center(
+              child: VideoPlayer(
+                video: UrlVideo(
+                  url: video.url,
+                  width: video.width,
+                  height: video.height,
+                ),
               ),
             ),
           )
         else if (gallery != null)
           Expanded(
             flex: 4,
-            child: Gallery(
-              images: [
-                for (final image in gallery.images)
-                  UrlImage(
-                    url: image.url,
-                    width: image.width,
-                    height: image.height,
-                  ),
-              ],
+            child: Center(
+              child: Gallery(
+                images: [
+                  for (final image in gallery.images)
+                    UrlImage(
+                      url: image.url,
+                      width: image.width,
+                      height: image.height,
+                    ),
+                ],
+              ),
             ),
           ),
       ],

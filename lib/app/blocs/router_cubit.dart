@@ -7,6 +7,10 @@ import 'package:lurkur/features/settings_popup.dart';
 import 'package:lurkur/features/sign_in_page.dart';
 import 'package:lurkur/features/subreddit_page.dart';
 
+extension BuildContextXRouter on BuildContext {
+  RouterCubit get watchRouter => watch<RouterCubit>();
+}
+
 /// Manages the routes available in the app.
 class RouterCubit extends Cubit<RouteState> {
   static const signIn = '/';
@@ -18,6 +22,8 @@ class RouterCubit extends Cubit<RouteState> {
   static const subredditQueryParameter = 'subreddit';
 
   RouterCubit() : super(UnauthorizedRoutes());
+
+  bool get canPop => (state.routerConfig as GoRouter).canPop();
 
   void showUnauthorizedRoutes() {
     emit(UnauthorizedRoutes());
