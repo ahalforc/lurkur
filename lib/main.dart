@@ -74,7 +74,7 @@ class _Providers extends StatelessWidget {
           create: (_) => RouterCubit(),
         ),
         BlocProvider(
-          create: (_) => AuthCubit(),
+          create: (_) => AuthCubit()..initialize(),
         ),
         BlocProvider(
           create: (_) => PreferenceCubit()..init(),

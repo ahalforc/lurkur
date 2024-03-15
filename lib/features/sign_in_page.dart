@@ -20,43 +20,58 @@ class SignInPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const _Title().animate().fadeIn(),
-            const _Subtitle().animate().fadeIn(delay: 0.25.seconds),
-            const SizedBox(height: 8),
-            FutureBuilder(
-              future: context.read<AuthCubit>().areTokensStoredAndValid(),
-              builder: (context, snapshot) {
-                final areValid = snapshot.data;
-                if (areValid == null) {
-                  return const LoadingIndicator();
-                } else if (areValid) {
-                  return Text(
-                    '👋',
-                    style: context.textTheme.bodyMedium,
-                  )
-                      .animate(
-                        delay: 1.seconds,
-                        onComplete: (_) => _signInViaStorage(context),
-                      )
-                      .scaleX(
-                        duration: 0.75.seconds,
-                        curve: Curves.elasticOut,
-                      );
-                } else {
-                  return FilledButton(
-                    onPressed: () => _showSignInWebView(context),
-                    child: const Text('sign in'),
-                  )
-                      .animate(
-                        delay: 1.seconds,
-                      )
-                      .scaleX(
-                        duration: 0.75.seconds,
-                        curve: Curves.elasticOut,
-                      )
-                      .fadeIn();
-                }
-              },
-            ),
+            const _Subtitle().animate().fadeIn(delay: 0.15.seconds),
+            const SizedBox(height: 16),
+            switch (context.watchAuthCubit.state) {
+              CheckingAuthorization _ => const LoadingIndicator(),
+              _ => FilledButton(
+                  onPressed: () => _showSignInWebView(context),
+                  child: const Text('sign in'),
+                )
+                    .animate(
+                      delay: 0.3.seconds,
+                    )
+                    .scaleX(
+                      duration: 1.seconds,
+                      curve: Curves.elasticOut,
+                    )
+                    .fadeIn(),
+            },
+            // FutureBuilder(
+            //   future: context.read<AuthCubit>().areTokensStoredAndValid(),
+            //   builder: (context, snapshot) {
+            //     final areValid = snapshot.data;
+            //     if (areValid == null) {
+            //       return const LoadingIndicator();
+            //     } else if (areValid) {
+            //       return Text(
+            //         'welcome back',
+            //         style: context.textTheme.bodyMedium,
+            //       )
+            //           .animate(
+            //             delay: 0.5.seconds,
+            //             onComplete: (_) => _signInViaStorage(context),
+            //           )
+            //           .scaleX(
+            //             duration: 0.75.seconds,
+            //             curve: Curves.elasticOut,
+            //           );
+            //     } else {
+            //       return FilledButton(
+            //         onPressed: () => _showSignInWebView(context),
+            //         child: const Text('sign in'),
+            //       )
+            //           .animate(
+            //             delay: 0.3.seconds,
+            //           )
+            //           .scaleX(
+            //             duration: 1.seconds,
+            //             curve: Curves.elasticOut,
+            //           )
+            //           .fadeIn();
+            //     }
+            //   },
+            // ),
           ],
         ),
       ),
@@ -78,19 +93,11 @@ class SignInPage extends StatelessWidget {
             // Do a little delay to make the experience nicer.
             routerCubit.goBack(context);
             await Future.delayed(400.milliseconds);
-            authCubit.authorize(stateId: stateId, code: code);
+            authCubit.completeAuthorizingViaWeb(stateId, code);
           },
         );
       },
     );
-  }
-
-  void _signInViaStorage(
-    BuildContext context,
-  ) async {
-    final authCubit = context.read<AuthCubit>();
-    await Future.delayed(1.seconds);
-    authCubit.startAuthorizingViaStorage();
   }
 }
 

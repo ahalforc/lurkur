@@ -16,9 +16,7 @@ class BrowseCubit extends RedditCubit<BrowseState> {
   BrowseCubit({
     required super.authCubit,
     required super.redditApi,
-  }) : super(
-          const Loading(),
-        );
+  }) : super(const Loading());
 
   /// Loads the user's subscribed subreddits.
   void load() async {
