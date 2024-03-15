@@ -58,16 +58,18 @@ final class ThemeState {
         colorScheme: ColorScheme.fromSeed(
           seedColor: cerulean,
           brightness: Brightness.light,
-        ).copyWith(
-          primary: Colors.white,
-          onPrimary: Colors.black,
+          primary: cerulean,
+          onPrimary: Colors.white,
+          secondary: jasper,
+          onSecondary: Colors.white,
+          tertiary: resedaGreen,
+          onTertiary: Colors.white,
           error: Colors.red,
           onError: Colors.white,
           background: Colors.white,
           onBackground: Colors.black,
           surface: Colors.white,
           onSurface: Colors.black,
-          outline: color,
         ),
       );
 
@@ -75,14 +77,18 @@ final class ThemeState {
         colorScheme: ColorScheme.fromSeed(
           seedColor: cerulean,
           brightness: Brightness.dark,
-        ).copyWith(
+          primary: cerulean,
+          onPrimary: Colors.white,
+          secondary: jasper,
+          onSecondary: Colors.white,
+          tertiary: resedaGreen,
+          onTertiary: Colors.white,
           error: Colors.red,
           onError: Colors.white,
           background: Colors.black,
           onBackground: Colors.white,
           surface: Colors.black,
           onSurface: Colors.white,
-          outline: color,
         ),
       );
 
@@ -93,12 +99,13 @@ final class ThemeState {
         useMaterial3: true,
         colorScheme: colorScheme,
         textTheme: _makeTextTheme(),
+        applyElevationOverlayColor: false,
         appBarTheme: _makeAppBarTheme(colorScheme),
         bottomNavigationBarTheme: _makeBottomNavigationBarTheme(colorScheme),
         bottomSheetTheme: _makeBottomSheetTheme(colorScheme),
         cardTheme: _makeCardTheme(colorScheme),
+        inputDecorationTheme: _makeInputDecorationTheme(),
         filledButtonTheme: _makeFilledButtonTheme(),
-        applyElevationOverlayColor: false,
         outlinedButtonTheme: _makeOutlinedButtonTheme(),
         textButtonTheme: _makeTextButtonTheme(),
       );
@@ -165,9 +172,17 @@ final class ThemeState {
     return CardTheme(
       clipBehavior: Clip.hardEdge,
       margin: EdgeInsets.zero,
-      color: colorScheme.primaryContainer.withOpacity(0.3),
+      color: colorScheme.primaryContainer,
       surfaceTintColor: null,
       shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+    );
+  }
+
+  InputDecorationTheme _makeInputDecorationTheme() {
+    return InputDecorationTheme(
+      border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
       ),
     );

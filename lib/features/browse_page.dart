@@ -94,9 +94,9 @@ class _SubredditTextField extends StatelessWidget {
       keyboardType: TextInputType.text,
       textInputAction: TextInputAction.go,
       decoration: const InputDecoration(
-        border: OutlineInputBorder(),
         hintText: 'Find a subreddit',
       ),
+      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       onSubmitted: (s) => context.goToSubreddit(s.trim()),
     );
   }

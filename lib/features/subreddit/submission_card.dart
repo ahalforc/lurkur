@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lurkur/app/blocs/preference_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
@@ -43,7 +44,7 @@ class SubmissionCard extends StatelessWidget {
               context,
               submission: submission,
             ),
-            child: Stack(
+            child: const Stack(
               children: [
                 _Background(),
                 Column(
@@ -78,11 +79,14 @@ class _Background extends StatelessWidget {
     return gallery == null
         ? Container()
         : Positioned.fill(
-            child: Opacity(
-              opacity: 0.1,
-              child: Image.network(
-                gallery.images.first.url,
-                fit: BoxFit.cover,
+            child: Container(
+              color: context.colorScheme.background.withOpacity(0.4),
+              child: Opacity(
+                opacity: 0.1,
+                child: Image.network(
+                  gallery.images.first.url,
+                  fit: BoxFit.cover,
+                ).animate().fadeIn(),
               ),
             ),
           );
