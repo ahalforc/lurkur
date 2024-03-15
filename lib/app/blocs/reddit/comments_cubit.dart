@@ -1,52 +1,35 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lurkur/app/blocs/auth_cubit.dart';
+import 'package:lurkur/app/blocs/reddit/core/reddit_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
 
-/// Allows loading a subreddit.
+/// Allows loading a subreddit's comments.
 ///
-/// See [SubredditState] for the various meta states.
-class CommentsCubit extends Cubit<CommentsState> {
+/// See [CommentsState] for the various meta states.
+class CommentsCubit extends RedditCubit<CommentsState> {
   CommentsCubit({
-    required AuthCubit authCubit,
-    required RedditApi redditApi,
-  })  : _authCubit = authCubit,
-        _redditApi = redditApi,
-        super(const Loading());
+    required super.authCubit,
+    required super.redditApi,
+  }) : super(const Loading());
 
-  final AuthCubit _authCubit;
-  final RedditApi _redditApi;
-
+  /// Loads the subreddit's comments.
   void load({
     required String subreddit,
     required String submissionId,
   }) async {
-    final accessToken = _authCubit.state.accessToken;
-    if (accessToken == null) {
-      emit(const LoadingFailed());
-      return;
-    }
-
     emit(const Loading());
-
     try {
-      final comments = await _redditApi.getComments(
+      final comments = await redditApi.getComments(
         accessToken: accessToken,
         subreddit: subreddit,
         submissionId: submissionId,
       );
       if (isClosed) return;
-      emit(
-        Loaded(
-          comments: comments,
-        ),
-      );
+      emit(Loaded(comments: comments));
     } catch (_) {
       emit(const LoadingFailed());
     }
   }
 }
 
-/// Represents the meta state of a comments request.
 sealed class CommentsState {
   const CommentsState();
 }

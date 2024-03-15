@@ -1,7 +1,21 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
+
+extension BuildContextXPadding on BuildContext {
+  EdgeInsets get responsiveHorizontalPadding {
+    final screenSize = MediaQuery.of(this).size;
+    return EdgeInsets.symmetric(
+      horizontal: max(
+        (screenSize.width - ThemeCubit.maxBodyWidth) / 2,
+        16,
+      ),
+    );
+  }
+}
 
 /// It's like a [Column], but you can separate its entries.
 class SeparatedColumn extends StatelessWidget {

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +7,7 @@ import 'package:lurkur/app/blocs/reddit/subreddit_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
+import 'package:lurkur/app/widgets/app_bars.dart';
 import 'package:lurkur/app/widgets/indicators.dart';
 import 'package:lurkur/app/widgets/layout.dart';
 import 'package:lurkur/app/widgets/popups.dart';
@@ -68,12 +67,7 @@ class _SubredditView extends StatelessWidget {
     }
 
     final screenSize = MediaQuery.of(context).size;
-    final horizontalPadding = EdgeInsets.symmetric(
-      horizontal: max(
-        (screenSize.width - ThemeCubit.maxBodyWidth) / 2,
-        16,
-      ),
-    );
+    final horizontalPadding = context.responsiveHorizontalPadding;
 
     return Scaffold(
       body: NotificationListener<ScrollNotification>(
@@ -84,28 +78,22 @@ class _SubredditView extends StatelessWidget {
         child: CustomScrollView(
           cacheExtent: screenSize.height,
           slivers: [
-            SliverAppBar(
-              floating: true,
-              expandedHeight: 100,
-              stretch: true,
-              flexibleSpace: FlexibleSpaceBar(
-                title: Text(state.subreddit ?? 'home'),
-                centerTitle: false,
-                background: switch (state) {
-                  Loaded loaded
-                      when loaded.headerImageUrl != null &&
-                          loaded.headerImageUrl!.isNotEmpty =>
-                    Image.network(
-                      state.headerImageUrl!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(),
-                    ).animate().fade(
-                          begin: 0,
-                          end: 0.5,
-                        ),
-                  _ => null,
-                },
-              ),
+            LargeSliverAppBar(
+              title: state.subreddit ?? 'home',
+              background: switch (state) {
+                Loaded loaded
+                    when loaded.headerImageUrl != null &&
+                        loaded.headerImageUrl!.isNotEmpty =>
+                  Image.network(
+                    state.headerImageUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(),
+                  ).animate().fade(
+                        begin: 0,
+                        end: 0.5,
+                      ),
+                _ => null,
+              },
               actions: [
                 IconButton(
                   onPressed: () => _showSortOptionsPopup(context),

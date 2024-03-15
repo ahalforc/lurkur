@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/auth_cubit.dart';
+import 'package:lurkur/app/blocs/reddit/browse_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
-import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
+import 'package:lurkur/app/widgets/app_bars.dart';
 import 'package:lurkur/app/widgets/indicators.dart';
 import 'package:lurkur/app/widgets/layout.dart';
 
@@ -12,15 +13,46 @@ class BrowsePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return BlocProvider(
+      create: (_) => BrowseCubit(
+        authCubit: context.read<AuthCubit>(),
+        redditApi: context.read<RedditApi>(),
+      )..load(),
+      child: const _BrowseView(),
+    );
+  }
+}
+
+class _BrowseView extends StatelessWidget {
+  const _BrowseView();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
       body: CustomScrollView(
         slivers: [
-          SliverAppBar(
-            title: Text('browse'),
-            centerTitle: false,
-            floating: true,
+          LargeSliverAppBar(
+            title: 'browse',
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.refresh_rounded),
+                onPressed: () => context.browseCubit.reload(),
+              ),
+            ],
           ),
-          _SubscriptionsList(),
+          SliverPadding(
+            padding: context.responsiveHorizontalPadding.copyWith(
+              top: 16,
+              bottom: 16,
+            ),
+            sliver: const SliverToBoxAdapter(
+              child: _SubredditTextField(),
+            ),
+          ),
+          SliverPadding(
+            padding: context.responsiveHorizontalPadding,
+            sliver: const _SubscriptionsList(),
+          ),
         ],
       ),
     );
@@ -32,41 +64,24 @@ class _SubscriptionsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<RedditSubscription>>(
-      future: RedditApi().getSubscriptions(
-        accessToken: context.read<AuthCubit>().state.accessToken!,
-      ),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return const SliverFullScreen(
-            child: LoadingFailedIndicator(),
-          );
-        }
-        final data = snapshot.data;
-        if (data == null) {
-          return const SliverFullScreen(
-            child: LoadingIndicator(),
-          );
-        }
-        return SliverList.list(
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(
-                left: ThemeCubit.medium2Padding,
-                right: ThemeCubit.medium2Padding,
-                bottom: ThemeCubit.medium2Padding,
-              ),
-              child: _SubredditTextField(),
-            ),
-            for (final subscription in data
-              ..sort((a, b) => a.displayName
-                  .toLowerCase()
-                  .compareTo(b.displayName.toLowerCase())))
-              _SubscriptionTile.fromSubscription(subscription),
-          ],
-        );
-      },
-    );
+    final state = context.watchBrowseCubit.state;
+    return switch (state) {
+      Loading _ => const SliverFullScreen(
+          child: LoadingIndicator(),
+        ),
+      LoadingFailed _ => const SliverFullScreen(
+          child: LoadingFailedIndicator(),
+        ),
+      Loaded loaded => SliverList.separated(
+          itemCount: loaded.subscriptions.length,
+          itemBuilder: (context, index) {
+            return _SubscriptionCard.fromSubscription(
+              loaded.subscriptions[index],
+            );
+          },
+          separatorBuilder: (_, __) => const SizedBox(height: 16),
+        ),
+    };
   }
 }
 
@@ -87,17 +102,17 @@ class _SubredditTextField extends StatelessWidget {
   }
 }
 
-class _SubscriptionTile extends StatelessWidget {
-  const _SubscriptionTile({
+class _SubscriptionCard extends StatelessWidget {
+  const _SubscriptionCard({
     required this.title,
     this.subtitle,
     this.subredditName,
   });
 
-  factory _SubscriptionTile.fromSubscription(
+  factory _SubscriptionCard.fromSubscription(
     RedditSubscription subscription,
   ) {
-    return _SubscriptionTile(
+    return _SubscriptionCard(
       title: subscription.displayName,
       subtitle: subscription.title,
       subredditName: subscription.displayName,
@@ -110,19 +125,21 @@ class _SubscriptionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-        title: Text(title),
-        subtitle: subtitle != null
-            ? Opacity(
-                opacity: 0.5,
-                child: Text(subtitle!),
-              )
-            : null,
-        trailing: const Opacity(
-          opacity: 0.5,
-          child: Icon(Icons.chevron_right),
-        ),
-        onTap: () => context.goToSubreddit(subredditName));
+    return Card(
+      child: ListTile(
+          title: Text(title),
+          subtitle: subtitle != null
+              ? Opacity(
+                  opacity: 0.5,
+                  child: Text(subtitle!),
+                )
+              : null,
+          trailing: const Opacity(
+            opacity: 0.5,
+            child: Icon(Icons.chevron_right),
+          ),
+          onTap: () => context.goToSubreddit(subredditName)),
+    );
   }
 }
 

@@ -1,5 +1,4 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lurkur/app/blocs/auth_cubit.dart';
+import 'package:lurkur/app/blocs/reddit/core/reddit_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
 
 /// Allows loading a subreddit and managing its ever-scrolling listing.
@@ -8,29 +7,16 @@ import 'package:lurkur/app/reddit/reddit.dart';
 /// See [load] for kicking off an initial load.
 /// See [loadMore] for kicking off subsequent loads.
 /// See [setSortOption] re-loading using the new sort option.
-class SubredditCubit extends Cubit<SubredditState> {
+class SubredditCubit extends RedditCubit<SubredditState> {
   SubredditCubit({
-    required AuthCubit authCubit,
-    required RedditApi redditApi,
-  })  : _authCubit = authCubit,
-        _redditApi = redditApi,
-        super(
+    required super.authCubit,
+    required super.redditApi,
+  }) : super(
           Loading(
             subreddit: null,
             sortOption: SortOption.values.first,
           ),
         );
-
-  final AuthCubit _authCubit;
-  final RedditApi _redditApi;
-
-  String get _accessToken {
-    final accessToken = _authCubit.state.accessToken;
-    if (accessToken == null) {
-      throw Exception('invalid access token');
-    }
-    return accessToken;
-  }
 
   /// Loads the given [subreddit] (or "home" if null).
   void load(
@@ -39,12 +25,12 @@ class SubredditCubit extends Cubit<SubredditState> {
   }) async {
     emit(Loading(subreddit: subreddit, sortOption: sortOption));
     try {
-      final subredditInfo = await _redditApi.getSubredditInfo(
-        accessToken: _accessToken,
+      final subredditInfo = await redditApi.getSubredditInfo(
+        accessToken: accessToken,
         subreddit: subreddit,
       );
-      final (after, submissions) = await _redditApi.getSubmissions(
-        accessToken: _accessToken,
+      final (after, submissions) = await redditApi.getSubmissions(
+        accessToken: accessToken,
         subreddit: subreddit,
         sort: sortOption.toEndpointSortKey(),
         after: null,
@@ -99,8 +85,8 @@ class SubredditCubit extends Cubit<SubredditState> {
     );
 
     try {
-      final (after, submissions) = await _redditApi.getSubmissions(
-        accessToken: _accessToken,
+      final (after, submissions) = await redditApi.getSubmissions(
+        accessToken: accessToken,
         subreddit: state.subreddit,
         sort: state.sortOption.toEndpointSortKey(),
         after: state.after,
