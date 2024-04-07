@@ -50,12 +50,38 @@ There, add this line of code: `const clientId = '';` and populate the empty stri
 
 ### Keeping the app on your device
 
-todo
+#### Android
+
+Building the `.apk` and installing it should be good enough.
+
+(I don't own an Android device so your experience may vary.)
+
+#### iOS
+
+Apple likes to make things incredibly difficult.
+
+Apple devices require a valid provisioning profile. The standard, unpaid Apple developer account only allows 7 days.
+To get around this, you'll either have to pay Apple for a developer account, or deal with reinstalling the app every week.
+
+For those that are choosing to reinstall the app every week, simply run:
+
+`flutter run --release`
+
+(You may need to open XCode go to Runner -> Singing & Capabilities and check "Automatically manage signing" and select a team.)
+
+If you need to refresh your provisioning profile for any reason, you can delete the old one and generate a new one.
+The old one can be found at `/Library/MobileDevice/Provisinoing Profiles`.
+
+For example
+`rm /Users/myusername/Library/MobileDevice/Provisioning\ Profiles/<some random hash>.mobileprovision`
 
 ## Contributing
 
 This project isn't currently accepting changes to its main branch.
-If you'd like to make a change, please fork this repo and do it yourself.
+I mainly use this project as a way to experiment with Flutter.
 
-Ideas are welcome, but unlikely to be implemented.
-Remember, the idea is that this project is lightweight.
+Forking is welcome, though. If there's anything you'd personally like in a Reddit app,
+feel free to fork this repo and implement it yourself.
+
+If you think you have a particularly good idea, feel free to post an issue,
+but just know that I'm unlikely to implement it.
