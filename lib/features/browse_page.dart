@@ -85,19 +85,35 @@ class _SubscriptionsList extends StatelessWidget {
   }
 }
 
-class _SubredditTextField extends StatelessWidget {
+class _SubredditTextField extends StatefulWidget {
   const _SubredditTextField();
+
+  @override
+  State<_SubredditTextField> createState() => _SubredditTextFieldState();
+}
+
+class _SubredditTextFieldState extends State<_SubredditTextField> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: _controller,
       keyboardType: TextInputType.text,
       textInputAction: TextInputAction.go,
       decoration: const InputDecoration(
-        hintText: 'Find a subreddit',
+        hintText: 'Go to a subreddit',
       ),
-      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-      onSubmitted: (s) => context.goToSubreddit(s.trim()),
+      onSubmitted: (s) {
+        context.goToSubreddit(s.trim());
+        _controller.clear();
+      },
     );
   }
 }
