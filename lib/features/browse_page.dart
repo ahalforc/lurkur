@@ -33,6 +33,7 @@ class _BrowseView extends StatelessWidget {
         slivers: [
           LargeSliverAppBar(
             title: 'browse',
+            automaticallyImplyLeading: false,
             actions: [
               IconButton(
                 icon: const Icon(Icons.refresh_rounded),
@@ -75,11 +76,11 @@ class _SubscriptionsList extends StatelessWidget {
       Loaded loaded => SliverList.separated(
           itemCount: loaded.subscriptions.length,
           itemBuilder: (context, index) {
-            return _SubscriptionCard.fromSubscription(
+            return _SubscriptionTile.fromSubscription(
               loaded.subscriptions[index],
             );
           },
-          separatorBuilder: (_, __) => const SizedBox(height: 16),
+          separatorBuilder: (_, __) => const Divider(),
         ),
     };
   }
@@ -118,17 +119,17 @@ class _SubredditTextFieldState extends State<_SubredditTextField> {
   }
 }
 
-class _SubscriptionCard extends StatelessWidget {
-  const _SubscriptionCard({
+class _SubscriptionTile extends StatelessWidget {
+  const _SubscriptionTile({
     required this.title,
     this.subtitle,
     this.subredditName,
   });
 
-  factory _SubscriptionCard.fromSubscription(
+  factory _SubscriptionTile.fromSubscription(
     RedditSubscription subscription,
   ) {
-    return _SubscriptionCard(
+    return _SubscriptionTile(
       title: subscription.displayName,
       subtitle: subscription.title,
       subredditName: subscription.displayName,
@@ -141,20 +142,19 @@ class _SubscriptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-          title: Text(title),
-          subtitle: subtitle != null
-              ? Opacity(
-                  opacity: 0.5,
-                  child: Text(subtitle!),
-                )
-              : null,
-          trailing: const Opacity(
-            opacity: 0.5,
-            child: Icon(Icons.chevron_right),
-          ),
-          onTap: () => context.goToSubreddit(subredditName)),
+    return ListTile(
+      title: Text(title),
+      subtitle: subtitle != null
+          ? Opacity(
+              opacity: 0.5,
+              child: Text(subtitle!),
+            )
+          : null,
+      trailing: const Opacity(
+        opacity: 0.5,
+        child: Icon(Icons.chevron_right),
+      ),
+      onTap: () => context.goToSubreddit(subredditName),
     );
   }
 }

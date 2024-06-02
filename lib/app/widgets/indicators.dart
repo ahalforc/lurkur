@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 
 class LoadingIndicator extends StatelessWidget {
@@ -6,10 +7,9 @@ class LoadingIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: SizedBox(
-        width: 64,
-        child: LinearProgressIndicator(),
+    return Center(
+      child: SpinKitFoldingCube(
+        color: context.colorScheme.onSurface,
       ),
     );
   }

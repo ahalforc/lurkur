@@ -37,41 +37,6 @@ class SignInPage extends StatelessWidget {
                     )
                     .fadeIn(),
             },
-            // FutureBuilder(
-            //   future: context.read<AuthCubit>().areTokensStoredAndValid(),
-            //   builder: (context, snapshot) {
-            //     final areValid = snapshot.data;
-            //     if (areValid == null) {
-            //       return const LoadingIndicator();
-            //     } else if (areValid) {
-            //       return Text(
-            //         'welcome back',
-            //         style: context.textTheme.bodyMedium,
-            //       )
-            //           .animate(
-            //             delay: 0.5.seconds,
-            //             onComplete: (_) => _signInViaStorage(context),
-            //           )
-            //           .scaleX(
-            //             duration: 0.75.seconds,
-            //             curve: Curves.elasticOut,
-            //           );
-            //     } else {
-            //       return FilledButton(
-            //         onPressed: () => _showSignInWebView(context),
-            //         child: const Text('sign in'),
-            //       )
-            //           .animate(
-            //             delay: 0.3.seconds,
-            //           )
-            //           .scaleX(
-            //             duration: 1.seconds,
-            //             curve: Curves.elasticOut,
-            //           )
-            //           .fadeIn();
-            //     }
-            //   },
-            // ),
           ],
         ),
       ),

@@ -48,6 +48,11 @@ final class ThemeState {
   static const cerulean = Color(0xFF37718E);
   static const resedaGreen = Color(0xFF646F4B);
 
+  static const ivoryA = Color(0xFFF6EBD4); // 246 235 212
+  static const ivoryB = Color(0xFFEAE1CA); // 234 225 202
+  static const blueA = Color(0xFF5F739A); // 95 115 154
+  static const blueB = Color(0xFF43618B); // 67 97 139
+
   const ThemeState({
     required this.color,
   });
@@ -56,39 +61,15 @@ final class ThemeState {
 
   ThemeData get lightTheme => _makeThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: cerulean,
+          seedColor: blueA,
           brightness: Brightness.light,
-          primary: cerulean,
-          onPrimary: Colors.white,
-          secondary: jasper,
-          onSecondary: Colors.white,
-          tertiary: resedaGreen,
-          onTertiary: Colors.white,
-          error: Colors.red,
-          onError: Colors.white,
-          background: Colors.white,
-          onBackground: Colors.black,
-          surface: Colors.white,
-          onSurface: Colors.black,
         ),
       );
 
   ThemeData get darkTheme => _makeThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: cerulean,
+          seedColor: blueA,
           brightness: Brightness.dark,
-          primary: cerulean,
-          onPrimary: Colors.white,
-          secondary: jasper,
-          onSecondary: Colors.white,
-          tertiary: resedaGreen,
-          onTertiary: Colors.white,
-          error: Colors.red,
-          onError: Colors.white,
-          background: Colors.black,
-          onBackground: Colors.white,
-          surface: Colors.black,
-          onSurface: Colors.white,
         ),
       );
 
@@ -96,7 +77,6 @@ final class ThemeState {
     required ColorScheme colorScheme,
   }) =>
       ThemeData(
-        useMaterial3: true,
         colorScheme: colorScheme,
         textTheme: _makeTextTheme(),
         applyElevationOverlayColor: false,
@@ -113,7 +93,9 @@ final class ThemeState {
   TextTheme _makeTextTheme() {
     final displayFont = GoogleFonts.yantramanav();
     final headlineFont = displayFont;
-    final titleFont = GoogleFonts.heebo();
+    final titleFont = GoogleFonts.heebo(
+      fontWeight: FontWeight.w500,
+    );
     final bodyFont = GoogleFonts.oxygen();
     final labelFont = bodyFont;
 
@@ -138,9 +120,9 @@ final class ThemeState {
 
   AppBarTheme _makeAppBarTheme(ColorScheme colorScheme) {
     return AppBarTheme(
-      backgroundColor: colorScheme.background,
-      foregroundColor: colorScheme.onBackground,
-      surfaceTintColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
+      foregroundColor: colorScheme.onSurface,
+      surfaceTintColor: colorScheme.surface,
     );
   }
 
@@ -223,4 +205,12 @@ final class ThemeState {
       ),
     );
   }
+}
+
+extension ColorSchemeX on ColorScheme {
+  Color get nsfwPrimaryColor => Colors.red;
+
+  Color get pinnedPrimaryColor => Colors.brown;
+
+  Color get stickiedPrimaryColor => Colors.green;
 }

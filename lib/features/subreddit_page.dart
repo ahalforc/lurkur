@@ -5,7 +5,6 @@ import 'package:lurkur/app/blocs/auth_cubit.dart';
 import 'package:lurkur/app/blocs/preference_cubit.dart';
 import 'package:lurkur/app/blocs/reddit/subreddit_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
-import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/app_bars.dart';
 import 'package:lurkur/app/widgets/indicators.dart';
@@ -37,34 +36,32 @@ class SubredditPage extends StatelessWidget {
           subreddit,
           sortOption: SubredditPage.defaultSortOption,
         ),
-      child: const _SubredditView(),
+      child: _SubredditView(),
     );
   }
 }
 
-class _SubredditView extends StatelessWidget {
+class _SubredditView extends StatefulWidget {
   const _SubredditView();
+
+  @override
+  State<_SubredditView> createState() => _SubredditViewState();
+}
+
+class _SubredditViewState extends State<_SubredditView> {
+  final _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final state = context.watch<SubredditCubit>().state;
     final hiddenSubreddits =
         context.watch<PreferenceCubit>().state.hiddenSubreddits;
-
-    final stickiedPosts = <RedditSubmission>[];
-    final otherPosts = <RedditSubmission>[];
-
-    if (state is Loaded) {
-      for (final post in state.submissions) {
-        if (hiddenSubreddits.contains(post.subreddit)) {
-          continue;
-        } else if (post.isStickied && !state.isMultiSubreddit) {
-          stickiedPosts.add(post);
-        } else {
-          otherPosts.add(post);
-        }
-      }
-    }
 
     final screenSize = MediaQuery.of(context).size;
     final horizontalPadding = context.responsiveHorizontalPadding;
@@ -76,10 +73,13 @@ class _SubredditView extends StatelessWidget {
           notification,
         ),
         child: CustomScrollView(
+          controller: _scrollController,
           cacheExtent: screenSize.height,
           slivers: [
             LargeSliverAppBar(
               title: state.subreddit ?? 'home',
+              automaticallyImplyLeading:
+                  ![null, 'popular'].contains(state.subreddit),
               background: switch (state) {
                 Loaded loaded
                     when loaded.headerImageUrl != null &&
@@ -115,21 +115,15 @@ class _SubredditView extends StatelessWidget {
               ),
             if (state is Loaded) ...[
               const SliverToBoxAdapter(child: SizedBox(height: 16)),
-              if (stickiedPosts.isNotEmpty) ...[
-                const _Header(text: 'stickied'),
-                SliverPadding(
-                  padding: horizontalPadding,
-                  sliver: _StickiedPostsGroup(
-                    submissions: stickiedPosts,
-                  ),
-                ),
-                const SliverToBoxAdapter(child: SizedBox(height: 16)),
-              ],
-              const _Header(text: 'posts'),
               SliverPadding(
                 padding: horizontalPadding,
                 sliver: _PostsList(
-                  submissions: otherPosts,
+                  submissions: state.submissions
+                      .where(
+                        (submission) =>
+                            !hiddenSubreddits.contains(submission.subreddit),
+                      )
+                      .toList(),
                 ),
               ),
             ],
@@ -173,6 +167,11 @@ class _SubredditView extends StatelessWidget {
 
   void _refresh(BuildContext context) {
     context.read<SubredditCubit>().reload();
+    _scrollController.animateTo(
+      0,
+      duration: 0.25.seconds,
+      curve: Curves.fastLinearToSlowEaseIn,
+    );
   }
 
   bool _maybeLoadMore(BuildContext context, ScrollNotification notification) {
@@ -183,29 +182,6 @@ class _SubredditView extends StatelessWidget {
       context.read<SubredditCubit>().loadMore();
     }
     return false; // let the notification continue bubbling
-  }
-}
-
-class _StickiedPostsGroup extends StatelessWidget {
-  const _StickiedPostsGroup({
-    required this.submissions,
-  });
-
-  final List<RedditSubmission> submissions;
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: HorizontalFancyScrollView(
-        itemCount: submissions.length,
-        itemBuilder: (context, i) {
-          return SubmissionCard(
-            submission: submissions[i],
-            compact: true,
-          );
-        },
-      ),
-    );
   }
 }
 
@@ -226,32 +202,8 @@ class _PostsList extends StatelessWidget {
           submission: submissions[index],
         );
       },
-      separatorBuilder: (context, _) => const SizedBox(
-        height: ThemeCubit.medium2Padding,
-      ),
-    );
-  }
-}
-
-class _Header extends StatelessWidget {
-  const _Header({
-    required this.text,
-  });
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.only(
-          left: 16,
-          bottom: 8,
-        ),
-        child: Text(
-          text,
-          style: context.textTheme.titleLarge,
-        ),
+      separatorBuilder: (_, __) => const Divider(
+        height: 42,
       ),
     );
   }

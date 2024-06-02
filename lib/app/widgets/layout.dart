@@ -17,7 +17,6 @@ extension BuildContextXPadding on BuildContext {
   }
 }
 
-/// It's like a [Column], but you can separate its entries.
 class SeparatedColumn extends StatelessWidget {
   const SeparatedColumn({
     super.key,
@@ -53,13 +52,13 @@ class SeparatedRow extends StatelessWidget {
     super.key,
     this.mainAxisSize,
     this.crossAxisAlignment,
-    required this.space,
+    required this.separatorBuilder,
     required this.children,
   });
 
   final MainAxisSize? mainAxisSize;
   final CrossAxisAlignment? crossAxisAlignment;
-  final double space;
+  final WidgetBuilder separatorBuilder;
   final List<Widget> children;
 
   @override
@@ -68,11 +67,10 @@ class SeparatedRow extends StatelessWidget {
       mainAxisSize: mainAxisSize ?? MainAxisSize.max,
       crossAxisAlignment: crossAxisAlignment ?? CrossAxisAlignment.center,
       children: [
-        for (var i = 0; i < children.length; i++)
-          Padding(
-            padding: EdgeInsets.only(left: i != 0 ? space : 0),
-            child: children[i],
-          ),
+        for (var i = 0; i < children.length; i++) ...[
+          if (i != 0) separatorBuilder(context),
+          children[i],
+        ],
       ],
     );
   }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 /// Data class for the endpoint
 ///   /r/$subreddit/<filter>
@@ -207,6 +208,9 @@ class GallerySubmission {
   });
 
   final List<GalleryImage> images;
+
+  double get tallestAspectRatio =>
+      images.map((image) => image.width / image.height).fold(0, max);
 }
 
 class GalleryImage {
@@ -232,4 +236,6 @@ class VideoSubmission {
   final String url;
   final double width;
   final double height;
+
+  double get aspectRatio => width / height;
 }

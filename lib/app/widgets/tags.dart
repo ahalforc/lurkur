@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -9,7 +10,7 @@ class NsfwTag extends StatelessWidget {
   Widget build(BuildContext context) {
     return _Tag(
       text: 'nsfw',
-      color: context.colorScheme.primaryContainer,
+      animationColor: context.colorScheme.nsfwPrimaryColor,
     );
   }
 }
@@ -21,7 +22,7 @@ class PinnedTag extends StatelessWidget {
   Widget build(BuildContext context) {
     return _Tag(
       text: 'pinned',
-      color: context.colorScheme.secondaryContainer,
+      animationColor: context.colorScheme.pinnedPrimaryColor,
     );
   }
 }
@@ -33,7 +34,7 @@ class StickiedTag extends StatelessWidget {
   Widget build(BuildContext context) {
     return _Tag(
       text: 'stickied',
-      color: context.colorScheme.tertiaryContainer,
+      animationColor: context.colorScheme.stickiedPrimaryColor,
     );
   }
 }
@@ -43,9 +44,8 @@ class SubmitterTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _Tag(
+    return const _Tag(
       text: 'OP',
-      color: context.colorScheme.primaryContainer,
     );
   }
 }
@@ -55,9 +55,8 @@ class EditedTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _Tag(
+    return const _Tag(
       text: 'Edited',
-      color: context.colorScheme.secondaryContainer,
     );
   }
 }
@@ -76,9 +75,6 @@ class ScoreTag extends StatelessWidget {
     return _Tag(
       icon: isPositive ? Icons.thumb_up : Icons.thumb_down,
       text: '${isPositive ? '' : ''}${score.shorthand}',
-      color: isPositive
-          ? context.colorScheme.primaryContainer
-          : context.colorScheme.error,
     );
   }
 }
@@ -96,7 +92,6 @@ class CommentsTag extends StatelessWidget {
     return _Tag(
       icon: Icons.comment,
       text: count.shorthand,
-      color: context.colorScheme.secondaryContainer,
     );
   }
 }
@@ -114,7 +109,6 @@ class CreatedTag extends StatelessWidget {
     return _Tag(
       icon: Icons.create,
       text: timeago.format(createdTime, locale: 'en_short'),
-      color: context.colorScheme.tertiaryContainer,
     );
   }
 }
@@ -123,39 +117,46 @@ class _Tag extends StatelessWidget {
   const _Tag({
     this.icon,
     required this.text,
-    required this.color,
+    this.animationColor,
   });
 
   final IconData? icon;
   final String text;
-  final Color color;
+  final Color? animationColor;
 
   @override
   Widget build(BuildContext context) {
     final icon = this.icon;
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4),
-        color: color,
-      ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: ThemeCubit.medium1Padding,
-        vertical: ThemeCubit.small2Padding,
-      ),
+    final animationColor = this.animationColor;
+    return Animate(
+      onComplete: animationColor != null ? (c) => c.loop() : null,
+      effects: animationColor != null
+          ? [
+              ShimmerEffect(
+                duration: 5.seconds,
+                color: animationColor,
+              ),
+            ]
+          : null,
       child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           if (icon != null) ...[
-            Icon(
-              icon,
-              size: 10,
-              // [color] can be many things, so onSurface is just a "safe" choice
-              color: context.colorScheme.onSurface,
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Icon(
+                icon,
+                size: 10,
+                color: context.colorScheme.onSurface,
+                applyTextScaling: true,
+              ),
             ),
-            const SizedBox(width: ThemeCubit.medium1Padding),
+            const SizedBox(width: ThemeCubit.small3Padding),
           ],
-          Text(text),
+          Text(
+            text,
+            style: context.textTheme.bodyMedium?.copyWith(),
+          ),
         ],
       ),
     );

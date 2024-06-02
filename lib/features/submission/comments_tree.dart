@@ -94,7 +94,7 @@ class CommentTile extends StatelessWidget {
           ),
         );
         final subtitle = context.watch<PreferenceCubit>().state.useHtmlForText
-            ? HtmlWidget(comment.bodyHtml)
+            ? HtmlWidget(comment.bodyHtml.trim())
             : Text(comment.body);
         return comment.replies.isNotEmpty
             ? ExpansionTile(
