@@ -14,7 +14,7 @@ extension BuildContextXTheme on BuildContext {
     return EdgeInsets.symmetric(
       horizontal: max(
         (screenSize.width - ThemeCubit.maxBodyWidth) / 2,
-        16,
+        0,
       ),
     );
   }

@@ -166,10 +166,9 @@ class _NetworkImage extends StatelessWidget {
         if (frame != null) {
           return child.animate().fadeIn();
         }
-        return const Center(
-          child: LoadingIndicator(
-            size: 12,
-          ),
+        return Container(
+          color: context.colorScheme.surfaceBright,
+          child: const LoadingIndicator(size: 12),
         );
       },
       errorBuilder: (context, _, __) {
