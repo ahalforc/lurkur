@@ -74,10 +74,38 @@ class Gallery extends StatelessWidget {
       itemBuilder: (context, itemIndex, pageViewIndex) {
         return ClipRRect(
           borderRadius: LurkurRadius.radius16.circularBorderRadius,
-          child: _NetworkImage(
-            url: images[itemIndex].url,
-            fit: BoxFit.contain,
-            gaplessPlayback: true,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              _NetworkImage(
+                url: images[itemIndex].url,
+                fit: BoxFit.contain,
+                gaplessPlayback: true,
+              ),
+              if (images.length > 1)
+                Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      margin: LurkurSpacing.spacing8.bottomInset,
+                      padding: LurkurSpacing.spacing8.allInsets.copyWith(
+                        top: LurkurSpacing.spacing4.value,
+                        bottom: LurkurSpacing.spacing4.value,
+                      ),
+                      decoration: BoxDecoration(
+                        color: context.colorScheme.surfaceBright,
+                        borderRadius: LurkurRadius.radius8.circularBorderRadius,
+                      ),
+                      child: Text(
+                        '${itemIndex + 1} / ${images.length}',
+                        style: context.textTheme.labelSmall?.copyWith(
+                          color: context.colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
         );
       },
