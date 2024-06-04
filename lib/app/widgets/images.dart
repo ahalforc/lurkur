@@ -2,7 +2,9 @@ import 'dart:math';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
+import 'package:lurkur/app/widgets/indicators.dart';
 
 /// Represents a standard image.
 ///
@@ -22,8 +24,12 @@ class UrlImage {
   final double height;
 }
 
+/// Renders a small thumbnail version of an image.
 class Thumbnail extends StatelessWidget {
-  const Thumbnail({super.key, required this.url});
+  const Thumbnail({
+    super.key,
+    required this.url,
+  });
 
   final String? url;
 
@@ -31,24 +37,26 @@ class Thumbnail extends StatelessWidget {
   Widget build(BuildContext context) {
     final url = this.url;
     return Container(
-      width: 36,
-      height: 36,
+      width: 48,
+      height: 48,
       decoration: BoxDecoration(
-        color: context.colorScheme.primaryContainer,
-        shape: BoxShape.circle,
+        color: context.colorScheme.surfaceBright,
+        borderRadius: LurkurRadius.radius8.circularBorderRadius,
       ),
       clipBehavior: Clip.hardEdge,
       child: url != null
-          ? Image.network(
-              url,
+          ? _NetworkImage(
+              url: url,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => const Icon(Icons.error),
             )
           : null,
     );
   }
 }
 
+/// Renders a large gallery version of a collection of images.
+///
+/// Their sizes are used to determine the aspect ratio that this gallery confines itself to.
 class Gallery extends StatelessWidget {
   const Gallery({
     super.key,
@@ -61,27 +69,24 @@ class Gallery extends StatelessWidget {
   Widget build(BuildContext context) {
     final tallestAspectRatio =
         images.map((image) => image.width / image.height).fold(0.0, max);
-    return IgnorePointer(
-      ignoring: images.length <= 1,
-      child: CarouselSlider.builder(
-        itemCount: images.length,
-        itemBuilder: (context, itemIndex, pageViewIndex) {
-          return ClipRRect(
-            borderRadius: LurkurRadius.radius16.circularBorderRadius,
-            child: Image.network(
-              images[itemIndex].url,
-              fit: BoxFit.contain,
-              gaplessPlayback: true,
-            ),
-          );
-        },
-        options: CarouselOptions(
-          height: null,
-          enableInfiniteScroll: false,
-          viewportFraction: 1,
-          aspectRatio: tallestAspectRatio,
-          enlargeCenterPage: true,
-        ),
+    return CarouselSlider.builder(
+      itemCount: images.length,
+      itemBuilder: (context, itemIndex, pageViewIndex) {
+        return ClipRRect(
+          borderRadius: LurkurRadius.radius16.circularBorderRadius,
+          child: _NetworkImage(
+            url: images[itemIndex].url,
+            fit: BoxFit.contain,
+            gaplessPlayback: true,
+          ),
+        );
+      },
+      options: CarouselOptions(
+        height: null,
+        enableInfiniteScroll: false,
+        viewportFraction: 1,
+        aspectRatio: tallestAspectRatio,
+        enlargeCenterPage: true,
       ),
     );
   }
@@ -108,6 +113,42 @@ class FullScreenImage extends StatelessWidget {
           gaplessPlayback: true,
         ),
       ),
+    );
+  }
+}
+
+class _NetworkImage extends StatelessWidget {
+  const _NetworkImage({
+    required this.url,
+    this.fit,
+    this.gaplessPlayback = false,
+  });
+
+  final String url;
+  final BoxFit? fit;
+  final bool gaplessPlayback;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.network(
+      url,
+      fit: fit,
+      gaplessPlayback: gaplessPlayback,
+      frameBuilder: (context, child, frame, _) {
+        if (frame != null) {
+          return child.animate().fadeIn();
+        }
+        return const Center(
+          child: LoadingIndicator(
+            size: 12,
+          ),
+        );
+      },
+      errorBuilder: (context, _, __) {
+        return const Center(
+          child: LoadingFailedIndicator(),
+        );
+      },
     );
   }
 }

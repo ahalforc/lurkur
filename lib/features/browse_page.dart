@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/auth_cubit.dart';
 import 'package:lurkur/app/blocs/reddit/browse_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
+import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/app_bars.dart';
 import 'package:lurkur/app/widgets/indicators.dart';
@@ -43,8 +44,8 @@ class _BrowseView extends StatelessWidget {
           ),
           SliverPadding(
             padding: context.responsiveHorizontalPadding.copyWith(
-              top: 16,
-              bottom: 16,
+              top: LurkurSpacing.spacing16.value,
+              bottom: LurkurSpacing.spacing16.value,
             ),
             sliver: const SliverToBoxAdapter(
               child: _SubredditTextField(),

@@ -1,33 +1,18 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lurkur/app/blocs/theme_cubit.dart';
-
-extension BuildContextXPadding on BuildContext {
-  EdgeInsets get responsiveHorizontalPadding {
-    final screenSize = MediaQuery.of(this).size;
-    return EdgeInsets.symmetric(
-      horizontal: max(
-        (screenSize.width - ThemeCubit.maxBodyWidth) / 2,
-        16,
-      ),
-    );
-  }
-}
 
 class SeparatedColumn extends StatelessWidget {
   const SeparatedColumn({
     super.key,
     this.mainAxisSize,
     this.crossAxisAlignment,
-    required this.space,
+    required this.separatorBuilder,
     required this.children,
   });
 
   final MainAxisSize? mainAxisSize;
   final CrossAxisAlignment? crossAxisAlignment;
-  final double space;
+  final WidgetBuilder separatorBuilder;
   final List<Widget> children;
 
   @override
@@ -36,11 +21,10 @@ class SeparatedColumn extends StatelessWidget {
       mainAxisSize: mainAxisSize ?? MainAxisSize.max,
       crossAxisAlignment: crossAxisAlignment ?? CrossAxisAlignment.center,
       children: [
-        for (var i = 0; i < children.length; i++)
-          Padding(
-            padding: EdgeInsets.only(top: i != 0 ? space : 0),
-            child: children[i],
-          ),
+        for (var i = 0; i < children.length; i++) ...[
+          if (i != 0) separatorBuilder(context),
+          children[i],
+        ],
       ],
     );
   }

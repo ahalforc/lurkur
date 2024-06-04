@@ -3,13 +3,19 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 
 class LoadingIndicator extends StatelessWidget {
-  const LoadingIndicator({super.key});
+  const LoadingIndicator({
+    super.key,
+    this.size = 50,
+  });
+
+  final double size;
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: SpinKitFoldingCube(
         color: context.colorScheme.onSurface,
+        size: size,
       ),
     );
   }

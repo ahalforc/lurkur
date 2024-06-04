@@ -68,7 +68,7 @@ class SubmissionCard extends StatelessWidget {
             ),
             if (thumbnail != null && !canShowLargePreview) ...[
               LurkurSpacing.spacing12.horizontalGap,
-              _Thumbnail(url: thumbnail),
+              Thumbnail(url: thumbnail),
             ],
           ],
         ),
@@ -219,30 +219,6 @@ class _VideoSubmission extends StatelessWidget {
             height: video.height,
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _Thumbnail extends StatelessWidget {
-  const _Thumbnail({required this.url});
-
-  final String url;
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: LurkurRadius.radius8.circularBorderRadius,
-      child: SizedBox(
-        width: switch (context.themeDensity) {
-          ThemeDensity.small => 48,
-          _ => 64,
-        },
-        height: switch (context.themeDensity) {
-          ThemeDensity.small => 48,
-          _ => 64,
-        },
-        child: Image.network(url),
       ),
     );
   }

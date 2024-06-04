@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,6 +8,16 @@ extension BuildContextXTheme on BuildContext {
   TextTheme get textTheme => Theme.of(this).textTheme;
 
   ColorScheme get colorScheme => Theme.of(this).colorScheme;
+
+  EdgeInsets get responsiveHorizontalPadding {
+    final screenSize = MediaQuery.of(this).size;
+    return EdgeInsets.symmetric(
+      horizontal: max(
+        (screenSize.width - ThemeCubit.maxBodyWidth) / 2,
+        16,
+      ),
+    );
+  }
 }
 
 /// Manages the app's theme.

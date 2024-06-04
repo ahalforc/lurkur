@@ -222,6 +222,8 @@ class _PostsList extends StatelessWidget {
       },
       separatorBuilder: (_, __) => Divider(
         height: LurkurSpacing.spacing16.value,
+        indent: LurkurSpacing.spacing16.value,
+        endIndent: LurkurSpacing.spacing16.value,
       ),
     );
   }
