@@ -14,28 +14,43 @@ class SubmissionCard extends StatelessWidget {
   const SubmissionCard({
     super.key,
     required this.submission,
+    this.compact = true,
   });
 
   final RedditSubmission submission;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
+    final density = context.watch<PreferenceCubit>().state.themeDensity;
     final self = submission.self;
     final gallery = submission.gallery;
     final video = submission.video;
     final thumbnail = submission.thumbnailUrl;
-    final canShowLargePreview = context.themeDensity == ThemeDensity.large;
-    return Provider.value(
-      value: submission,
+    final canShowLargePreview =
+        !compact || (compact && density == ThemeDensity.large);
+    return MultiProvider(
+      providers: [
+        Provider.value(
+          value: submission,
+        ),
+        Provider.value(
+          value: compact ? density : ThemeDensity.large,
+        ),
+      ],
       child: InkWell(
-        onTap: () => showSubmissionPopup(
-          context,
-          submission: submission,
-        ),
-        onLongPress: () => showSubmissionMoreActionsPopup(
-          context,
-          submission: submission,
-        ),
+        onTap: compact
+            ? () => showSubmissionPopup(
+                  context,
+                  submission: submission,
+                )
+            : null,
+        onLongPress: compact
+            ? () => showSubmissionMoreActionsPopup(
+                  context,
+                  submission: submission,
+                )
+            : null,
         child: Container(
           color: Colors.transparent,
           child: Row(
@@ -51,7 +66,7 @@ class SubmissionCard extends StatelessWidget {
                     const _Info(),
                     if (self != null && canShowLargePreview) ...[
                       const SizedBox(height: 12),
-                      _SelfSubmission(self: self),
+                      _SelfSubmission(self: self, compact: compact),
                     ],
                     if (gallery != null &&
                         video == null &&
@@ -79,7 +94,7 @@ class SubmissionCard extends StatelessWidget {
 }
 
 extension on BuildContext {
-  ThemeDensity get themeDensity => watch<PreferenceCubit>().state.themeDensity;
+  ThemeDensity get themeDensity => watch<ThemeDensity>();
 
   RedditSubmission get submission => watch<RedditSubmission>();
 }
@@ -159,15 +174,17 @@ class _Info extends StatelessWidget {
 class _SelfSubmission extends StatelessWidget {
   const _SelfSubmission({
     required this.self,
+    required this.compact,
   });
 
   final SelfSubmission self;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       self.text,
-      maxLines: 10,
+      maxLines: compact ? 10 : null,
       overflow: TextOverflow.fade,
     );
   }
@@ -182,20 +199,17 @@ class _GallerySubmission extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: gallery.tallestAspectRatio,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Gallery(
-          images: [
-            for (final image in gallery.images)
-              UrlImage(
-                url: image.url,
-                width: image.width,
-                height: image.height,
-              ),
-          ],
-        ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: Gallery(
+        images: [
+          for (final image in gallery.images)
+            UrlImage(
+              url: image.url,
+              width: image.width,
+              height: image.height,
+            ),
+        ],
       ),
     );
   }

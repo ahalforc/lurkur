@@ -3,7 +3,6 @@ import 'package:lurkur/app/blocs/preference_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/popups.dart';
-import 'package:lurkur/features/submission/title_tile.dart';
 import 'package:provider/provider.dart';
 
 void showSubmissionMoreActionsPopup(
@@ -42,8 +41,10 @@ class SubmissionMoreActionsBody extends StatelessWidget {
     return ListView(
       controller: scrollController,
       children: [
-        TitleTile(
-          submission: submission,
+        ListTile(
+          leading: const Icon(Icons.reddit_rounded),
+          title: Text(submission.title),
+          subtitle: Text(submission.subreddit),
         ),
         const _ShowOrHide(),
         const _ShowJson(),

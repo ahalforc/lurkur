@@ -1,8 +1,8 @@
+import 'dart:math';
+
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
-import 'package:lurkur/app/widgets/layout.dart';
 
 /// Represents a standard image.
 ///
@@ -50,35 +50,41 @@ class Thumbnail extends StatelessWidget {
 }
 
 class Gallery extends StatelessWidget {
-  const Gallery({super.key, required this.images});
+  const Gallery({
+    super.key,
+    required this.images,
+    this.useBorderRadius = true,
+  });
 
   final List<UrlImage> images;
+  final bool useBorderRadius;
 
   @override
   Widget build(BuildContext context) {
-    return FancyPageView(
-      children: [
-        for (final image in images)
-          Stack(
-            children: [
-              Positioned.fill(
-                child: GestureDetector(
-                  onTap: () {
-                    context.read<RouterCubit>().pushDismissibleFullScreenWidget(
-                          context,
-                          child: FullScreenImage(url: image.url),
-                        );
-                  },
-                  child: Image.network(
-                    image.url,
-                    fit: BoxFit.contain,
-                    gaplessPlayback: true,
-                  ),
-                ),
-              ),
-            ],
-          ),
-      ],
+    final tallestAspectRatio =
+        images.map((image) => image.width / image.height).fold(0.0, max);
+    return IgnorePointer(
+      ignoring: images.length <= 1,
+      child: CarouselSlider.builder(
+        itemCount: images.length,
+        itemBuilder: (context, itemIndex, pageViewIndex) {
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(useBorderRadius ? 16 : 0),
+            child: Image.network(
+              images[itemIndex].url,
+              fit: BoxFit.contain,
+              gaplessPlayback: true,
+            ),
+          );
+        },
+        options: CarouselOptions(
+          height: null,
+          enableInfiniteScroll: false,
+          viewportFraction: 1,
+          aspectRatio: tallestAspectRatio,
+          enlargeCenterPage: true,
+        ),
+      ),
     );
   }
 }
