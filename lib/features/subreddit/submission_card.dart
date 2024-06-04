@@ -6,8 +6,6 @@ import 'package:lurkur/app/widgets/images.dart';
 import 'package:lurkur/app/widgets/layout.dart';
 import 'package:lurkur/app/widgets/tags.dart';
 import 'package:lurkur/app/widgets/videos.dart';
-import 'package:lurkur/features/submission_more_actions_popup.dart';
-import 'package:lurkur/features/submission_popup.dart';
 import 'package:provider/provider.dart';
 
 class SubmissionCard extends StatelessWidget {
@@ -38,55 +36,41 @@ class SubmissionCard extends StatelessWidget {
           value: compact ? density : ThemeDensity.large,
         ),
       ],
-      child: InkWell(
-        onTap: compact
-            ? () => showSubmissionPopup(
-                  context,
-                  submission: submission,
-                )
-            : null,
-        onLongPress: compact
-            ? () => showSubmissionMoreActionsPopup(
-                  context,
-                  submission: submission,
-                )
-            : null,
-        child: Container(
-          color: Colors.transparent,
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const _Context(),
-                    const SizedBox(height: 4),
-                    const _Title(),
-                    const SizedBox(height: 4),
-                    const _Info(),
-                    if (self != null && canShowLargePreview) ...[
-                      const SizedBox(height: 12),
-                      _SelfSubmission(self: self, compact: compact),
-                    ],
-                    if (gallery != null &&
-                        video == null &&
-                        canShowLargePreview) ...[
-                      const SizedBox(height: 12),
-                      _GallerySubmission(gallery: gallery),
-                    ],
-                    if (video != null && canShowLargePreview) ...[
-                      const SizedBox(height: 12),
-                      _VideoSubmission(video: video),
-                    ],
+      child: Container(
+        color: Colors.transparent,
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const _Context(),
+                  LurkurSpacing.spacing4.verticalGap,
+                  const _Title(),
+                  LurkurSpacing.spacing4.verticalGap,
+                  const _Info(),
+                  if (self != null && canShowLargePreview) ...[
+                    LurkurSpacing.spacing12.verticalGap,
+                    _SelfSubmission(self: self, compact: compact),
                   ],
-                ),
+                  if (gallery != null &&
+                      video == null &&
+                      canShowLargePreview) ...[
+                    LurkurSpacing.spacing12.verticalGap,
+                    _GallerySubmission(gallery: gallery),
+                  ],
+                  if (video != null && canShowLargePreview) ...[
+                    LurkurSpacing.spacing12.verticalGap,
+                    _VideoSubmission(video: video),
+                  ],
+                ],
               ),
-              if (thumbnail != null && !canShowLargePreview) ...[
-                const SizedBox(width: 12),
-                _Thumbnail(url: thumbnail),
-              ],
+            ),
+            if (thumbnail != null && !canShowLargePreview) ...[
+              LurkurSpacing.spacing12.horizontalGap,
+              _Thumbnail(url: thumbnail),
             ],
-          ),
+          ],
         ),
       ),
     );
@@ -156,7 +140,7 @@ class _Info extends StatelessWidget {
     return SeparatedRow(
       separatorBuilder: (_) => Container(
         alignment: Alignment.center,
-        width: ThemeCubit.medium3Padding,
+        width: LurkurSpacing.spacing24.value,
         child: const Text('•'),
       ),
       children: [
@@ -200,7 +184,7 @@ class _GallerySubmission extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: LurkurRadius.radius16.circularBorderRadius,
       child: Gallery(
         images: [
           for (final image in gallery.images)
@@ -227,7 +211,7 @@ class _VideoSubmission extends StatelessWidget {
     return AspectRatio(
       aspectRatio: video.aspectRatio,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: LurkurRadius.radius16.circularBorderRadius,
         child: VideoPlayer(
           video: UrlVideo(
             url: video.url,
@@ -248,7 +232,7 @@ class _Thumbnail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: LurkurRadius.radius8.circularBorderRadius,
       child: SizedBox(
         width: switch (context.themeDensity) {
           ThemeDensity.small => 48,

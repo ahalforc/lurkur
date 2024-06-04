@@ -151,7 +151,7 @@ class _Tag extends StatelessWidget {
                 applyTextScaling: true,
               ),
             ),
-            const SizedBox(width: ThemeCubit.small3Padding),
+            LurkurSpacing.spacing4.horizontalGap,
           ],
           Text(
             text,

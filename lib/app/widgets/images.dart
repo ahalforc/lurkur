@@ -53,11 +53,9 @@ class Gallery extends StatelessWidget {
   const Gallery({
     super.key,
     required this.images,
-    this.useBorderRadius = true,
   });
 
   final List<UrlImage> images;
-  final bool useBorderRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +67,7 @@ class Gallery extends StatelessWidget {
         itemCount: images.length,
         itemBuilder: (context, itemIndex, pageViewIndex) {
           return ClipRRect(
-            borderRadius: BorderRadius.circular(useBorderRadius ? 16 : 0),
+            borderRadius: LurkurRadius.radius16.circularBorderRadius,
             child: Image.network(
               images[itemIndex].url,
               fit: BoxFit.contain,
@@ -100,7 +98,7 @@ class FullScreenImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colorScheme.background,
+      backgroundColor: context.colorScheme.surface,
       body: InteractiveViewer(
         child: Image.network(
           url,

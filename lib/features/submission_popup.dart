@@ -61,9 +61,7 @@ class SubmissionBody extends StatelessWidget {
       slivers: [
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: ThemeCubit.medium2Padding,
-            ),
+            padding: LurkurSpacing.spacing16.horizontalInsets,
             child: SubmissionCard(
               submission: submission,
               compact: false,

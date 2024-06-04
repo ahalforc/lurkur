@@ -3,11 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 extension BuildContextXTheme on BuildContext {
-  bool get isDeviceWide =>
-      MediaQuery.of(this).size.width > MediaQuery.of(this).size.height;
-
-  bool get isDeviceNarrow => !isDeviceWide;
-
   TextTheme get textTheme => Theme.of(this).textTheme;
 
   ColorScheme get colorScheme => Theme.of(this).colorScheme;
@@ -15,16 +10,6 @@ extension BuildContextXTheme on BuildContext {
 
 /// Manages the app's theme.
 class ThemeCubit extends Cubit<ThemeState> {
-  static const small1Padding = 1.0;
-  static const small2Padding = 2.0;
-  static const small3Padding = 4.0;
-  static const medium1Padding = 8.0;
-  static const medium2Padding = 16.0;
-  static const medium3Padding = 24.0;
-  static const large1Padding = 32.0;
-  static const large2Padding = 64.0;
-  static const large3Padding = 128.0;
-
   static const maxBodyWidth = 560.0;
 
   ThemeCubit() : super(const ThemeState(color: Colors.blue));
@@ -130,22 +115,20 @@ final class ThemeState {
     ColorScheme colorScheme,
   ) {
     return BottomNavigationBarThemeData(
-      backgroundColor: colorScheme.background,
-      unselectedItemColor: colorScheme.onBackground,
-      selectedItemColor: colorScheme.onBackground,
+      backgroundColor: colorScheme.surface,
+      unselectedItemColor: colorScheme.onSurface,
+      selectedItemColor: colorScheme.onSurface,
     );
   }
 
   BottomSheetThemeData _makeBottomSheetTheme(ColorScheme colorScheme) {
     return BottomSheetThemeData(
-      backgroundColor: colorScheme.background,
-      surfaceTintColor: colorScheme.background,
-      dragHandleColor: colorScheme.onBackground,
+      backgroundColor: colorScheme.surface,
+      surfaceTintColor: colorScheme.surface,
+      dragHandleColor: colorScheme.onSurface,
       dragHandleSize: const Size(48, 4),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(16),
-        ),
+      shape: RoundedRectangleBorder(
+        borderRadius: LurkurRadius.radius16.topCircularBorderRadius,
       ),
     );
   }
@@ -157,7 +140,7 @@ final class ThemeState {
       color: colorScheme.primaryContainer,
       surfaceTintColor: null,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: LurkurRadius.radius16.circularBorderRadius,
       ),
     );
   }
@@ -165,7 +148,7 @@ final class ThemeState {
   InputDecorationTheme _makeInputDecorationTheme() {
     return InputDecorationTheme(
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: LurkurRadius.radius16.circularBorderRadius,
       ),
     );
   }
@@ -173,9 +156,9 @@ final class ThemeState {
   FilledButtonThemeData _makeFilledButtonTheme() {
     return FilledButtonThemeData(
       style: ButtonStyle(
-        shape: MaterialStateProperty.all(
+        shape: WidgetStateProperty.all(
           RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: LurkurRadius.radius8.circularBorderRadius,
           ),
         ),
       ),
@@ -185,9 +168,9 @@ final class ThemeState {
   OutlinedButtonThemeData _makeOutlinedButtonTheme() {
     return OutlinedButtonThemeData(
       style: ButtonStyle(
-        shape: MaterialStateProperty.all(
+        shape: WidgetStateProperty.all(
           RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: LurkurRadius.radius8.circularBorderRadius,
           ),
         ),
       ),
@@ -197,9 +180,9 @@ final class ThemeState {
   TextButtonThemeData _makeTextButtonTheme() {
     return TextButtonThemeData(
       style: ButtonStyle(
-        shape: MaterialStateProperty.all(
+        shape: WidgetStateProperty.all(
           RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: LurkurRadius.radius8.circularBorderRadius,
           ),
         ),
       ),
@@ -213,4 +196,55 @@ extension ColorSchemeX on ColorScheme {
   Color get pinnedPrimaryColor => Colors.brown;
 
   Color get stickiedPrimaryColor => Colors.green;
+}
+
+enum LurkurSpacing {
+  spacing2(2),
+  spacing4(4),
+  spacing8(8),
+  spacing12(12),
+  spacing16(16),
+  spacing24(24),
+  spacing32(32);
+
+  const LurkurSpacing(this.value);
+
+  final double value;
+
+  EdgeInsets get leftInset => EdgeInsets.only(left: value);
+
+  EdgeInsets get rightInset => EdgeInsets.only(right: value);
+
+  EdgeInsets get topInset => EdgeInsets.only(top: value);
+
+  EdgeInsets get bottomInset => EdgeInsets.only(bottom: value);
+
+  EdgeInsets get horizontalInsets => EdgeInsets.symmetric(horizontal: value);
+
+  EdgeInsets get verticalInsets => EdgeInsets.symmetric(vertical: value);
+
+  EdgeInsets get allInsets => EdgeInsets.all(value);
+
+  Widget get horizontalGap => SizedBox(width: value);
+
+  Widget get verticalGap => SizedBox(height: value);
+
+  Widget get horizontalSliverGap => SliverToBoxAdapter(child: horizontalGap);
+
+  Widget get verticalSliverGap => SliverToBoxAdapter(child: verticalGap);
+}
+
+enum LurkurRadius {
+  radius8(8),
+  radius16(16);
+
+  const LurkurRadius(this.value);
+
+  final double value;
+
+  BorderRadius get topCircularBorderRadius => BorderRadius.vertical(
+        top: Radius.circular(value),
+      );
+
+  BorderRadius get circularBorderRadius => BorderRadius.circular(value);
 }

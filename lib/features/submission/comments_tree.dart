@@ -58,30 +58,24 @@ class CommentTile extends StatelessWidget {
             children: [
               WidgetSpan(
                 child: Padding(
-                  padding: const EdgeInsets.only(
-                    right: ThemeCubit.small3Padding,
-                  ),
+                  padding: LurkurSpacing.spacing4.rightInset,
                   child: ScoreTag(
                     score: comment.score,
                   ),
                 ),
               ),
               if (comment.isSubmitter)
-                const WidgetSpan(
+                WidgetSpan(
                   child: Padding(
-                    padding: EdgeInsets.only(
-                      right: ThemeCubit.small3Padding,
-                    ),
-                    child: SubmitterTag(),
+                    padding: LurkurSpacing.spacing4.rightInset,
+                    child: const SubmitterTag(),
                   ),
                 ),
               if (comment.isEdited)
-                const WidgetSpan(
+                WidgetSpan(
                   child: Padding(
-                    padding: EdgeInsets.only(
-                      right: ThemeCubit.small3Padding,
-                    ),
-                    child: EditedTag(),
+                    padding: LurkurSpacing.spacing4.rightInset,
+                    child: const EditedTag(),
                   ),
                 ),
               TextSpan(

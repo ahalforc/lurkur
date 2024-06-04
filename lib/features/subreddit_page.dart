@@ -5,11 +5,14 @@ import 'package:lurkur/app/blocs/auth_cubit.dart';
 import 'package:lurkur/app/blocs/preference_cubit.dart';
 import 'package:lurkur/app/blocs/reddit/subreddit_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
+import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/app_bars.dart';
 import 'package:lurkur/app/widgets/indicators.dart';
 import 'package:lurkur/app/widgets/layout.dart';
 import 'package:lurkur/app/widgets/popups.dart';
+import 'package:lurkur/features/submission_more_actions_popup.dart';
+import 'package:lurkur/features/submission_popup.dart';
 import 'package:lurkur/features/subreddit/submission_card.dart';
 
 /// Renders a subreddit's posts and scaffold content for interacting with the
@@ -36,7 +39,7 @@ class SubredditPage extends StatelessWidget {
           subreddit,
           sortOption: SubredditPage.defaultSortOption,
         ),
-      child: _SubredditView(),
+      child: const _SubredditView(),
     );
   }
 }
@@ -114,7 +117,7 @@ class _SubredditViewState extends State<_SubredditView> {
                 child: LoadingFailedIndicator(),
               ),
             if (state is Loaded) ...[
-              const SliverToBoxAdapter(child: SizedBox(height: 16)),
+              LurkurSpacing.spacing16.verticalSliverGap,
               SliverPadding(
                 padding: horizontalPadding,
                 sliver: _PostsList(
@@ -197,13 +200,28 @@ class _PostsList extends StatelessWidget {
     return SliverList.separated(
       itemCount: submissions.length,
       itemBuilder: (context, index) {
-        return SubmissionCard(
-          key: ValueKey(submissions[index].id),
-          submission: submissions[index],
+        final submission = submissions[index];
+        return InkWell(
+          onTap: () => showSubmissionPopup(
+            context,
+            submission: submission,
+          ),
+          onLongPress: () => showSubmissionMoreActionsPopup(
+            context,
+            submission: submission,
+          ),
+          borderRadius: LurkurRadius.radius16.circularBorderRadius,
+          child: Padding(
+            padding: LurkurSpacing.spacing16.allInsets,
+            child: SubmissionCard(
+              key: ValueKey(submission.id),
+              submission: submission,
+            ),
+          ),
         );
       },
-      separatorBuilder: (_, __) => const Divider(
-        height: 42,
+      separatorBuilder: (_, __) => Divider(
+        height: LurkurSpacing.spacing16.value,
       ),
     );
   }
