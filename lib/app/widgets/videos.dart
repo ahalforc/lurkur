@@ -95,38 +95,17 @@ class _VideoPlayerState extends State<_VideoPlayer> {
             Positioned.fill(
               child: vp.VideoPlayer(_videoController),
             ),
-            Positioned.fill(
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: ValueListenableBuilder(
-                  valueListenable: _videoController,
-                  builder: (context, value, widget) {
-                    return _ProgressBar(
-                      progress: (value.position.inMilliseconds /
-                              value.duration.inMilliseconds)
-                          .clamp(0.0, 1.0),
-                    );
-                  },
-                ),
-              ),
-            ),
             Align(
               alignment: Alignment.bottomCenter,
               child: ValueListenableBuilder(
                 valueListenable: _videoController,
                 builder: (context, value, widget) {
-                  return AnimatedSwitcher(
-                    duration: 0.25.seconds,
-                    transitionBuilder: (child, animation) => ScaleTransition(
-                      scale: animation,
-                      child: child,
-                    ),
-                    child: Icon(
-                      value.isPlaying
-                          ? Icons.pause_rounded
-                          : Icons.play_arrow_rounded,
-                      key: ValueKey('video_player_icon_${value.isPlaying}'),
-                      color: context.colorScheme.primary,
+                  return Padding(
+                    padding: LurkurSpacing.spacing12.bottomInset,
+                    child: _PlayButton(
+                      isPlaying: value.isPlaying,
+                      positionMs: value.position.inMilliseconds,
+                      durationMs: value.duration.inMilliseconds,
                     ),
                   );
                 },
@@ -169,40 +148,49 @@ class _VideoPlayerState extends State<_VideoPlayer> {
   }
 }
 
-class _ProgressBar extends StatelessWidget {
-  const _ProgressBar({
-    required this.progress,
+class _PlayButton extends StatelessWidget {
+  const _PlayButton({
+    required this.isPlaying,
+    required this.positionMs,
+    required this.durationMs,
   });
 
-  final double progress; // 0.0 to 1.0
+  final bool isPlaying;
+  final int positionMs;
+  final int durationMs;
+
+  double get _progress => (positionMs / durationMs).clamp(0.0, 1.0);
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Row(
-          children: [
-            if (0 < progress)
-              AnimatedContainer(
-                duration: 0.2.seconds,
-                height: 2,
-                width: (constraints.maxWidth * progress).clamp(
-                  0,
-                  constraints.maxWidth - 1,
-                ),
-                color: context.colorScheme.primary,
-                padding: EdgeInsets.zero,
-                margin: EdgeInsets.zero,
-              )
-                  .animate(
-                    onComplete: (c) => c.loop(period: 4.seconds),
-                  )
-                  .shimmer(),
-            const Spacer(),
-          ],
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        CircularProgressIndicator(
+          value: _progress,
+          color: context.colorScheme.onSurface,
+          strokeWidth: 2,
+        ),
+        AnimatedSwitcher(
+          duration: 0.25.seconds,
+          transitionBuilder: (child, animation) => ScaleTransition(
+            scale: animation,
+            child: child,
+          ),
+          child: Icon(
+            isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+            key: ValueKey('video_player_icon_$isPlaying'),
+            color: context.colorScheme.onSurface,
+          ),
+        ),
+      ],
+    )
+        .animate(
+          target: isPlaying ? 0 : 1,
+        )
+        .fadeIn(
+          duration: 0.5.seconds,
         );
-      },
-    );
   }
 }
 
