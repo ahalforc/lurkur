@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class NavigationShell extends StatelessWidget {
   static const _items = [
@@ -29,7 +30,7 @@ class NavigationShell extends StatelessWidget {
   }
 }
 
-class _NavigationBar extends StatelessWidget {
+class _NavigationBar extends StatefulWidget {
   const _NavigationBar({
     required this.selectedIndex,
     required this.onSelectIndex,
@@ -41,19 +42,58 @@ class _NavigationBar extends StatelessWidget {
   final Widget child;
 
   @override
+  State<_NavigationBar> createState() => _NavigationBarState();
+}
+
+class _NavigationBarState extends State<_NavigationBar>
+    with TickerProviderStateMixin {
+  final _animationControllers = <int, AnimationController>{};
+
+  @override
+  void dispose() {
+    for (final controller in _animationControllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  AnimationController _getAnimationController(int index) {
+    return _animationControllers.putIfAbsent(
+      index,
+      () => AnimationController(vsync: this),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: child,
+      body: widget.child,
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: selectedIndex,
+        currentIndex: widget.selectedIndex,
         items: [
-          for (final item in NavigationShell._items)
+          for (var i = 0; i < NavigationShell._items.length; i++)
             BottomNavigationBarItem(
-              icon: Icon(item.$2),
-              label: item.$1,
+              icon: Icon(NavigationShell._items[i].$2)
+                  .animate(
+                    autoPlay: false,
+                    controller: _getAnimationController(i),
+                    onComplete: (c) => c.reverse(),
+                  )
+                  .scale(
+                    duration: 0.2.seconds,
+                    begin: const Offset(1, 1),
+                    end: const Offset(1.3, 1.3),
+                  )
+                  .shake(
+                    hz: 4,
+                  ),
+              label: NavigationShell._items[i].$1,
             ),
         ],
-        onTap: onSelectIndex,
+        onTap: (index) {
+          _getAnimationController(index).loop(count: 1);
+          widget.onSelectIndex(index);
+        },
       ),
     );
   }
