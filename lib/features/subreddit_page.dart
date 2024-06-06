@@ -211,19 +211,14 @@ class _PostsList extends StatelessWidget {
             submission: submission,
           ),
           borderRadius: LurkurRadius.radius16.circularBorderRadius,
-          child: Padding(
-            padding: LurkurSpacing.spacing16.allInsets,
-            child: SubmissionCard(
-              key: ValueKey(submission.id),
-              submission: submission,
-            ),
+          child: SubmissionCard(
+            key: ValueKey(submission.id),
+            submission: submission,
           ),
         );
       },
       separatorBuilder: (_, __) => Divider(
-        height: LurkurSpacing.spacing16.value,
-        indent: LurkurSpacing.spacing16.value,
-        endIndent: LurkurSpacing.spacing16.value,
+        height: LurkurSpacing.spacing32.value,
       ),
     );
   }
