@@ -1,28 +1,36 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+extension BuildContextX on BuildContext {
+  PreferencesCubit get preferences => read<PreferencesCubit>();
+
+  PreferencesCubit get watchPreferences => watch<PreferencesCubit>();
+}
+
 /// Stores data on the user's device.
 ///
-/// This data is only intended to be used for a user's preference and is subject
+/// This data is only intended to be used for a user's preferences and is subject
 /// to deletion at the user's or device's discretion.
-class PreferenceCubit extends Cubit<PreferenceState> {
+class PreferencesCubit extends Cubit<PreferencesState> {
   static const _themeBrightness = 'theme brightness';
   static const _themeColor = 'theme color';
   static const _themeDensity = 'theme density';
   static const _autoPlayVideos = 'auto play videos';
   static const _useHtmlForText = 'use html for text';
+  static const _hideAutoModeratorComments = 'hide auto moderator comments';
   static const _hiddenSubreddits = 'hidden subreddits';
 
-  PreferenceCubit() : super(const PreferenceState.empty());
+  PreferencesCubit() : super(const PreferencesState.empty());
 
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
-  Future<PreferenceState> get _nextState async {
-    const empty = PreferenceState.empty();
+  Future<PreferencesState> get _nextState async {
+    const empty = PreferencesState.empty();
     final prefs = await _prefs;
-    return PreferenceState(
+    return PreferencesState(
       themeBrightness: ThemeBrightness.values.firstWhere(
         (tb) => tb.value == prefs.getString(_themeBrightness),
         orElse: () => empty.themeBrightness,
@@ -37,6 +45,8 @@ class PreferenceCubit extends Cubit<PreferenceState> {
       ),
       autoPlayVideos: prefs.getBool(_autoPlayVideos) ?? empty.autoPlayVideos,
       useHtmlForText: prefs.getBool(_useHtmlForText) ?? empty.useHtmlForText,
+      hideAutoModeratorComments: prefs.getBool(_hideAutoModeratorComments) ??
+          empty.hideAutoModeratorComments,
       hiddenSubreddits:
           prefs.getStringList(_hiddenSubreddits)?.toSet() ?? const {},
     );
@@ -86,6 +96,14 @@ class PreferenceCubit extends Cubit<PreferenceState> {
     emit(await _nextState);
   }
 
+  void nextHideAutoModeratorComments() async {
+    (await _prefs).setBool(
+      _hideAutoModeratorComments,
+      !state.hideAutoModeratorComments,
+    );
+    emit(await _nextState);
+  }
+
   void hideSubreddit(String subreddit) async {
     (await _prefs).setStringList(
       _hiddenSubreddits,
@@ -121,22 +139,24 @@ extension _ListX<T> on List<T> {
 /// A static type, synchronous representation of the user's stored preferences.
 ///
 /// Note that defaults may be provided if the value isn't actually stored.
-final class PreferenceState {
-  const PreferenceState({
+final class PreferencesState {
+  const PreferencesState({
     required this.themeBrightness,
     required this.themeColor,
     required this.themeDensity,
     required this.autoPlayVideos,
     required this.useHtmlForText,
+    required this.hideAutoModeratorComments,
     required this.hiddenSubreddits,
   });
 
-  const PreferenceState.empty()
+  const PreferencesState.empty()
       : themeBrightness = ThemeBrightness.auto,
         themeColor = ThemeColor.blue,
         themeDensity = ThemeDensity.large,
         autoPlayVideos = true,
         useHtmlForText = false,
+        hideAutoModeratorComments = false,
         hiddenSubreddits = const {};
 
   final ThemeBrightness themeBrightness;
@@ -148,6 +168,8 @@ final class PreferenceState {
   final bool autoPlayVideos;
 
   final bool useHtmlForText;
+
+  final bool hideAutoModeratorComments;
 
   final Set<String> hiddenSubreddits;
 }

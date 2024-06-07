@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/auth_cubit.dart';
-import 'package:lurkur/app/blocs/preference_cubit.dart';
+import 'package:lurkur/app/blocs/preferences_cubit.dart';
 import 'package:lurkur/app/blocs/reddit/subreddit_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
@@ -64,7 +64,7 @@ class _SubredditViewState extends State<_SubredditView> {
   Widget build(BuildContext context) {
     final state = context.watch<SubredditCubit>().state;
     final hiddenSubreddits =
-        context.watch<PreferenceCubit>().state.hiddenSubreddits;
+        context.watch<PreferencesCubit>().state.hiddenSubreddits;
 
     final screenSize = MediaQuery.of(context).size;
     final horizontalPadding = context.responsiveHorizontalPadding;

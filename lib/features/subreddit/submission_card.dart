@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lurkur/app/blocs/preference_cubit.dart';
+import 'package:lurkur/app/blocs/preferences_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/images.dart';
@@ -20,7 +20,7 @@ class SubmissionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final density = context.watch<PreferenceCubit>().state.themeDensity;
+    final density = context.watch<PreferencesCubit>().state.themeDensity;
     final self = submission.self;
     final gallery = submission.gallery;
     final video = submission.video;

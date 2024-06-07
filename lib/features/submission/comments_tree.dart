@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
-import 'package:lurkur/app/blocs/preference_cubit.dart';
+import 'package:lurkur/app/blocs/preferences_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/tags.dart';
@@ -51,6 +51,10 @@ class CommentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (comment.author == 'AutoModerator' &&
+        context.watchPreferences.state.hideAutoModeratorComments) {
+      return Container();
+    }
     return BlocBuilder<_ExpansionStateCubit, Set<RedditComment>>(
       builder: (context, collapsedComments) {
         final title = Text.rich(
@@ -87,7 +91,7 @@ class CommentTile extends StatelessWidget {
             ],
           ),
         );
-        final subtitle = context.watch<PreferenceCubit>().state.useHtmlForText
+        final subtitle = context.watch<PreferencesCubit>().state.useHtmlForText
             ? HtmlWidget(comment.bodyHtml.trim())
             : Text(comment.body);
         return comment.replies.isNotEmpty

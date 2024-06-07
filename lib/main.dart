@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lurkur/app/blocs/auth_cubit.dart';
-import 'package:lurkur/app/blocs/preference_cubit.dart';
+import 'package:lurkur/app/blocs/preferences_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
@@ -36,14 +36,14 @@ class _App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeState = context.watch<ThemeCubit>().state;
-    final preferenceState = context.watch<PreferenceCubit>().state;
+    final preferencesState = context.watch<PreferencesCubit>().state;
     final routerState = context.watch<RouterCubit>().state;
     return MaterialApp.router(
       key: const ValueKey('app'),
       title: 'lurkur',
       theme: themeState.lightTheme,
       darkTheme: themeState.darkTheme,
-      themeMode: switch (preferenceState.themeBrightness) {
+      themeMode: switch (preferencesState.themeBrightness) {
         ThemeBrightness.light => ThemeMode.light,
         ThemeBrightness.dark => ThemeMode.dark,
         ThemeBrightness.auto => ThemeMode.system,
@@ -77,7 +77,7 @@ class _Providers extends StatelessWidget {
           create: (_) => AuthCubit()..initialize(),
         ),
         BlocProvider(
-          create: (_) => PreferenceCubit()..init(),
+          create: (_) => PreferencesCubit()..init(),
         ),
         Provider(
           create: (_) => RedditApi(),
@@ -140,10 +140,10 @@ class _ConnectorsState extends State<_Connectors> {
   }
 
   StreamSubscription<void> _connectPreferencesToTheme() {
-    return context.read<PreferenceCubit>().stream.listen((preferenceState) {
+    return context.read<PreferencesCubit>().stream.listen((preferencesState) {
       context
           .read<ThemeCubit>()
-          .setColorSeed(switch (preferenceState.themeColor) {
+          .setColorSeed(switch (preferencesState.themeColor) {
             ThemeColor.red => Colors.red,
             ThemeColor.orange => Colors.orange,
             ThemeColor.yellow => Colors.yellow,

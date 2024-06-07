@@ -23,7 +23,10 @@ class SignInPage extends StatelessWidget {
             const _Subtitle().animate().fadeIn(delay: 0.15.seconds),
             LurkurSpacing.spacing16.verticalGap,
             switch (context.watchAuthCubit.state) {
-              CheckingAuthorization _ => const LoadingIndicator(),
+              CheckingAuthorization _ => Padding(
+                  padding: LurkurSpacing.spacing16.topInset,
+                  child: const LoadingIndicator(),
+                ),
               _ => FilledButton(
                   onPressed: () => _showSignInWebView(context),
                   child: const Text('sign in'),

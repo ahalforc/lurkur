@@ -96,10 +96,12 @@ class _SubredditTextField extends StatefulWidget {
 
 class _SubredditTextFieldState extends State<_SubredditTextField> {
   final _controller = TextEditingController();
+  final _focusNode = FocusNode();
 
   @override
   void dispose() {
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -107,11 +109,13 @@ class _SubredditTextFieldState extends State<_SubredditTextField> {
   Widget build(BuildContext context) {
     return TextField(
       controller: _controller,
+      focusNode: _focusNode,
       keyboardType: TextInputType.text,
       textInputAction: TextInputAction.go,
       decoration: const InputDecoration(
         hintText: 'Go to a subreddit',
       ),
+      onTapOutside: (_) => _focusNode.unfocus(),
       onSubmitted: (s) {
         context.goToSubreddit(s.trim());
         _controller.clear();

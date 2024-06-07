@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lurkur/app/blocs/preference_cubit.dart';
+import 'package:lurkur/app/blocs/preferences_cubit.dart';
 import 'package:lurkur/app/blocs/router_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
 import 'package:lurkur/app/widgets/popups.dart';
@@ -88,7 +88,7 @@ class _ShowOrHide extends StatelessWidget {
       title: const Text('Hide'),
       subtitle: const Text('Remove this subreddit from all feeds'),
       onTap: () {
-        context.read<PreferenceCubit>().hideSubreddit(
+        context.read<PreferencesCubit>().hideSubreddit(
               submission.subreddit,
             );
         context.read<RouterCubit>().goBack(context);
