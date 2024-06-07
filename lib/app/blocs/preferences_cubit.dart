@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-extension BuildContextX on BuildContext {
+extension BuildContextXPreferences on BuildContext {
   PreferencesCubit get preferences => read<PreferencesCubit>();
 
   PreferencesCubit get watchPreferences => watch<PreferencesCubit>();

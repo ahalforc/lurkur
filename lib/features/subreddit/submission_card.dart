@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:lurkur/app/blocs/preferences_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
@@ -162,11 +163,16 @@ class _SelfSubmission extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      self.text,
-      maxLines: compact ? 10 : null,
-      overflow: TextOverflow.fade,
-    );
+    final textHtml = self.textHtml?.trim();
+    return context.watchPreferences.state.useHtmlForText &&
+            textHtml != null &&
+            textHtml.isNotEmpty
+        ? HtmlWidget(textHtml)
+        : Text(
+            self.text,
+            maxLines: compact ? 10 : null,
+            overflow: TextOverflow.fade,
+          );
   }
 }
 

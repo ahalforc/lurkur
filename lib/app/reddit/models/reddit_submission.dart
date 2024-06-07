@@ -51,7 +51,10 @@ class RedditSubmission {
   SelfSubmission? get self {
     final selfText = _data['selftext']?.toString();
     if (selfText == null || selfText.isEmpty) return null;
-    return SelfSubmission(text: selfText);
+    return SelfSubmission(
+      text: selfText,
+      textHtml: _data['selftext_html']?.toString(),
+    );
   }
 
   GallerySubmission? get gallery {
@@ -196,9 +199,11 @@ class LinkSubmission {
 class SelfSubmission {
   const SelfSubmission({
     required this.text,
+    this.textHtml,
   });
 
   final String text;
+  final String? textHtml;
 }
 
 class GallerySubmission {

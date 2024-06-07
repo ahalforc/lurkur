@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lurkur/app/blocs/preferences_cubit.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
-import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart' as vp;
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -37,7 +36,7 @@ class VideoPlayer extends StatelessWidget {
   Widget build(BuildContext context) {
     return _VideoPlayer(
       video: video,
-      autoPlay: context.watch<PreferencesCubit>().state.autoPlayVideos,
+      autoPlay: context.watchPreferences.state.autoPlayVideos,
     );
   }
 }

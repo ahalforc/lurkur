@@ -116,7 +116,7 @@ class _CommentSubtitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return context.watch<PreferencesCubit>().state.useHtmlForText
+    return context.watchPreferences.state.useHtmlForText
         ? HtmlWidget(comment.bodyHtml.trim())
         : Text(comment.body);
   }
