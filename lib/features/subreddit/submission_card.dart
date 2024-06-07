@@ -138,11 +138,7 @@ class _Info extends StatelessWidget {
   Widget build(BuildContext context) {
     final submission = context.submission;
     return SeparatedRow(
-      separatorBuilder: (_) => Container(
-        alignment: Alignment.center,
-        width: LurkurSpacing.spacing24.value,
-        child: const Text('•'),
-      ),
+      separatorBuilder: SeparatedRow.dotSeparatorBuilder,
       children: [
         if (submission.isNsfw) const NsfwTag(),
         if (submission.isPinned) const PinnedTag(),

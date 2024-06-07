@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:lurkur/app/blocs/preferences_cubit.dart';
-import 'package:lurkur/app/blocs/theme_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
+import 'package:lurkur/app/widgets/layout.dart';
 import 'package:lurkur/app/widgets/tags.dart';
 
 class CommentsTree extends StatelessWidget {
@@ -57,43 +57,8 @@ class CommentTile extends StatelessWidget {
     }
     return BlocBuilder<_ExpansionStateCubit, Set<RedditComment>>(
       builder: (context, collapsedComments) {
-        final title = Text.rich(
-          TextSpan(
-            children: [
-              WidgetSpan(
-                child: Padding(
-                  padding: LurkurSpacing.spacing4.rightInset,
-                  child: ScoreTag(
-                    score: comment.score,
-                  ),
-                ),
-              ),
-              if (comment.isSubmitter)
-                WidgetSpan(
-                  child: Padding(
-                    padding: LurkurSpacing.spacing4.rightInset,
-                    child: const SubmitterTag(),
-                  ),
-                ),
-              if (comment.isEdited)
-                WidgetSpan(
-                  child: Padding(
-                    padding: LurkurSpacing.spacing4.rightInset,
-                    child: const EditedTag(),
-                  ),
-                ),
-              TextSpan(
-                text: comment.author,
-                style: context.textTheme.bodyMedium?.copyWith(
-                  color: context.colorScheme.secondary,
-                ),
-              ),
-            ],
-          ),
-        );
-        final subtitle = context.watch<PreferencesCubit>().state.useHtmlForText
-            ? HtmlWidget(comment.bodyHtml.trim())
-            : Text(comment.body);
+        final title = _CommentTitle(comment: comment);
+        final subtitle = _CommentSubtitle(comment: comment);
         return comment.replies.isNotEmpty
             ? ExpansionTile(
                 title: title,
@@ -116,6 +81,44 @@ class CommentTile extends StatelessWidget {
               );
       },
     );
+  }
+}
+
+class _CommentTitle extends StatelessWidget {
+  const _CommentTitle({
+    required this.comment,
+  });
+
+  final RedditComment comment;
+
+  @override
+  Widget build(BuildContext context) {
+    return SeparatedRow(
+      separatorBuilder: SeparatedRow.dotSeparatorBuilder,
+      children: [
+        Flexible(
+          child: Text(comment.author.isEmpty ? 'Deleted' : comment.author),
+        ),
+        ScoreTag(score: comment.score),
+        if (comment.isSubmitter) const SubmitterTag(),
+        if (comment.isEdited) const EditedTag(),
+      ],
+    );
+  }
+}
+
+class _CommentSubtitle extends StatelessWidget {
+  const _CommentSubtitle({
+    required this.comment,
+  });
+
+  final RedditComment comment;
+
+  @override
+  Widget build(BuildContext context) {
+    return context.watch<PreferencesCubit>().state.useHtmlForText
+        ? HtmlWidget(comment.bodyHtml.trim())
+        : Text(comment.body);
   }
 }
 

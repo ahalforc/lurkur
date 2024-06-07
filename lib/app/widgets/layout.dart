@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lurkur/app/blocs/theme_cubit.dart';
 
 class SeparatedColumn extends StatelessWidget {
   const SeparatedColumn({
@@ -31,6 +32,12 @@ class SeparatedColumn extends StatelessWidget {
 }
 
 class SeparatedRow extends StatelessWidget {
+  static WidgetBuilder dotSeparatorBuilder = (_) => Container(
+        alignment: Alignment.center,
+        width: LurkurSpacing.spacing24.value,
+        child: const Text('•'),
+      );
+
   const SeparatedRow({
     super.key,
     this.mainAxisSize,
