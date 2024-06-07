@@ -22,6 +22,8 @@ class UrlImage {
   final String url;
   final double width;
   final double height;
+
+  double get aspectRatio => height == 0 ? 0 : width / height;
 }
 
 /// Renders a small thumbnail version of an image.
@@ -65,10 +67,17 @@ class Gallery extends StatelessWidget {
 
   final List<UrlImage> images;
 
+  double get _tallestAspectRatio {
+    if (images.isEmpty) return 0;
+    var aspectRatio = images.first.aspectRatio;
+    for (final image in images) {
+      aspectRatio = min(aspectRatio, image.aspectRatio);
+    }
+    return aspectRatio;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final tallestAspectRatio =
-        images.map((image) => image.width / image.height).fold(0.0, max);
     return CarouselSlider.builder(
       itemCount: images.length,
       itemBuilder: (context, itemIndex, pageViewIndex) {
@@ -113,7 +122,7 @@ class Gallery extends StatelessWidget {
         height: null,
         enableInfiniteScroll: false,
         viewportFraction: 1,
-        aspectRatio: tallestAspectRatio,
+        aspectRatio: _tallestAspectRatio,
         enlargeCenterPage: true,
       ),
     );
@@ -163,17 +172,21 @@ class _NetworkImage extends StatelessWidget {
       fit: fit,
       gaplessPlayback: gaplessPlayback,
       frameBuilder: (context, child, frame, _) {
-        if (frame != null) {
-          return child.animate().fadeIn();
-        }
         return Container(
+          alignment: Alignment.center,
           color: context.colorScheme.surfaceBright,
-          child: const LoadingIndicator(size: 12),
+          child: AnimatedSwitcher(
+            duration: 1.seconds,
+            switchInCurve: Curves.fastLinearToSlowEaseIn,
+            child: frame != null ? child : const LoadingIndicator(size: 12),
+          ),
         );
       },
       errorBuilder: (context, _, __) {
-        return const Center(
-          child: LoadingFailedIndicator(),
+        return Container(
+          alignment: Alignment.center,
+          color: context.colorScheme.surfaceBright,
+          child: const LoadingFailedIndicator(),
         );
       },
     );
