@@ -212,13 +212,15 @@ class _VideoSubmission extends StatelessWidget {
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: video.aspectRatio,
-      child: ClipRRect(
-        borderRadius: LurkurRadius.radius16.circularBorderRadius,
-        child: VideoPlayer(
-          video: UrlVideo(
-            url: video.url,
-            width: video.width,
-            height: video.height,
+      child: Card(
+        child: ClipRRect(
+          borderRadius: LurkurRadius.radius16.circularBorderRadius,
+          child: VideoPlayer(
+            video: UrlVideo(
+              url: video.url,
+              width: video.width,
+              height: video.height,
+            ),
           ),
         ),
       ),
