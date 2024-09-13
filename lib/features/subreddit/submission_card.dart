@@ -212,10 +212,10 @@ class _VideoSubmission extends StatelessWidget {
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: video.aspectRatio,
-      child: Container(
-        color: context.colorScheme.surfaceBright,
-        child: ClipRRect(
-          borderRadius: LurkurRadius.radius16.circularBorderRadius,
+      child: ClipRRect(
+        borderRadius: LurkurRadius.radius16.circularBorderRadius,
+        child: Container(
+          color: context.colorScheme.surfaceBright,
           child: VideoPlayer(
             video: UrlVideo(
               url: video.url,

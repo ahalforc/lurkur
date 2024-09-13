@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lurkur/app/blocs/theme_cubit.dart';
@@ -78,52 +77,56 @@ class Gallery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CarouselSlider.builder(
-      itemCount: images.length,
-      itemBuilder: (context, itemIndex, pageViewIndex) {
-        return ClipRRect(
-          borderRadius: LurkurRadius.radius16.circularBorderRadius,
-          child: Stack(
-            alignment: Alignment.center,
+    return AspectRatio(
+      aspectRatio: _tallestAspectRatio,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return CarouselView(
+            itemExtent: constraints.maxWidth,
+            scrollDirection: Axis.horizontal,
+            itemSnapping: true,
+            shape: RoundedRectangleBorder(
+              borderRadius: LurkurRadius.radius16.circularBorderRadius,
+            ),
             children: [
-              _NetworkImage(
-                url: images[itemIndex].url,
-                fit: BoxFit.contain,
-                gaplessPlayback: true,
-              ),
-              if (images.length > 1)
-                Positioned.fill(
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      margin: LurkurSpacing.spacing8.bottomInset,
-                      padding: LurkurSpacing.spacing8.allInsets.copyWith(
-                        top: LurkurSpacing.spacing4.value,
-                        bottom: LurkurSpacing.spacing4.value,
-                      ),
-                      decoration: BoxDecoration(
-                        color: context.colorScheme.surfaceBright,
-                        borderRadius: LurkurRadius.radius8.circularBorderRadius,
-                      ),
-                      child: Text(
-                        '${itemIndex + 1} / ${images.length}',
-                        style: context.textTheme.labelSmall?.copyWith(
-                          color: context.colorScheme.onSurface,
+              for (var i = 0; i < images.length; i++)
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    _NetworkImage(
+                      url: images[i].url,
+                      fit: BoxFit.contain,
+                      gaplessPlayback: true,
+                    ),
+                    if (images.length > 1)
+                      Positioned.fill(
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Container(
+                            margin: LurkurSpacing.spacing8.bottomInset,
+                            padding: LurkurSpacing.spacing8.allInsets.copyWith(
+                              top: LurkurSpacing.spacing4.value,
+                              bottom: LurkurSpacing.spacing4.value,
+                            ),
+                            decoration: BoxDecoration(
+                              color: context.colorScheme.surfaceBright,
+                              borderRadius:
+                                  LurkurRadius.radius8.circularBorderRadius,
+                            ),
+                            child: Text(
+                              '${i + 1} / ${images.length}',
+                              style: context.textTheme.labelSmall?.copyWith(
+                                color: context.colorScheme.onSurface,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
+                  ],
                 ),
             ],
-          ),
-        );
-      },
-      options: CarouselOptions(
-        height: null,
-        enableInfiniteScroll: false,
-        viewportFraction: 1,
-        aspectRatio: _tallestAspectRatio,
-        enlargeCenterPage: true,
+          );
+        },
       ),
     );
   }
