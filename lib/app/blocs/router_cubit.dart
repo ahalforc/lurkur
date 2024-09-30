@@ -8,6 +8,8 @@ import 'package:lurkur/features/sign_in_page.dart';
 import 'package:lurkur/features/subreddit_page.dart';
 
 extension BuildContextXRouter on BuildContext {
+  RouterCubit get routerCubit => read<RouterCubit>();
+
   RouterCubit get watchRouter => watch<RouterCubit>();
 }
 

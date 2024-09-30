@@ -130,28 +130,30 @@ class _ConnectorsState extends State<_Connectors> {
   }
 
   StreamSubscription<void> _connectAuthToRoutes() {
-    return context.read<AuthCubit>().stream.listen((authState) {
+    final authCubit = context.authCubit;
+    final routerCubit = context.routerCubit;
+    return authCubit.stream.listen((authState) {
       if (authState is Authorized) {
-        context.read<RouterCubit>().showAuthorizedRoutes();
+        routerCubit.showAuthorizedRoutes();
       } else if (authState is Unauthorized) {
-        context.read<RouterCubit>().showUnauthorizedRoutes();
+        routerCubit.showUnauthorizedRoutes();
       }
     });
   }
 
   StreamSubscription<void> _connectPreferencesToTheme() {
-    return context.read<PreferencesCubit>().stream.listen((preferencesState) {
-      context
-          .read<ThemeCubit>()
-          .setColorSeed(switch (preferencesState.themeColor) {
-            ThemeColor.red => Colors.red,
-            ThemeColor.orange => Colors.orange,
-            ThemeColor.yellow => Colors.yellow,
-            ThemeColor.green => Colors.green,
-            ThemeColor.blue => Colors.blue,
-            ThemeColor.indigo => Colors.indigo,
-            ThemeColor.violet => Colors.purple,
-          });
+    final preferencesCubit = context.preferences;
+    final themeCubit = context.themeCubit;
+    return preferencesCubit.stream.listen((preferencesState) {
+      themeCubit.setColorSeed(switch (preferencesState.themeColor) {
+        ThemeColor.red => Colors.red,
+        ThemeColor.orange => Colors.orange,
+        ThemeColor.yellow => Colors.yellow,
+        ThemeColor.green => Colors.green,
+        ThemeColor.blue => Colors.blue,
+        ThemeColor.indigo => Colors.indigo,
+        ThemeColor.violet => Colors.purple,
+      });
     });
   }
 }

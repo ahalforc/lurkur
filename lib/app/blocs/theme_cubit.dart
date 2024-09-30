@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 extension BuildContextXTheme on BuildContext {
+  ThemeCubit get themeCubit => read<ThemeCubit>();
+
   TextTheme get textTheme => Theme.of(this).textTheme;
 
   ColorScheme get colorScheme => Theme.of(this).colorScheme;
