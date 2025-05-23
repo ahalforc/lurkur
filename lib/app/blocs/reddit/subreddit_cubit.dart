@@ -99,10 +99,10 @@ class SubredditCubit extends RedditCubit<SubredditState> {
           subreddit: state.subreddit,
           sortOption: state.sortOption,
           after: after,
-          submissions: [
-            ...state.submissions,
-            ...submissions,
-          ],
+          submissions: _joinSubmissions(
+            existingSubmissions: state.submissions,
+            incomingSubmissions: submissions,
+          ),
           isLoadingMore: false,
           didLoadingMoreFail: false,
         ),
@@ -120,6 +120,19 @@ class SubredditCubit extends RedditCubit<SubredditState> {
         ),
       );
     }
+  }
+
+  List<RedditSubmission> _joinSubmissions({
+    required List<RedditSubmission> existingSubmissions,
+    required List<RedditSubmission> incomingSubmissions,
+  }) {
+    final existingKeys = {
+      for (final submission in existingSubmissions) submission.id,
+    };
+    return [
+      ...existingSubmissions,
+      ...incomingSubmissions.where((s) => !existingKeys.contains(s.id)),
+    ];
   }
 
   /// Performs a reload using the current subreddit but with the new sort option.

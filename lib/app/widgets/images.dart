@@ -157,6 +157,28 @@ class FullScreenImage extends StatelessWidget {
   }
 }
 
+class InlineImage extends StatelessWidget {
+  const InlineImage({
+    super.key,
+    required this.url,
+  });
+
+  final String url;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: LurkurRadius.radius8.circularBorderRadius,
+      child: Image.network(
+        url,
+        alignment: Alignment.centerLeft,
+        fit: BoxFit.contain,
+        gaplessPlayback: true,
+      ),
+    );
+  }
+}
+
 class _NetworkImage extends StatelessWidget {
   const _NetworkImage({
     required this.url,

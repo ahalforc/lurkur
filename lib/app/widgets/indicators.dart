@@ -13,7 +13,7 @@ class LoadingIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: SpinKitFoldingCube(
+      child: SpinKitDualRing(
         color: context.colorScheme.onSurface,
         size: size,
       ),

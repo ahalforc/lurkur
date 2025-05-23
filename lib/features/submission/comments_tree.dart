@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:lurkur/app/blocs/preferences_cubit.dart';
 import 'package:lurkur/app/reddit/reddit.dart';
+import 'package:lurkur/app/widgets/images.dart';
 import 'package:lurkur/app/widgets/layout.dart';
 import 'package:lurkur/app/widgets/tags.dart';
 
@@ -116,6 +117,9 @@ class _CommentSubtitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (comment.body.startsWith('https://preview.redd.it/')) {
+      return InlineImage(url: comment.body);
+    }
     return context.watchPreferences.state.useHtmlForText
         ? HtmlWidget(comment.bodyHtml.trim())
         : Text(comment.body);
