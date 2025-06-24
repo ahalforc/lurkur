@@ -25,8 +25,6 @@ class RouterCubit extends Cubit<RouteState> {
 
   RouterCubit() : super(UnauthorizedRoutes());
 
-  bool get canPop => (state.routerConfig as GoRouter).canPop();
-
   void showUnauthorizedRoutes() {
     emit(UnauthorizedRoutes());
   }

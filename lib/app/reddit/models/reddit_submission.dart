@@ -59,7 +59,6 @@ class RedditSubmission {
 
   GallerySubmission? get gallery {
     final result = <GalleryImage>[];
-    final galleryIds = <String>[];
     if (_data case {'preview': {'images': List images}}) {
       for (final image in images) {
         if (image
@@ -122,23 +121,21 @@ class RedditSubmission {
         }
       }
     }
+
+    // If this is a gallery, then omit all other media entries that don't
+    // exist in the gallery list items.
     if (_data case {'gallery_data': {'items': List items}}) {
+      final galleryIds = <String>[];
       for (final item in items) {
         if (item case {'media_id': String id}) {
           galleryIds.add(id);
         }
       }
-    }
-
-    // If [galleryIds] is not empty, then [result] is likely sortable
-    // based off the list order of [galleryIds].
-    if (galleryIds.isNotEmpty && result.length > 1) {
-      result.sort((a, b) {
-        final aId = a.id, bId = b.id;
-        if (bId == null) return -1; // a comes before b
-        if (aId == null) return 1; // b comes before a
-        return galleryIds.indexOf(aId).compareTo(galleryIds.indexOf(bId));
-      });
+      return GallerySubmission(
+        images: galleryIds
+            .map((id) => result.firstWhere((image) => image.id == id))
+            .toList(),
+      );
     }
 
     return result.isNotEmpty
