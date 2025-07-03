@@ -119,6 +119,26 @@ class RedditSubmission {
             ),
           );
         }
+        if (entry
+            case {
+              'e': 'AnimatedImage',
+              's': {
+                'gif': String url,
+                // 'mp4': String mp4Url,
+                'x': num width,
+                'y': num height,
+              },
+              'id': String id,
+            }) {
+          result.add(
+            GalleryImage(
+              id: id,
+              url: url,
+              width: width.toDouble(),
+              height: height.toDouble(),
+            ),
+          );
+        }
       }
     }
 
@@ -133,7 +153,12 @@ class RedditSubmission {
       }
       return GallerySubmission(
         images: galleryIds
-            .map((id) => result.firstWhere((image) => image.id == id))
+            .map(
+              (id) => result.firstWhere(
+                (image) => image.id == id,
+                orElse: () => GalleryImage.unknown(),
+              ),
+            )
             .toList(),
       );
     }
@@ -218,6 +243,13 @@ class GalleryImage {
     required this.width,
     required this.height,
   });
+
+  factory GalleryImage.unknown() => const GalleryImage(
+        id: null,
+        url: '',
+        width: 100,
+        height: 100,
+      );
 
   final String? id;
   final String url;
