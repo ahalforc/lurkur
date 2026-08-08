@@ -7,41 +7,42 @@ struct AuthStorage {
     private let refreshTokenKey = "refresh_token"
     private let expirationTimeKey = "expiration_time"
 
-    var accessToken: String? {
-        get { read(accessTokenKey) }
-        nonmutating set { write(accessTokenKey, value: newValue) }
+    func accessToken() -> String? { read(accessTokenKey) }
+
+    func refreshToken() -> String? { read(refreshTokenKey) }
+
+    func expirationTime() -> Date? {
+        guard let raw = read(expirationTimeKey),
+              let milliseconds = Int64(raw)
+        else { return nil }
+        return Date(timeIntervalSince1970: TimeInterval(milliseconds) / 1000)
     }
 
-    var refreshToken: String? {
-        get { read(refreshTokenKey) }
-        nonmutating set { write(refreshTokenKey, value: newValue) }
+    @discardableResult
+    func setAccessToken(_ token: String) -> Bool {
+        write(accessTokenKey, value: token)
     }
 
-    var expirationTime: Date? {
-        get {
-            guard let raw = read(expirationTimeKey),
-                  let milliseconds = Int64(raw)
-            else { return nil }
-            return Date(timeIntervalSince1970: TimeInterval(milliseconds) / 1000)
-        }
-        nonmutating set {
-            guard let newValue else {
-                write(expirationTimeKey, value: nil)
-                return
-            }
-            let milliseconds = Int64(newValue.timeIntervalSince1970 * 1000)
-            write(expirationTimeKey, value: String(milliseconds))
-        }
+    @discardableResult
+    func setRefreshToken(_ token: String) -> Bool {
+        write(refreshTokenKey, value: token)
     }
 
-    func setExpirationTimeFromNow(seconds: Int) {
-        expirationTime = Date().addingTimeInterval(TimeInterval(seconds))
+    @discardableResult
+    func setExpirationTime(_ date: Date) -> Bool {
+        let milliseconds = Int64(date.timeIntervalSince1970 * 1000)
+        return write(expirationTimeKey, value: String(milliseconds))
+    }
+
+    @discardableResult
+    func setExpirationTimeFromNow(seconds: Int) -> Bool {
+        setExpirationTime(Date().addingTimeInterval(TimeInterval(seconds)))
     }
 
     func deleteAll() {
-        accessToken = nil
-        refreshToken = nil
-        expirationTime = nil
+        delete(accessTokenKey)
+        delete(refreshTokenKey)
+        delete(expirationTimeKey)
     }
 
     private func read(_ key: String) -> String? {
@@ -61,21 +62,25 @@ struct AuthStorage {
         return value
     }
 
-    private func write(_ key: String, value: String?) {
-        let deleteQuery: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: key,
-        ]
-        SecItemDelete(deleteQuery as CFDictionary)
-
-        guard let value, let data = value.data(using: .utf8) else { return }
+    @discardableResult
+    private func write(_ key: String, value: String) -> Bool {
+        delete(key)
+        guard let data = value.data(using: .utf8) else { return false }
 
         let addQuery: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
             kSecValueData as String: data,
-            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock,
+            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
         ]
-        SecItemAdd(addQuery as CFDictionary, nil)
+        return SecItemAdd(addQuery as CFDictionary, nil) == errSecSuccess
+    }
+
+    private func delete(_ key: String) {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key,
+        ]
+        SecItemDelete(query as CFDictionary)
     }
 }

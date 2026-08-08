@@ -46,9 +46,9 @@ final class AuthService {
     func initialize() async {
         state = .checking
 
-        guard let accessToken = storage.accessToken,
-              let expirationTime = storage.expirationTime,
-              let refreshToken = storage.refreshToken
+        guard let accessToken = storage.accessToken(),
+              let expirationTime = storage.expirationTime(),
+              let refreshToken = storage.refreshToken()
         else {
             state = .unauthorized
             return
@@ -139,12 +139,14 @@ final class AuthService {
                   let expiresIn = json["expires_in"] as? Int
             else { return nil }
 
-            storage.accessToken = accessToken
-            storage.setExpirationTimeFromNow(seconds: expiresIn)
+            guard storage.setAccessToken(accessToken),
+                  storage.setExpirationTimeFromNow(seconds: expiresIn)
+            else { return nil }
 
             if expectRefreshToken {
-                guard let refreshToken = json["refresh_token"] as? String else { return nil }
-                storage.refreshToken = refreshToken
+                guard let refreshToken = json["refresh_token"] as? String,
+                      storage.setRefreshToken(refreshToken)
+                else { return nil }
             }
 
             return accessToken
