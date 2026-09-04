@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import OSLog
 
 enum AuthState: Equatable {
     case unauthorized
@@ -55,9 +56,11 @@ final class AuthService {
         }
 
         if expirationTime < Date() {
+            LurkurLog.auth.info("Access token expired; refreshing")
             if let refreshed = await refreshAccessToken(refreshToken) {
                 state = .authorized(accessToken: refreshed)
             } else {
+                LurkurLog.auth.error("Token refresh failed; logging out")
                 await logout()
             }
             return
@@ -131,26 +134,37 @@ final class AuthService {
         do {
             let (data, response) = try await session.data(for: request)
             guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+                LurkurLog.auth.error("Token exchange failed with non-200 response")
                 return nil
             }
 
             guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                   let accessToken = json["access_token"] as? String,
                   let expiresIn = json["expires_in"] as? Int
-            else { return nil }
+            else {
+                LurkurLog.auth.error("Token exchange response missing fields")
+                return nil
+            }
 
             guard storage.setAccessToken(accessToken),
                   storage.setExpirationTimeFromNow(seconds: expiresIn)
-            else { return nil }
+            else {
+                LurkurLog.auth.error("Keychain write failed during token exchange")
+                return nil
+            }
 
             if expectRefreshToken {
                 guard let refreshToken = json["refresh_token"] as? String,
                       storage.setRefreshToken(refreshToken)
-                else { return nil }
+                else {
+                    LurkurLog.auth.error("Keychain refresh-token write failed")
+                    return nil
+                }
             }
 
             return accessToken
         } catch {
+            LurkurLog.auth.error("Token exchange error: \(error.localizedDescription, privacy: .public)")
             return nil
         }
     }

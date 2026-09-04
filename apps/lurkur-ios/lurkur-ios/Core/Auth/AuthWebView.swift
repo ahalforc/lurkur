@@ -59,6 +59,8 @@ extension AuthWebView {
             {
                 didComplete = true
                 onComplete(stateId, code)
+                decisionHandler(.cancel)
+                return
             }
             decisionHandler(.allow)
         }
