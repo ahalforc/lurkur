@@ -116,12 +116,14 @@ Covers Home (user multi-home), Popular, and pushed named subreddits.
 - Cards always use **large** preview: metadata tags (subreddit, author, NSFW, pinned, stickied, score, comments, relative time); self / gallery carousel / video as applicable.
 - Tapping a submission **pushes** Post (see Post).
 - Long-press (or equivalent) exposes more-actions: **hide subreddit** only.
+- **Session persistence:** Across navigation that leaves a feed in the stack (post push/pop, tab switches, Browse→subreddit→back), keep listing session state — already-loaded pages, current sort, and scroll position. Do not remount into a full-screen loading state on re-appear. Reload (discard session) only on pull-to-refresh, sort change, a different feed target, or logout / clear settings. Hide-subreddit filters the in-memory list; it does not reload.
 
 ### Non-goals
 
 - Density-varying compact/medium card modes.
 - Custom video chrome (autoplay-on-visible, overlay play/pause, drag-seek)—use system player controls, with **never autoplay** (user starts playback).
 - Voting or other write actions.
+- Explicit scroll-offset save/restore APIs (rely on keep-alive so the system preserves position).
 
 ---
 
@@ -152,7 +154,7 @@ Covers Home (user multi-home), Popular, and pushed named subreddits.
 - Comment/self bodies via Markdown (see Content rendering).
 - Bodies that are a `https://preview.redd.it/…` URL show as an inline image.
 - Honor **Hide AutoModerator** preference when rendering comments.
-- More-actions: **hide subreddit** (updates Core Preferences).
+- More-actions: **hide subreddit** (updates Core Preferences **and pops** back to the feed).
 
 ### Non-goals
 

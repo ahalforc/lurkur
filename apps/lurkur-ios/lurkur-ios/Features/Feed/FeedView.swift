@@ -6,6 +6,7 @@ struct FeedView: View {
     let target: FeedTarget
 
     @State private var store: FeedStore?
+    @State private var loadedSessionEpoch: Int?
 
     var body: some View {
         Group {
@@ -16,10 +17,20 @@ struct FeedView: View {
             }
         }
         .navigationTitle(target.title)
-        .task(id: target) {
-            let created = FeedStore(target: target, reddit: reddit, preferences: preferences)
-            store = created
-            await created.load()
+        .task(id: FeedAppearKey(target: target, epoch: preferences.feedSessionEpoch)) {
+            // `.task` restarts whenever the view reappears (e.g. after popping a post
+            // or switching tabs). Keep the existing session instead of remounting.
+            if store?.target != target {
+                store = FeedStore(target: target, reddit: reddit, preferences: preferences)
+                loadedSessionEpoch = nil
+            }
+            guard let store else { return }
+            let epoch = preferences.feedSessionEpoch
+            if store.phase == .loaded, loadedSessionEpoch == epoch {
+                return
+            }
+            await store.load()
+            loadedSessionEpoch = epoch
         }
     }
 
@@ -101,4 +112,9 @@ struct FeedView: View {
             }
         }
     }
+}
+
+private struct FeedAppearKey: Equatable {
+    let target: FeedTarget
+    let epoch: Int
 }

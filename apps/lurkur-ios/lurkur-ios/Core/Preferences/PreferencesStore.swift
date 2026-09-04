@@ -38,6 +38,8 @@ final class PreferencesStore {
     private(set) var brightness: ThemeBrightness = .system
     private(set) var hideAutoModeratorComments = false
     private(set) var hiddenSubreddits: Set<String> = []
+    /// Bumped on clear-all so feeds discard kept sessions and reload.
+    private(set) var feedSessionEpoch: Int = 0
 
     private let defaults: UserDefaults
 
@@ -83,6 +85,7 @@ final class PreferencesStore {
         defaults.removeObject(forKey: Keys.hideAutoModerator)
         defaults.removeObject(forKey: Keys.hiddenSubreddits)
         reload()
+        feedSessionEpoch += 1
     }
 
     func isHidden(_ subreddit: String) -> Bool {

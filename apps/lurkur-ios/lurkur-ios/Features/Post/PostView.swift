@@ -4,6 +4,7 @@ import WebKit
 struct PostView: View {
     @Environment(RedditClient.self) private var reddit
     @Environment(PreferencesStore.self) private var preferences
+    @Environment(\.dismiss) private var dismiss
     let submission: Submission
 
     @State private var store: PostStore?
@@ -41,6 +42,7 @@ struct PostView: View {
                 Menu {
                     Button("Hide r/\(submission.subreddit)", role: .destructive) {
                         preferences.hideSubreddit(submission.subreddit)
+                        dismiss()
                     }
                 } label: {
                     Label("More", systemImage: "ellipsis.circle")

@@ -36,6 +36,7 @@ final class FeedStore {
     }
 
     func load(sort: FeedSort? = nil) async {
+        let sortAtStart = self.sort
         if let sort { self.sort = sort }
         phase = .loading
         errorMessage = nil
@@ -58,6 +59,15 @@ final class FeedStore {
             submissions = page.submissions
             phase = .loaded
             LurkurLog.feed.info("Loaded \(page.submissions.count) submissions for \(self.target.title, privacy: .public)")
+        } catch is CancellationError {
+            // View disappeared mid-load (push post / tab switch). Keep prior pages if any,
+            // and revert sort so the toolbar still matches the retained listing.
+            if submissions.isEmpty {
+                phase = .idle
+            } else {
+                self.sort = sortAtStart
+                phase = .loaded
+            }
         } catch {
             phase = .failed
             errorMessage = error.localizedDescription
@@ -79,6 +89,8 @@ final class FeedStore {
             after = page.after
             let existing = Set(submissions.map(\.id))
             submissions.append(contentsOf: page.submissions.filter { !existing.contains($0.id) })
+            isLoadingMore = false
+        } catch is CancellationError {
             isLoadingMore = false
         } catch {
             isLoadingMore = false
