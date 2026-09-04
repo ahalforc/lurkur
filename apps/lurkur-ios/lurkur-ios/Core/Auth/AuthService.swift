@@ -79,11 +79,16 @@ final class AuthService {
 
     /// Completes OAuth after the redirect provides `state` and `code`.
     func completeAuthorizingViaWeb(stateId: String, code: String) async {
-        guard case let .authorizing(expected) = state, expected == stateId else { return }
+        guard case let .authorizing(expected) = state, expected == stateId else {
+            LurkurLog.auth.error("OAuth complete ignored — not authorizing or state mismatch")
+            return
+        }
 
         if let accessToken = await fetchAccessToken(stateId: stateId, code: code) {
+            LurkurLog.auth.info("OAuth token exchange succeeded")
             state = .authorized(accessToken: accessToken)
         } else {
+            LurkurLog.auth.error("OAuth token exchange failed")
             state = .unauthorized
         }
     }

@@ -4,6 +4,9 @@ struct SignInView: View {
     @Environment(AuthService.self) private var auth
     @State private var authURL: URL?
     @State private var isCompleting = false
+    /// Captured when the web view intercepts OAuth credentials so sheet dismiss
+    /// can finish the exchange without treating it as a user cancel.
+    @State private var pendingCredentials: (stateId: String, code: String)?
 
     var body: some View {
         VStack(spacing: 16) {
@@ -25,25 +28,24 @@ struct SignInView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .sheet(isPresented: Binding(
-            get: { authURL != nil },
-            set: { if !$0 { dismissAuthSheet() } }
-        )) {
-            if let authURL {
+        .sheet(
+            isPresented: Binding(
+                get: { authURL != nil },
+                set: { if !$0 { authURL = nil } }
+            ),
+            onDismiss: handleAuthSheetDismiss
+        ) {
+            if let url = authURL {
                 NavigationStack {
-                    AuthWebView(url: authURL) { stateId, code in
-                        self.authURL = nil
-                        Task {
-                            isCompleting = true
-                            await auth.completeAuthorizingViaWeb(stateId: stateId, code: code)
-                            isCompleting = false
-                        }
+                    AuthWebView(url: url) { stateId, code in
+                        pendingCredentials = (stateId, code)
+                        authURL = nil
                     }
                     .ignoresSafeArea(edges: .bottom)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
                             Button("Cancel") {
-                                dismissAuthSheet()
+                                authURL = nil
                             }
                         }
                     }
@@ -59,9 +61,22 @@ struct SignInView: View {
         }
     }
 
-    private func dismissAuthSheet() {
-        authURL = nil
-        auth.cancelAuthorizing()
+    /// Mirrors Flutter: close the web sheet first, then exchange the code while
+    /// still in `.authorizing` — never call `cancelAuthorizing` on success.
+    private func handleAuthSheetDismiss() {
+        if let pendingCredentials {
+            self.pendingCredentials = nil
+            isCompleting = true
+            Task {
+                await auth.completeAuthorizingViaWeb(
+                    stateId: pendingCredentials.stateId,
+                    code: pendingCredentials.code
+                )
+                isCompleting = false
+            }
+        } else {
+            auth.cancelAuthorizing()
+        }
     }
 }
 

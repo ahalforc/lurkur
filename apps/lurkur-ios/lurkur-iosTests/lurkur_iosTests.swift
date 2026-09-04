@@ -10,10 +10,22 @@ struct lurkur_iosTests {
         #expect(result?.code == "def-456")
     }
 
+    @Test func authRedirectParsesTrailingSlashAndBareHost() {
+        let withSlash = URL(string: "https://www.reddit.com/?state=abc-123&code=def-456")!
+        let bareHost = URL(string: "https://reddit.com?state=abc-123&code=def-456")!
+        #expect(AuthWebView.Coordinator.authRedirectCredentials(from: withSlash)?.code == "def-456")
+        #expect(AuthWebView.Coordinator.authRedirectCredentials(from: bareHost)?.stateId == "abc-123")
+    }
+
     @Test func authRedirectIgnoresUnrelatedRedditURLs() {
         let url = URL(string: "https://www.reddit.com/r/swift")!
         let result = AuthWebView.Coordinator.authRedirectCredentials(from: url)
         #expect(result == nil)
+    }
+
+    @Test func authRedirectIgnoresLoginPagesWithoutCode() {
+        let url = URL(string: "https://www.reddit.com/login/?dest=https%3A%2F%2Fwww.reddit.com")!
+        #expect(AuthWebView.Coordinator.authRedirectCredentials(from: url) == nil)
     }
 
     @Test func authorizingStateBuildsRedditAuthURL() {
